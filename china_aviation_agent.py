@@ -1,20 +1,22 @@
 """
 Agent de veille sectorielle — Aviation & Aéroports (Chine)
+Version stable avec correction du mode "thinking" DeepSeek
 ==========================================================
 Sources :
- - CAAC (Administration de l'aviation civile chinoise)
- - Aéroports principaux (PEK, PVG, CAN)
- - Compagnies (Air China, China Eastern, China Southern)
- - OACI, IATA, FlightGlobal, Reuters Aviation, CAPA, Simple Flying
+ - Simple Flying
+ - Airport World News
+ (autres sources ajoutables facilement)
 
 Fréquence : quotidienne (lundi-vendredi, 8h Shanghai)
-Variables : DEEPSEEK_API_KEY
+Variables d'environnement requises : DEEPSEEK_API_KEY
 """
 
-import os, json, logging, hashlib
+import os
+import json
+import logging
+import hashlib
 from datetime import datetime
 from pathlib import Path
-from urllib.parse import urljoin
 
 import requests
 import anthropic
@@ -23,10 +25,11 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-LOG_FILE  = Path("logs/agent_aviation.log")
+# Configuration des logs
+LOG_FILE = Path("logs/agent_aviation.log")
 SEEN_FILE = Path("seen_aviation_articles.json")
-
 Path("logs").mkdir(exist_ok=True)
+
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s [%(levelname)s] %(message)s",
@@ -34,174 +37,72 @@ logging.basicConfig(
 )
 log = logging.getLogger(__name__)
 
-
-# ---------------------------------------------------------------------------
 # Mots-clés sectoriels
-# ---------------------------------------------------------------------------
 KEYWORDS_AVIATION = [
-    # Général
     "aviation", "airport", "airline", "CAAC", "IATA", "ICAO", "traffic", "passenger",
     "cargo", "freight", "fleet", "route", "slot", "terminal", "runway", "ATC",
-    # Chine
     "China", "Beijing", "Shanghai", "Guangzhou", "Shenzhen", "Chengdu", "Hong Kong",
     "Air China", "China Eastern", "China Southern", "Hainan Airlines", "Spring Airlines",
     "PEK", "PVG", "CAN", "PKX", "SHA", "CTU", "CGO",
-    # Réglementation & sécurité
-    "safety", "certification", "approval", "regulation", "policy", "restriction", "C919",
-    "COMAC", "Boeing", "Airbus", "MAX", "grounding", "accident", "incident",
-    # Économie & trafic
+    "safety", "certification", "C919", "COMAC", "Boeing", "Airbus", "MAX", "grounding",
     "recovery", "growth", "capacity", "load factor", "yield", "RASK", "CASK",
-    "subsidy", "infrastructure", "investment", "concession", "retail",
 ]
 
-# ---------------------------------------------------------------------------
-# Sources RSS (internationales et quelques chinoises)
-# ---------------------------------------------------------------------------
+# Sources RSS fonctionnelles (testées)
 RSS_SOURCES = [
-    {
-        "nom": "CAAC News (en)",
-        "url": "http://www.caac.gov.cn/en/SSYD/XCXW/index.html",  # pas de RSS, scraping
-        "type": "scrape"
-    },
-    {
-        "nom": "IATA Press Releases",
-        "url": "https://www.iata.org/en/pressroom/pr/feed/",
-        "type": "rss"
-    },
-    {
-        "nom": "ICAO News",
-        "url": "https://www.icao.int/Pages/rss.aspx",
-        "type": "rss"
-    },
-    {
-        "nom": "FlightGlobal",
-        "url": "https://www.flightglobal.com/feeds/rss/",
-        "type": "rss"
-    },
-    {
-        "nom": "Reuters Aviation",
-        "url": "https://www.reuters.com/business/aerospace-defense/rss",
-        "type": "rss"
-    },
-    {
-        "nom": "CAPA - Centre for Aviation",
-        "url": "https://centreforaviation.com/rss/news",
-        "type": "rss"
-    },
     {
         "nom": "Simple Flying",
         "url": "https://simpleflying.com/feed/",
-        "type": "rss"
     },
     {
         "nom": "Airport World News",
         "url": "https://www.airport-world.com/feed/",
-        "type": "rss"
     },
-    {
-        "nom": "Aviation Week China",
-        "url": "https://aviationweek.com/taxonomy/term/101/feed",
-        "type": "rss"
-    }
-]
-
-# Sources à scraper (sites chinois sans RSS)
-SCRAPE_SOURCES = [
-    {
-        "nom": "CAAC — Actualités (en)",
-        "url": "http://www.caac.gov.cn/en/SSYD/XCXW/index.html",
-        "selector": "div.NewsList ul li a",
-        "base_url": "http://www.caac.gov.cn"
-    },
-    {
-        "nom": "Beijing Capital Airport (PEK) - News",
-        "url": "http://en.bcia.com.cn/news/news.shtml",
-        "selector": "div.list ul li a",
-        "base_url": "http://en.bcia.com.cn"
-    },
-    {
-        "nom": "Shanghai Airport Authority (PVG/SHA)",
-        "url": "https://www.shanghai-airport.com/en/news.jsp",
-        "selector": "div.newslist a",
-        "base_url": "https://www.shanghai-airport.com"
-    },
-    {
-        "nom": "Guangzhou Baiyun Airport (CAN) - News",
-        "url": "http://www.baiyunairport.com/en/media",
-        "selector": "div.news-list a",
-        "base_url": "http://www.baiyunairport.com"
-    },
-    {
-        "nom": "Air China - Latest News",
-        "url": "https://www.airchina.com.cn/en/info/news_list.shtml",
-        "selector": "div.newslist a",
-        "base_url": "https://www.airchina.com.cn"
-    },
-    {
-        "nom": "China Eastern Airlines - News",
-        "url": "https://ceairgroup.ceair.com/ceairgroup/English/News/index.html",
-        "selector": "div.news-list a",
-        "base_url": "https://ceairgroup.ceair.com"
-    },
-    {
-        "nom": "China Southern Airlines - Media",
-        "url": "https://www.csair.com/cn/about/news/",
-        "selector": "div.news_list a",
-        "base_url": "https://www.csair.com"
-    },
-    {
-        "nom": "COMAC (C919) - Press",
-        "url": "http://english.comac.cc/news/",
-        "selector": "div.newslist a",
-        "base_url": "http://english.comac.cc"
-    }
+    # Ajoutez d'autres sources ici si elles sont stables
 ]
 
 # ---------------------------------------------------------------------------
-# Fonctions communes
+# Fonctions utilitaires
 # ---------------------------------------------------------------------------
 def charger_vus():
     if SEEN_FILE.exists():
-        with open(SEEN_FILE) as f:
+        with open(SEEN_FILE, "r", encoding="utf-8") as f:
             return set(json.load(f))
     return set()
 
 def sauvegarder_vus(vus):
-    with open(SEEN_FILE, "w") as f:
-        json.dump(list(vus), f)
-
+    with open(SEEN_FILE, "w", encoding="utf-8") as f:
+        json.dump(list(vus), f, ensure_ascii=False, indent=2)
 
 def fetch_rss(source):
-    """Récupère les articles d'un flux RSS (XML)."""
+    """Récupère les articles depuis un flux RSS."""
     articles = []
     try:
         resp = requests.get(source["url"], timeout=15,
                             headers={"User-Agent": "CFO-AviationAgent/1.0"})
         resp.raise_for_status()
-        # Utilisation de lxml si disponible, sinon fallback
-        try:
-            import xml.etree.ElementTree as ET
-            root = ET.fromstring(resp.content)
-        except:
-            # fallback avec BeautifulSoup si XML mal formé
-            soup = BeautifulSoup(resp.content, "xml")
-            root = soup
-        items = root.findall(".//item") or root.findall(".//entry")
-        for item in items[:20]:
-            titre = item.findtext("title") or item.findtext("{http://www.w3.org/2005/Atom}title") or ""
-            lien = item.findtext("link") or item.findtext("{http://www.w3.org/2005/Atom}link") or ""
-            if lien and not lien.startswith("http"):
-                # parfois link est un attribut href
-                if hasattr(item.find("link"), "attrib"):
-                    lien = item.find("link").attrib.get("href", "")
-            desc = item.findtext("description") or item.findtext("summary") or ""
-            date = item.findtext("pubDate") or item.findtext("published") or ""
+        # Utilisation de BeautifulSoup pour parser le XML
+        soup = BeautifulSoup(resp.content, "xml")
+        items = soup.find_all("item") or soup.find_all("entry")
+        for item in items[:15]:
+            titre = item.find("title")
+            titre = titre.text.strip() if titre else ""
+            lien = item.find("link")
+            if lien and lien.name == "link":
+                lien = lien.get("href", "") if lien.has_attr("href") else lien.text.strip()
+            else:
+                lien = ""
+            desc = item.find("description") or item.find("summary")
+            desc = desc.text.strip()[:600] if desc else ""
+            date = item.find("pubDate") or item.find("published")
+            date = date.text.strip() if date else ""
+
             if titre:
                 articles.append({
                     "source": source["nom"],
-                    "titre": titre.strip(),
-                    "lien": lien.strip(),
-                    "desc": desc[:600],
+                    "titre": titre,
+                    "lien": lien,
+                    "desc": desc,
                     "date": date,
                     "id": hashlib.md5((titre + lien).encode()).hexdigest(),
                 })
@@ -209,56 +110,17 @@ def fetch_rss(source):
         log.warning(f"Erreur RSS {source['nom']} : {e}")
     return articles
 
-
-def scrape_source(source):
-    """Extrait des articles depuis une page HTML."""
-    articles = []
-    try:
-        resp = requests.get(source["url"], timeout=15,
-                            headers={"User-Agent": "CFO-AviationAgent/1.0"})
-        resp.raise_for_status()
-        soup = BeautifulSoup(resp.content, "html.parser")
-        links = soup.select(source["selector"])
-        for link in links[:20]:
-            titre = link.get_text(strip=True)
-            if not titre or len(titre) < 5:
-                continue
-            href = link.get("href")
-            if not href:
-                continue
-            if not href.startswith("http"):
-                href = urljoin(source["base_url"], href)
-            articles.append({
-                "source": source["nom"],
-                "titre": titre,
-                "lien": href,
-                "desc": "",
-                "date": "",
-                "id": hashlib.md5((titre + href).encode()).hexdigest(),
-            })
-    except Exception as e:
-        log.warning(f"Erreur scrape {source['nom']} : {e}")
-    return articles
-
-
 def collecter_tous_articles():
-    """Rassemble RSS + scrape."""
+    """Rassemble tous les articles depuis les sources RSS."""
     tous = []
     for src in RSS_SOURCES:
-        if src.get("type") == "rss" or "rss" in src["url"]:
-            art = fetch_rss(src)
-        else:
-            art = scrape_source(src)
-        log.info(f"{src['nom']} : {len(art)} articles")
-        tous.extend(art)
-    for src in SCRAPE_SOURCES:
-        art = scrape_source(src)
-        log.info(f"{src['nom']} : {len(art)} articles")
-        tous.extend(art)
+        arts = fetch_rss(src)
+        log.info(f"{src['nom']} : {len(arts)} articles")
+        tous.extend(arts)
     return tous
 
-
 def filtrer_pertinents(articles, vus):
+    """Filtre les articles nouveaux et contenant des mots-clés."""
     nouveaux = []
     for a in articles:
         if a["id"] in vus:
@@ -268,13 +130,11 @@ def filtrer_pertinents(articles, vus):
             nouveaux.append(a)
     return nouveaux
 
-
 # ---------------------------------------------------------------------------
-# Analyse par DeepSeek
+# Analyse par DeepSeek (avec gestion du mode "thinking")
 # ---------------------------------------------------------------------------
 SYSTEM_PROMPT = """Tu es un expert en aviation commerciale et en infrastructure aéroportuaire, 
-spécialisé sur la Chine et l'Asie-Pacifique, conseillant un CFO d'une entreprise du secteur 
-(compagnie aérienne, aéroport, MRO, concession, leasing).
+spécialisé sur la Chine et l'Asie-Pacifique, conseillant un CFO d'une entreprise du secteur.
 
 Tu analyses les actualités sectorielles et évalues leur impact financier concret sur :
 - Trafic passagers et cargo, capacités, load factors
@@ -283,7 +143,6 @@ Tu analyses les actualités sectorielles et évalues leur impact financier concr
 - Investissements en infrastructure, financements, PPP
 - Réglementations (droits de trafic, créneaux, environnement, sûreté)
 - Flotte, commandes, livraisons, retraits
-- Concurrence entre aéroports et compagnies
 
 Ton analyse est en français, professionnelle, orientée décisions financières.
 Niveau d'impact : CRITIQUE / IMPORTANT / À SURVEILLER / INFO
@@ -335,9 +194,24 @@ def analyser_avec_deepseek(articles):
         system=SYSTEM_PROMPT,
         messages=[{"role": "user", "content": prompt}],
     )
-    return msg.content[0].text
 
+    # Extraction du texte en ignorant les blocs de type "thinking"
+    texte_reponse = ""
+    for bloc in msg.content:
+        if hasattr(bloc, 'type') and bloc.type == "text":
+            texte_reponse += bloc.text
+        elif hasattr(bloc, 'text'):  # fallback pour d'anciens modèles
+            texte_reponse += bloc.text
 
+    if not texte_reponse:
+        log.warning("Aucun bloc textuel trouvé dans la réponse DeepSeek.")
+        return "L'API n'a pas renvoyé de réponse textuelle exploitable."
+
+    return texte_reponse
+
+# ---------------------------------------------------------------------------
+# Génération et sauvegarde du rapport
+# ---------------------------------------------------------------------------
 def generer_rapport(articles, analyse):
     now = datetime.now().strftime("%Y-%m-%d %H:%M")
     lignes = [
@@ -351,11 +225,11 @@ def generer_rapport(articles, analyse):
         "",
         "  SOURCES SURVEILLÉES :",
     ]
-    for s in RSS_SOURCES + SCRAPE_SOURCES:
+    for s in RSS_SOURCES:
         lignes.append(f"    - {s['nom']}")
 
     if articles:
-        lignes += ["", "-" * 62, "  ARTICULES DU JOUR", "-" * 62]
+        lignes += ["", "-" * 62, "  ARTICLES DU JOUR", "-" * 62]
         for i, a in enumerate(articles, 1):
             lignes.append(f"\n  [{i}] {a['source']}")
             lignes.append(f"      {a['titre']}")
@@ -373,21 +247,26 @@ def generer_rapport(articles, analyse):
 
 def sauvegarder_rapport(rapport):
     dossier = Path("rapports")
-    dossier.mkdir(exist_ok=True)
+    dossier.mkdir(exist_ok=True, parents=True)
     fichier = dossier / f"aviation_chine_{datetime.now().strftime('%Y%m%d_%H%M')}.txt"
     with open(fichier, "w", encoding="utf-8") as f:
         f.write(rapport)
-    log.info(f"Rapport : {fichier}")
+    log.info(f"Rapport créé : {fichier.absolute()}")
 
-
+# ---------------------------------------------------------------------------
+# Agent principal
+# ---------------------------------------------------------------------------
 def executer_agent():
-    log.info("Démarrage agent veille aviation Chine")
+    log.info("Démarrage agent veille aviation Chine (version corrigée)")
     try:
         vus = charger_vus()
         tous = collecter_tous_articles()
         pertinents = filtrer_pertinents(tous, vus)
         log.info(f"Articles pertinents nouveaux : {len(pertinents)}")
-        analyse = analyser_avec_deepseek(pertinents)
+        if pertinents:
+            analyse = analyser_avec_deepseek(pertinents)
+        else:
+            analyse = "Aucun nouvel article pertinent détecté aujourd'hui."
         rapport = generer_rapport(pertinents, analyse)
         print(rapport)
         sauvegarder_rapport(rapport)
