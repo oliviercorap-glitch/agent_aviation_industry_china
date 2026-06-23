@@ -27,6 +27,9 @@ log = logging.getLogger(__name__)
 # =============================================================================
 #  NOUVEAUX MOTS-CLÉS (RACINES GÉNÉRIQUES POUR CAPTURER TOUT SIGNAL)
 # =============================================================================
+# =============================================================================
+#  MOTS-CLÉS ÉLARGIS : GSE + AÉROPORTS + COMPAGNIES AÉRIENNES (CLIENTS)
+# =============================================================================
 KEYWORDS_GSE = [
     # ---------- ANGLAIS (mots racines) ----------
     "ground support", "gse", "airport", "airline", "aviation", "handling",
@@ -34,35 +37,41 @@ KEYWORDS_GSE = [
     "passenger", "cargo", "freight", "fleet", "order", "delivery",
     "expansion", "new runway", "terminal", "swissport", "menzies", "dnata",
     "battery", "lithium", "steel", "semiconductor", "tariff", "belt and road",
+    "profit", "loss", "revenue", "bankruptcy", "load factor", "bankruptcy",
 
-    # ---------- CHINOIS (mots racines ultra-présents dans les titres) ----------
-    "机场",    # aéroport
-    "航空",    # aviation
-    "航班",    # vol
-    "旅客",    # passager
-    "货邮",    # fret postal
-    "吞吐量",  # trafic (passagers/fret)
-    "扩建",    # extension
-    "招标",    # appel d'offres (VITAL pour Bidcenter)
-    "采购",    # achat / procurement (VITAL)
-    "项目",    # projet
-    "交付",    # livraison
-    "订单",    # commande
-    "机队",    # flotte
-    "新能源",  # nouvelle énergie (électrique)
-    "电动",    # électrique
-    "地勤",    # ground handling
-    "行李",    # bagages
-    "牵引车",  # tracteur
-    "客梯车",  # passerelle
-    "除冰车",  # dégivreuse
-    "电源车",  # GPU
-    "航站楼",  # terminal
-    "停机坪",  # tarmac
-    "机位",    # parking stand
-    "投运"     # mise en service
+    # ---------- CHINOIS (AÉROPORTS & INFRA) ----------
+    "机场", "航空", "航站楼", "停机坪", "扩建", "招标", "采购", "项目", "投运",
+    "吞吐量", "旅客", "货邮", "航班", "机位", "远机位",
+
+    # ========== NOUVEAU : COMPAGNIES AÉRIENNES (vos gros clients) ==========
+    # Noms des compagnies
+    "中国国航", "国航",           # Air China
+    "中国东方航空", "东方航空", "东航",  # China Eastern
+    "中国南方航空", "南方航空", "南航",  # China Southern
+    "海南航空", "海航",           # Hainan Airlines
+    "厦门航空", "厦航",           # Xiamen Airlines
+    "深圳航空", "深航",           # Shenzhen Airlines
+    "春秋航空", "春秋",           # Spring Airlines
+    "吉祥航空", "吉祥",           # Juneyao Air
+    "四川航空", "川航",           # Sichuan Airlines
+    "山东航空", "山航",           # Shandong Airlines
+
+    # Événements flotte & finances (signaux forts)
+    "订购",                      # Commande de flotte
+    "交付",                      # Livraison d'avions
+    "机队",                      # Flotte
+    "盈利",                      # Bénéfice
+    "亏损",                      # Perte
+    "营收",                      # Revenu / Chiffre d'affaires
+    "净利润",                    # Bénéfice net
+    "复航",                      # Reprise des vols
+    "停飞",                      # Grounding / Arrêt des vols
+    "航线",                      # Ligne aérienne (route)
+    "新开航线",                  # Nouvelle route
+    "恢复",                      # Rétablissement
+    "破产",                      # Faillite
+    "重组"                       # Restructuration
 ]
-
 # =============================================================================
 #  SOURCES CORRIGÉES (URLs qui fonctionnent)
 # =============================================================================
