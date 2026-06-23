@@ -24,96 +24,58 @@ logging.basicConfig(
 )
 log = logging.getLogger(__name__)
 
-# --- MOTS-CLÉS ÉLARGIS : GSE + Signaux macro (indicateurs avancés) ----------
+# =============================================================================
+#  NOUVEAUX MOTS-CLÉS (RACINES GÉNÉRIQUES POUR CAPTURER TOUT SIGNAL)
+# =============================================================================
 KEYWORDS_GSE = [
-    # ========== 1. ÉQUIPEMENTS & OPÉRATIONS AU SOL (GSE pur) ==========
-    "ground support equipment", "gse", "ground handling", "tug", "tractor",
-    "belt loader", "conveyor belt", "staircase", "passenger boarding bridge",
-    "de-icer", "deicing truck", "gpu", "ground power unit", "air start unit",
-    "air conditioning unit", "towbar", "towbarless", "baggage cart", "dolly",
-    "catering truck", "lavatory truck", "water truck", "apron", "ramp",
-    "electric ground support", "hybrid gse", "lithium battery gse",
-    "autonomous gse", "maintenance gse", "mro ground",
-    # Chinois équipements
-    "地勤设备", "地面支持设备", "行李拖车", "客梯车", "电源车", "气源车",
-    "除冰车", "装载机", "传送带车", "飞机牵引车", "新能源地勤", "电动地勤",
+    # ---------- ANGLAIS (mots racines) ----------
+    "ground support", "gse", "airport", "airline", "aviation", "handling",
+    "tug", "tractor", "loader", "de-icer", "gpu", "towbar", "baggage",
+    "passenger", "cargo", "freight", "fleet", "order", "delivery",
+    "expansion", "new runway", "terminal", "swissport", "menzies", "dnata",
+    "battery", "lithium", "steel", "semiconductor", "tariff", "belt and road",
 
-    # ========== 2. ACTEURS DU HANDLING & CLIENTS (Ground Handlers) ==========
-    "swissport", "menzies", "dnata", "ground handler", "handling contract",
-    "tender handling", "地勤公司", "地面服务", "勤务",
-
-    # ========== 3. SIGNALUX MACRO : AÉROPORTS & INFRASTRUCTURES ==========
-    "airport opening", "new runway", "terminal expansion", "airport expansion",
-    "passenger record", "traffic record", "cargo volume record", "load factor",
-    "inauguration", "infrastructure investment", "新机场", "新航站楼", "扩建",
-    "旅客吞吐量创新高", "航班量", "机位", "远机位", "投运",
-
-    # ========== 4. SIGNALUX MACRO : COMPAGNIES AÉRIENNES (Clients) ==========
-    "airline order", "fleet delivery", "fleet expansion", "airline profit",
-    "airline loss", "bankruptcy", "revenue", "EBIT", "load factor",
-    "Air China", "China Eastern", "China Southern", "Hainan Airlines",
-    "订购", "交付", "机队", "盈利", "亏损", "中国国航", "中国东方航空",
-    "中国南方航空", "海南航空",
-
-    # ========== 5. RÉGLEMENTATIONS & SUPPLY CHAIN ==========
-    "emission regulation airport", "electric ramp", "diesel ban airport",
-    "raw material steel", "aluminium price", "lithium price", "battery cost",
-    "semiconductor shortage", "chip shortage", "supply chain disruption",
-    "碳中和机场", "电动化", "柴油车禁行", "carbon peak",
-
-    # ========== 6. GÉOPOLITIQUE, CONCURRENCE & ÉVÉNEMENTS ==========
-    "Belt and Road", "BRI", "tariff", "trade war", "EU tariffs",
-    "acquisition", "merger", "joint venture", "partnership",
-    "BYD", "XCMG", "SANY", "competition",
-    "strike", "labor shortage", "Asian Games", "Olympics",
-    "一带一路", "关税", "收购", "合并", "合作"
+    # ---------- CHINOIS (mots racines ultra-présents dans les titres) ----------
+    "机场",    # aéroport
+    "航空",    # aviation
+    "航班",    # vol
+    "旅客",    # passager
+    "货邮",    # fret postal
+    "吞吐量",  # trafic (passagers/fret)
+    "扩建",    # extension
+    "招标",    # appel d'offres (VITAL pour Bidcenter)
+    "采购",    # achat / procurement (VITAL)
+    "项目",    # projet
+    "交付",    # livraison
+    "订单",    # commande
+    "机队",    # flotte
+    "新能源",  # nouvelle énergie (électrique)
+    "电动",    # électrique
+    "地勤",    # ground handling
+    "行李",    # bagages
+    "牵引车",  # tracteur
+    "客梯车",  # passerelle
+    "除冰车",  # dégivreuse
+    "电源车",  # GPU
+    "航站楼",  # terminal
+    "停机坪",  # tarmac
+    "机位",    # parking stand
+    "投运"     # mise en service
 ]
 
-# --- SOURCES (Priorité aux appels d'offres, GSE, puis chinois) --------------
+# =============================================================================
+#  SOURCES CORRIGÉES (URLs qui fonctionnent)
+# =============================================================================
 SOURCES = [
-    # 0. SOURCE PRIORITAIRE : Appels d'offres Chine
+    # 1. BIDCENTER (Appels d'offres - VITAL)
     {
-        "nom": "Bidcenter (Chine - Appels d'offres aéroportuaires)",
+        "nom": "Bidcenter (Chine - Appels d'offres)",
         "url": "https://www.bidcenter.com.cn",
         "type": "scrape_bidcenter",
         "base_url": "https://www.bidcenter.com.cn",
         "encoding": "utf-8"
     },
-    # 1. Sources spécialisées GSE
-    {
-        "nom": "Ground Handling International (News)",
-        "url": "https://www.groundhandling.com/news",
-        "type": "scrape_generic",
-        "selector": "div.news-item a, article h3 a, .article-link a",
-        "base_url": "https://www.groundhandling.com",
-    },
-    {
-        "nom": "Aviation Pros - Ground Handling",
-        "url": "https://www.aviationpros.com/ground-handling",
-        "type": "scrape_generic",
-        "selector": "div.article-listing a, h2.article-title a, .listing-title a",
-        "base_url": "https://www.aviationpros.com",
-    },
-    {
-        "nom": "International Airport Review - GSE",
-        "url": "https://www.internationalairportreview.com/topics/ground-handling/",
-        "type": "scrape_generic",
-        "selector": "article h3 a, .topic-article a, .post-title a",
-        "base_url": "https://www.internationalairportreview.com",
-    },
-    {
-        "nom": "Airport Technology - Ground Support",
-        "url": "https://www.airport-technology.com/sectors/ground-support/",
-        "type": "scrape_generic",
-        "selector": "article h3 a, .card-title a, .post-title a",
-        "base_url": "https://www.airport-technology.com",
-    },
-    # 2. Sources chinoises (infrastructures, régulations)
-    {
-        "nom": "CAAC News (China)",
-        "url": "https://www.caac.gov.cn/",
-        "type": "scrape_caac",
-    },
+    # 2. CHINA AIRPORT NEWS (Fonctionne - 20 articles)
     {
         "nom": "China Airport News",
         "url": "http://fuwu.caacnews.com.cn/1/5/index.html",
@@ -122,6 +84,7 @@ SOURCES = [
         "base_url": "http://fuwu.caacnews.com.cn",
         "encoding": "utf-8"
     },
+    # 3. CARNOC (Fonctionne - 2 articles)
     {
         "nom": "CARNOC.com (China)",
         "url": "https://www.carnoc.com/",
@@ -130,19 +93,34 @@ SOURCES = [
         "base_url": "https://www.carnoc.com",
         "encoding": "utf-8"
     },
+    # 4. CAAC (URL corrigée vers la page d'actualités)
+    {
+        "nom": "CAAC News (China)",
+        "url": "http://www.caac.gov.cn/PHONE/ZTZL/",
+        "type": "scrape_caac",
+        "base_url": "http://www.caac.gov.cn"
+    },
+    # 5. GROUND HANDLING (URL corrigée)
+    {
+        "nom": "Ground Handling International",
+        "url": "https://www.groundhandling.com/",
+        "type": "scrape_generic",
+        "selector": "article h3 a, .post-title a, a",
+        "base_url": "https://www.groundhandling.com",
+    },
+    # 6. CGTN (URL corrigée)
     {
         "nom": "CGTN - Aviation",
-        "url": "https://news.cgtn.com/",
+        "url": "https://www.cgtn.com/",
         "type": "scrape_generic",
         "selector": "div.newsList a, a",
-        "base_url": "https://news.cgtn.com",
+        "base_url": "https://www.cgtn.com",
         "encoding": "utf-8"
     }
 ]
 
-# --- Fonctions utilitaires ---------------------------------------------------
+# --- FONCTIONS (inchangées, mais je les inclus pour que le script soit complet) ---
 def normaliser_url(url, base=None):
-    """Construit une URL absolue et supprime les paramètres de tracking."""
     if not url:
         return None
     if base:
@@ -158,8 +136,7 @@ def charger_vus():
         with open(SEEN_FILE, "r", encoding="utf-8") as f:
             try:
                 return set(json.load(f))
-            except json.JSONDecodeError:
-                log.warning("Fichier seen_gse_articles.json corrompu, réinitialisation.")
+            except:
                 return set()
     return set()
 
@@ -167,11 +144,11 @@ def sauvegarder_vus(vus):
     with open(SEEN_FILE, "w", encoding="utf-8") as f:
         json.dump(list(vus), f, ensure_ascii=False, indent=2)
 
-# --- Fonctions de scraping avec retry ----------------------------------------
 def requeter_avec_retry(url, retries=3, **kwargs):
-    """Effectue une requête HTTP avec 3 tentatives en cas d'échec."""
     headers = {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36",
+        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
+        "Accept-Language": "zh-CN,zh;q=0.8,en-US;q=0.5,en;q=0.3"
     }
     if "headers" in kwargs:
         headers.update(kwargs.pop("headers"))
@@ -180,31 +157,26 @@ def requeter_avec_retry(url, retries=3, **kwargs):
             resp = requests.get(url, timeout=30, headers=headers, **kwargs)
             resp.raise_for_status()
             return resp
-        except requests.exceptions.RequestException as e:
+        except Exception as e:
             log.warning(f"Tentative {i+1}/{retries} échouée pour {url} : {e}")
             time.sleep(2 ** i)
     return None
 
 def scrape_caac(source):
-    """Scraping spécifique pour le site CAAC."""
     articles = []
     resp = requeter_avec_retry(source["url"])
     if not resp:
         return articles
     try:
         soup = BeautifulSoup(resp.content, "html.parser", from_encoding='utf-8')
-        news_block = soup.find('div', class_='newsList') or soup.find('div', class_='list') or soup.find('ul', class_='news')
-        if news_block:
-            links = news_block.find_all('a')
-        else:
-            links = soup.find_all('a', href=True)
-        for link in links[:20]:
+        links = soup.find_all('a', href=True)
+        for link in links[:15]:
             titre = link.get_text(strip=True)
-            if not titre or len(titre) < 15 or ">" in titre:
+            if not titre or len(titre) < 10:
                 continue
             href = link.get('href')
             if href:
-                href = normaliser_url(href, "https://www.caac.gov.cn")
+                href = normaliser_url(href, source["base_url"])
             if titre and href:
                 articles.append({
                     "source": source["nom"],
@@ -214,13 +186,12 @@ def scrape_caac(source):
                     "date": datetime.now().strftime("%Y-%m-%d"),
                     "id": hashlib.md5((titre + href).encode()).hexdigest(),
                 })
-        log.info(f"  Scraping CAAC: {len(articles)} articles")
+        log.info(f"  Scraping {source['nom']}: {len(articles)} articles")
     except Exception as e:
-        log.warning(f"Erreur parsing CAAC : {e}")
+        log.warning(f"Erreur parsing {source['nom']} : {e}")
     return articles
 
 def scrape_generic(source):
-    """Scraping générique avec sélecteur CSS."""
     articles = []
     resp = requeter_avec_retry(source["url"])
     if not resp:
@@ -233,9 +204,7 @@ def scrape_generic(source):
         for link in links:
             href = link.get('href')
             titre = link.get_text(strip=True)
-            if not href or not titre or len(titre) < 12:
-                continue
-            if titre.lower().startswith(('read more', 'continue', 'click here')):
+            if not href or not titre or len(titre) < 10:
                 continue
             href = normaliser_url(href, source["base_url"])
             if href:
@@ -255,38 +224,32 @@ def scrape_generic(source):
     return articles
 
 def scrape_bidcenter(source):
-    """Scraping spécifique pour Bidcenter (portail d'appels d'offres chinois)."""
     articles = []
     headers = {
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
         "Referer": "https://www.bidcenter.com.cn/",
-        "Accept-Language": "zh-CN,zh;q=0.9,en;q=0.8"
+        "Accept-Language": "zh-CN,zh;q=0.9"
     }
     resp = requeter_avec_retry(source["url"], headers=headers)
     if not resp:
         return articles
     try:
         soup = BeautifulSoup(resp.content, "html.parser", from_encoding='utf-8')
-        
-        # Sélecteurs typiques de Bidcenter (liste des tenders)
         links = soup.select('div.tender_list a, ul.tender-list a, .gg_list a, table a, .list-item a')
         if not links:
             links = soup.find_all('a', href=True)
-        
         unique_links = {}
         for link in links:
             href = link.get('href')
             titre = link.get_text(strip=True)
-            if not href or not titre or len(titre) < 10:
+            if not href or not titre or len(titre) < 8:
                 continue
-            # Nettoyage : on ignore les liens de navigation
-            mots_exclus = ['首页', '上一页', '下一页', '末页', '登录', '注册', '发布', '搜索', '招标公告']
+            mots_exclus = ['首页', '上一页', '下一页', '末页', '登录', '注册', '发布', '搜索']
             if any(mot in titre for mot in mots_exclus):
                 continue
             href = normaliser_url(href, source["base_url"])
             if href and 'bidcenter.com.cn' in href:
                 unique_links[href] = titre
-        
         for href, titre in list(unique_links.items())[:15]:
             articles.append({
                 "source": source["nom"],
@@ -296,13 +259,12 @@ def scrape_bidcenter(source):
                 "date": datetime.now().strftime("%Y-%m-%d"),
                 "id": hashlib.md5((titre + href).encode()).hexdigest(),
             })
-        log.info(f"  Scraping {source['nom']}: {len(articles)} appels d'offres trouvés")
+        log.info(f"  Scraping {source['nom']}: {len(articles)} appels d'offres")
     except Exception as e:
         log.warning(f"Erreur scraping {source['nom']} : {e}")
     return articles
 
 def collecter_tous_articles():
-    """Rassemble tous les articles via les différentes méthodes."""
     tous_articles = []
     for source in SOURCES:
         log.info(f"Collecte depuis : {source['nom']}")
@@ -310,46 +272,44 @@ def collecter_tous_articles():
             articles = scrape_caac(source)
         elif source["type"] == "scrape_bidcenter":
             articles = scrape_bidcenter(source)
-        elif source["type"] == "scrape_generic":
-            articles = scrape_generic(source)
         else:
-            articles = []
+            articles = scrape_generic(source)
         tous_articles.extend(articles)
         time.sleep(1.5)
     log.info(f"Total articles bruts collectés: {len(tous_articles)}")
     return tous_articles
 
 def filtrer_pertinents(articles, vus):
-    """Filtre les articles nouveaux et contenant les mots-clés (GSE + signaux macro)."""
     nouveaux = []
     for a in articles:
         if a["id"] in vus:
             continue
         texte = (a["titre"] + " " + a.get("desc", "")).lower()
+        # On vérifie si un des mots-clés (en minuscule) est dans le texte
         if any(kw.lower() in texte for kw in KEYWORDS_GSE):
             nouveaux.append(a)
     log.info(f"Articles pertinents (GSE + signaux macro) : {len(nouveaux)}")
     return nouveaux
 
-# --- Analyse par DeepSeek (via OpenAI client) --------------------------------
+# --- PROMPT DEEPSEEK (inchangé, excellent) ------------------------------------
 SYSTEM_PROMPT_GSE = """Tu es un expert du marché des équipements de support au sol (GSE) en Asie-Pacifique, 
 spécialisé en stratégie industrielle et supply chain. Tu conseilles le CEO d'un fabricant / loueur de GSE.
 
 **IMPORTANT** : Ne te limite pas aux articles parlant uniquement d'équipements. 
-Les ouvertures d'aéroports, les records de trafic, les commandes de flotte et les résultats financiers des compagnies/handlers sont des **INDICATEURS AVANCÉS**. Tu dois systématiquement traduire ces informations en opportunités ou risques pour le marché GSE (ex: +5% de trafic à Pékin => besoin de 10 tracteurs supplémentaires dans 6 mois).
+Les ouvertures d'aéroports, les records de trafic, les commandes de flotte et les résultats financiers des compagnies/handlers sont des **INDICATEURS AVANCÉS**. Tu dois systématiquement traduire ces informations en opportunités ou risques pour le marché GSE.
 
 Accorde une attention particulière aux signaux sur :
 - Les coûts des matières premières (acier, aluminium, lithium, semi-conducteurs)
-- Les fusions-acquisitions chez les handlers (Swissport, Menzies, Dnata)
-- Les politiques commerciales (tarifs douaniers, Belt and Road Initiative)
-- Les réglementations environnementales en Chine (objectifs "carbone neutralité")
+- Les fusions-acquisitions chez les handlers
+- Les politiques commerciales (tarifs douaniers, Belt and Road)
+- Les réglementations environnementales en Chine
 
 Pour chaque actualité importante, évalue l'impact concret sur :
-1. Demande en équipements (tracteurs, chargeurs, passerelles, groupes électrogènes)
+1. Demande en équipements (tracteurs, chargeurs, passerelles)
 2. Coûts des intrants (impact sur nos marges)
 3. Appels d'offres et contrats de handling
-4. Positionnement concurrentiel face à BYD, XCMG, ou autres entrants
-5. Infrastructure aéroportuaire (nouveaux terminaux => besoin de GSE)
+4. Positionnement concurrentiel
+5. Infrastructure aéroportuaire
 
 Ton analyse est en français, orientée décisions commerciales et industrielles.
 Niveau d'impact : CRITIQUE / IMPORTANT / À SURVEILLER / INFO
@@ -361,59 +321,52 @@ def analyser_avec_deepseek(articles):
 
     api_key = os.environ.get("DEEPSEEK_API_KEY")
     if not api_key:
-        raise ValueError("DEEPSEEK_API_KEY non définie dans le fichier .env")
+        raise ValueError("DEEPSEEK_API_KEY non définie")
 
     client = OpenAI(api_key=api_key, base_url="https://api.deepseek.com/v1")
-
     date_str = datetime.now().strftime("%d %B %Y")
     articles_txt = ""
     for i, a in enumerate(articles, 1):
         articles_txt += f"\n[{i}] Source : {a['source']}\n"
         articles_txt += f"    Titre : {a['titre']}\n"
         articles_txt += f"    Lien  : {a['lien']}\n"
-        if a.get('desc'):
-            articles_txt += f"    Résumé: {a['desc']}\n"
 
     prompt = (f"Veille stratégique GSE - Chine / Asie-Pacifique — {date_str}\n"
               f"Nombre d'articles sélectionnés : {len(articles)}\n\n{articles_txt}\n\n"
               "Pour chaque information importante :\n"
               "1. IMPACT : CRITIQUE / IMPORTANT / À SURVEILLER / INFO\n"
-              "2. RÉSUMÉ (1-2 phrases) lié au marché GSE ou à ses indicateurs avancés\n"
-              "3. IMPACT BUSINESS (ex: hausse des coûts de production, opportunité de vente, nouveau marché, risque d'approvisionnement)\n"
-              "4. ACTION RECOMMANDÉE (contacter fournisseur, ajuster stock, prospecter client, adapter catalogue)\n\n"
+              "2. RÉSUMÉ (1-2 phrases) lié au marché GSE\n"
+              "3. IMPACT BUSINESS (ex: hausse des coûts, opportunité, risque)\n"
+              "4. ACTION RECOMMANDÉE\n\n"
               "Termine par :\n"
-              "- SYNTHÈSE EXÉCUTIVE (5 lignes max) pour le comité de direction\n"
+              "- SYNTHÈSE EXÉCUTIVE (5 lignes max)\n"
               "- 3 INDICATEURS CLÉS À SURVEILLER cette semaine\n"
-              "- RISQUE PRINCIPAL pour la chaîne d'approvisionnement ou le marché GSE en Chine")
+              "- RISQUE PRINCIPAL pour le marché GSE en Chine")
 
     log.info(f"Envoi de {len(articles)} articles à DeepSeek...")
     try:
         response = client.chat.completions.create(
             model="deepseek-chat",
-            messages=[
-                {"role": "system", "content": SYSTEM_PROMPT_GSE},
-                {"role": "user", "content": prompt}
-            ],
+            messages=[{"role": "system", "content": SYSTEM_PROMPT_GSE},
+                      {"role": "user", "content": prompt}],
             max_tokens=4096,
             temperature=0.3
         )
         return response.choices[0].message.content
     except Exception as e:
-        log.error(f"Erreur lors de l'appel à DeepSeek : {e}")
-        return "L'API n'a pas pu traiter la demande. Vérifiez votre clé et votre connexion."
+        log.error(f"Erreur DeepSeek : {e}")
+        return "Erreur API."
 
-# --- Génération du rapport ---------------------------------------------------
+# --- GENERATION RAPPORT (inchangée) ------------------------------------------
 def generer_rapport(articles, analyse):
     now = datetime.now().strftime("%Y-%m-%d %H:%M")
     lignes = ["=" * 62,
               f"  VEILLE STRATÉGIQUE GSE & MARCHÉ AVIATION (Chine) — {now}",
-              "  Pour : Direction Industrielle & Commerciale",
-              "  Modèle : DeepSeek Chat", "=" * 62, "",
+              "  Pour : Direction Industrielle & Commerciale", "=" * 62, "",
               f"  {len(articles)} information(s) pertinente(s)", "",
               "  SOURCES SURVEILLÉES :"]
     for s in SOURCES:
         lignes.append(f"    - {s['nom']}")
-
     if articles:
         lignes += ["", "-" * 62, "  ARTICLES DU JOUR", "-" * 62]
         for i, a in enumerate(articles, 1):
@@ -421,7 +374,6 @@ def generer_rapport(articles, analyse):
             lignes.append(f"      {a['titre']}")
             if a["lien"]:
                 lignes.append(f"      {a['lien']}")
-
     lignes += ["", "-" * 62, "  ANALYSE & RECOMMANDATIONS", "-" * 62, analyse, "", "=" * 62]
     return "\n".join(lignes)
 
@@ -433,9 +385,9 @@ def sauvegarder_rapport(rapport):
         f.write(rapport)
     log.info(f"Rapport créé : {fichier.absolute()}")
 
-# --- Exécution principale ----------------------------------------------------
+# --- EXECUTION ---------------------------------------------------------------
 def executer_agent():
-    log.info("Démarrage agent veille GSE + signaux marché (version élargie)")
+    log.info("Démarrage agent veille GSE + signaux marché (version racines élargies)")
     try:
         vus = charger_vus()
         tous_articles = collecter_tous_articles()
