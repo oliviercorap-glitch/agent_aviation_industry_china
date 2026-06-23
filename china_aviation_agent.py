@@ -25,55 +25,92 @@ logging.basicConfig(
 log = logging.getLogger(__name__)
 
 # =============================================================================
-#  NOUVEAUX MOTS-CLÉS (RACINES GÉNÉRIQUES POUR CAPTURER TOUT SIGNAL)
-# =============================================================================
-# =============================================================================
-#  MOTS-CLÉS ÉLARGIS : GSE + AÉROPORTS + COMPAGNIES AÉRIENNES (CLIENTS)
+#  MOTS-CLÉS ÉLARGIS : GSE + AÉROPORTS + COMPAGNIES + CONCURRENTS
 # =============================================================================
 KEYWORDS_GSE = [
-    # ---------- ANGLAIS (mots racines) ----------
-    "ground support", "gse", "airport", "airline", "aviation", "handling",
-    "tug", "tractor", "loader", "de-icer", "gpu", "towbar", "baggage",
-    "passenger", "cargo", "freight", "fleet", "order", "delivery",
-    "expansion", "new runway", "terminal", "swissport", "menzies", "dnata",
-    "battery", "lithium", "steel", "semiconductor", "tariff", "belt and road",
-    "profit", "loss", "revenue", "bankruptcy", "load factor", "bankruptcy",
+    # ---------- GSE & ÉQUIPEMENTS ----------
+    "ground support", "gse", "tug", "tractor", "loader", "de-icer", "gpu",
+    "towbar", "baggage", "passenger boarding bridge", "air start unit",
+    "belt loader", "conveyor belt", "staircase", "dolly", "catering truck",
+    "lavatory truck", "water truck", "apron", "ramp", "electric ground support",
+    "hybrid gse", "lithium battery gse", "autonomous gse", "maintenance gse",
+    "mro ground",
+    "地勤设备", "地面支持设备", "行李拖车", "客梯车", "电源车", "气源车",
+    "除冰车", "装载机", "传送带车", "飞机牵引车", "新能源地勤", "电动地勤",
 
-    # ---------- CHINOIS (AÉROPORTS & INFRA) ----------
+    # ---------- AÉROPORTS & INFRASTRUCTURES ----------
+    "airport opening", "new runway", "terminal expansion", "airport expansion",
+    "passenger record", "traffic record", "cargo volume", "load factor",
+    "inauguration", "infrastructure investment",
     "机场", "航空", "航站楼", "停机坪", "扩建", "招标", "采购", "项目", "投运",
-    "吞吐量", "旅客", "货邮", "航班", "机位", "远机位",
+    "吞吐量", "旅客", "货邮", "航班", "机位", "远机位", "新机场", "新航站楼",
+    "旅客吞吐量创新高", "航班量",
 
-    # ========== NOUVEAU : COMPAGNIES AÉRIENNES (vos gros clients) ==========
-    # Noms des compagnies
-    "中国国航", "国航",           # Air China
-    "中国东方航空", "东方航空", "东航",  # China Eastern
-    "中国南方航空", "南方航空", "南航",  # China Southern
-    "海南航空", "海航",           # Hainan Airlines
-    "厦门航空", "厦航",           # Xiamen Airlines
-    "深圳航空", "深航",           # Shenzhen Airlines
-    "春秋航空", "春秋",           # Spring Airlines
-    "吉祥航空", "吉祥",           # Juneyao Air
-    "四川航空", "川航",           # Sichuan Airlines
-    "山东航空", "山航",           # Shandong Airlines
+    # ---------- COMPAGNIES AÉRIENNES (CLIENTS) ----------
+    "airline order", "fleet delivery", "fleet expansion", "airline profit",
+    "airline loss", "bankruptcy", "revenue", "EBIT",
+    "Air China", "China Eastern", "China Southern", "Hainan Airlines",
+    "中国国航", "国航", "中国东方航空", "东方航空", "东航",
+    "中国南方航空", "南方航空", "南航", "海南航空", "海航",
+    "厦门航空", "厦航", "深圳航空", "深航", "春秋航空", "春秋",
+    "吉祥航空", "吉祥", "四川航空", "川航", "山东航空", "山航",
+    "订购", "交付", "机队", "盈利", "亏损", "营收", "净利润",
+    "复航", "停飞", "航线", "新开航线", "恢复", "破产", "重组",
 
-    # Événements flotte & finances (signaux forts)
-    "订购",                      # Commande de flotte
-    "交付",                      # Livraison d'avions
-    "机队",                      # Flotte
-    "盈利",                      # Bénéfice
-    "亏损",                      # Perte
-    "营收",                      # Revenu / Chiffre d'affaires
-    "净利润",                    # Bénéfice net
-    "复航",                      # Reprise des vols
-    "停飞",                      # Grounding / Arrêt des vols
-    "航线",                      # Ligne aérienne (route)
-    "新开航线",                  # Nouvelle route
-    "恢复",                      # Rétablissement
-    "破产",                      # Faillite
-    "重组"                       # Restructuration
+    # ---------- RÉGLEMENTATIONS & SUPPLY CHAIN ----------
+    "emission regulation", "electric ramp", "diesel ban",
+    "steel price", "aluminium", "lithium", "battery cost",
+    "semiconductor", "chip shortage", "supply chain disruption",
+    "碳中和机场", "电动化", "柴油车禁行", "carbon peak",
+
+    # ---------- GÉOPOLITIQUE ----------
+    "Belt and Road", "BRI", "tariff", "trade war", "EU tariffs",
+    "一带一路", "关税",
+
+    # ---------- CONCURRENTS (TOP 20 MONDIAUX) ----------
+    "TLD Group", "TLD", "Alvest",
+    "JBT Corporation", "JBT", "Oshkosh AeroTech", "Oshkosh",
+    "Textron GSE", "Textron", "Tug Technologies", "Tronair", "ITW GSE",
+    "Fast Global Solutions", "Fast Global", "WASP GSE",
+    "Mallaghan", "Mallaghan Engineering", "Goldhofer", "MULAG",
+    "HYDRO", "Guinault", "Cavotec", "AERO Specialties", "Aero Specialties",
+    "Global Ground Support", "DOLL", "Nepean", "Gate GSE",
+    "Clyde Machines", "Douglas Equipment",
+
+    # ---------- CONCURRENTS (EUROPÉENS & AMÉRICAINS) ----------
+    "FgFlightline", "AMSS GSE", "Avia Equipment", "Teleflex Lionel-Dupont",
+    "CargoTec", "Bharat Earth Movers", "Bliss-Fox GSE",
+    "Imai Aero-Equipment", "Toyota Industries", "JCB", "Jungheinrich",
+    "Komatsu", "Cobus", "Rheinmetall", "Vestergaard", "Trepel",
+    "AGSE", "Aviapartner", "Havas Ground Handling",
+    "Alliance Ground International", "Watkins Aircraft Support",
+    "Handiquip GSE", "MAK Controls", "Unitron", "Enersys", "RASAKTI",
+    "ATEC Inc", "Joloda Hydraroll", "Wollard International",
+    "BEUMER Group", "Powervamp", "Acsoon", "Velocity Airport Solutions",
+    "Red Box International", "Power Systems International", "PSI",
+    "GB Barberi", "Jetall GPU", "Aeromax GSE", "Current Power",
+    "MRCCS", "Bertoli Power Units",
+
+    # ---------- CONCURRENTS CHINOIS ----------
+    "Weihai Guangtai", "Guangtai", "威海广泰",
+    "CIMC Tianda", "中集天达",
+    "Jiangsu Tianyi", "Tianyi", "江苏天一",
+    "Shenzhen TECHKING", "TECHKING", "深圳达航",
+    "Hangfu", "航福",
+    "Shanghai Jiajie", "上海嘉捷",
+    "Guangzhou Jinhaoyang", "广州金浩阳",
+    "Shenyang Tianhua", "沈阳天华",
+    "Shandong Tianhe", "山东天河",
+    "Zhejiang Goodsense", "浙江中力",
+    "Alha GSE", "Shanghai Ifly", "Ifly GSE",
+
+    # ---------- LOCATION & SERVICES ----------
+    "TCR Group", "TCR", "Mercury GSE", "Lufthansa Technik",
+    "GE Aviation", "AFI KLM E&M", "ST Aerospace", "MTU Maintenance"
 ]
+
 # =============================================================================
-#  SOURCES CORRIGÉES (URLs qui fonctionnent)
+#  SOURCES (FONCTIONNELLES)
 # =============================================================================
 SOURCES = [
     # 1. BIDCENTER (Appels d'offres - VITAL)
@@ -93,7 +130,7 @@ SOURCES = [
         "base_url": "http://fuwu.caacnews.com.cn",
         "encoding": "utf-8"
     },
-    # 3. CARNOC (Fonctionne - 2 articles)
+    # 3. CARNOC (Fonctionne)
     {
         "nom": "CARNOC.com (China)",
         "url": "https://www.carnoc.com/",
@@ -102,7 +139,7 @@ SOURCES = [
         "base_url": "https://www.carnoc.com",
         "encoding": "utf-8"
     },
-    # 4. CAAC (URL corrigée vers la page d'actualités)
+    # 4. CAAC (URL corrigée)
     {
         "nom": "CAAC News (China)",
         "url": "http://www.caac.gov.cn/PHONE/ZTZL/",
@@ -128,7 +165,7 @@ SOURCES = [
     }
 ]
 
-# --- FONCTIONS (inchangées, mais je les inclus pour que le script soit complet) ---
+# --- FONCTIONS UTILITAIRES ---------------------------------------------------
 def normaliser_url(url, base=None):
     if not url:
         return None
@@ -294,31 +331,31 @@ def filtrer_pertinents(articles, vus):
         if a["id"] in vus:
             continue
         texte = (a["titre"] + " " + a.get("desc", "")).lower()
-        # On vérifie si un des mots-clés (en minuscule) est dans le texte
         if any(kw.lower() in texte for kw in KEYWORDS_GSE):
             nouveaux.append(a)
-    log.info(f"Articles pertinents (GSE + signaux macro) : {len(nouveaux)}")
+    log.info(f"Articles pertinents (GSE + signaux macro + concurrents) : {len(nouveaux)}")
     return nouveaux
 
-# --- PROMPT DEEPSEEK (inchangé, excellent) ------------------------------------
+# --- PROMPT DEEPSEEK (VERSION FINALE) ----------------------------------------
 SYSTEM_PROMPT_GSE = """Tu es un expert du marché des équipements de support au sol (GSE) en Asie-Pacifique, 
-spécialisé en stratégie industrielle et supply chain. Tu conseilles le CEO d'un fabricant / loueur de GSE.
+spécialisé en stratégie industrielle et supply chain. Tu conseilles le CEO d'un fabricant / loueur de GSE (TLD Group).
 
 **IMPORTANT** : Ne te limite pas aux articles parlant uniquement d'équipements. 
-Les ouvertures d'aéroports, les records de trafic, les commandes de flotte et les résultats financiers des compagnies/handlers sont des **INDICATEURS AVANCÉS**. Tu dois systématiquement traduire ces informations en opportunités ou risques pour le marché GSE.
+- Les ouvertures d'aéroports, les records de trafic, les commandes de flotte et les résultats financiers des compagnies sont des **INDICATEURS AVANCÉS**.
+- Les annonces de tes concurrents (JBT, Textron, Guangtai, etc.) sont à analyser comme des menaces ou des opportunités.
+- Traduis systématiquement ces informations en volumes d'équipements potentiels (ex: +5% de trafic = +10 tracteurs).
 
-Accorde une attention particulière aux signaux sur :
-- Les coûts des matières premières (acier, aluminium, lithium, semi-conducteurs)
-- Les fusions-acquisitions chez les handlers
-- Les politiques commerciales (tarifs douaniers, Belt and Road)
-- Les réglementations environnementales en Chine
+Accorde une attention particulière à :
+1. Les coûts des matières premières (acier, aluminium, lithium, semi-conducteurs)
+2. Les fusions-acquisitions chez les handlers (Swissport, Menzies, Dnata)
+3. Les politiques commerciales (tarifs, Belt and Road)
+4. Les réglementations environnementales en Chine
 
 Pour chaque actualité importante, évalue l'impact concret sur :
-1. Demande en équipements (tracteurs, chargeurs, passerelles)
+1. Demande en équipements (tracteurs, chargeurs, passerelles, GPU)
 2. Coûts des intrants (impact sur nos marges)
 3. Appels d'offres et contrats de handling
-4. Positionnement concurrentiel
-5. Infrastructure aéroportuaire
+4. Positionnement concurrentiel face aux challengers
 
 Ton analyse est en français, orientée décisions commerciales et industrielles.
 Niveau d'impact : CRITIQUE / IMPORTANT / À SURVEILLER / INFO
@@ -345,10 +382,10 @@ def analyser_avec_deepseek(articles):
               "Pour chaque information importante :\n"
               "1. IMPACT : CRITIQUE / IMPORTANT / À SURVEILLER / INFO\n"
               "2. RÉSUMÉ (1-2 phrases) lié au marché GSE\n"
-              "3. IMPACT BUSINESS (ex: hausse des coûts, opportunité, risque)\n"
-              "4. ACTION RECOMMANDÉE\n\n"
+              "3. IMPACT BUSINESS (ex: hausse des coûts, opportunité de vente, menace concurrentielle)\n"
+              "4. ACTION RECOMMANDÉE (contacter fournisseur, prospecter client, adapter catalogue)\n\n"
               "Termine par :\n"
-              "- SYNTHÈSE EXÉCUTIVE (5 lignes max)\n"
+              "- SYNTHÈSE EXÉCUTIVE (5 lignes max) pour le comité de direction\n"
               "- 3 INDICATEURS CLÉS À SURVEILLER cette semaine\n"
               "- RISQUE PRINCIPAL pour le marché GSE en Chine")
 
@@ -366,11 +403,11 @@ def analyser_avec_deepseek(articles):
         log.error(f"Erreur DeepSeek : {e}")
         return "Erreur API."
 
-# --- GENERATION RAPPORT (inchangée) ------------------------------------------
+# --- GÉNÉRATION RAPPORT ------------------------------------------------------
 def generer_rapport(articles, analyse):
     now = datetime.now().strftime("%Y-%m-%d %H:%M")
     lignes = ["=" * 62,
-              f"  VEILLE STRATÉGIQUE GSE & MARCHÉ AVIATION (Chine) — {now}",
+              f"  VEILLE STRATÉGIQUE GSE & CONCURRENCE (Chine) — {now}",
               "  Pour : Direction Industrielle & Commerciale", "=" * 62, "",
               f"  {len(articles)} information(s) pertinente(s)", "",
               "  SOURCES SURVEILLÉES :"]
@@ -394,9 +431,9 @@ def sauvegarder_rapport(rapport):
         f.write(rapport)
     log.info(f"Rapport créé : {fichier.absolute()}")
 
-# --- EXECUTION ---------------------------------------------------------------
+# --- EXÉCUTION ---------------------------------------------------------------
 def executer_agent():
-    log.info("Démarrage agent veille GSE + signaux marché (version racines élargies)")
+    log.info("Démarrage agent veille GSE + concurrents + signaux marché (version finale)")
     try:
         vus = charger_vus()
         tous_articles = collecter_tous_articles()
