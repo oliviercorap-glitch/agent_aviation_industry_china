@@ -1,51 +1,43 @@
-name: Veille Aviation & Aéroports Chine
+name: Veille Aviation GSE (Chine)
 
 on:
   schedule:
-    - cron: '0 0 * * 1-5'   # lundi-vendredi 8h Shanghai (UTC+0)
+    # Lance le script tous les jours à 6h00 (heure UTC)
+    - cron: '0 6 * * *'
   workflow_dispatch:
-
-permissions:
-  contents: read
+    # Permet de lancer le script manuellement depuis l'onglet "Actions" de GitHub
 
 jobs:
-  aviation-veille:
+  run-aviation-agent:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Récupérer le code
+      # 1. Récupère tout le code de votre dépôt
+      - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Restaurer le cache des articles vus
-        uses: actions/cache@v3
-        with:
-          path: seen_aviation_articles.json
-          key: seen-aviation-${{ github.run_id }}
-          restore-keys: |
-            seen-aviation-
-
-      - name: Installer Python
+      # 2. Installe Python 3.11
+      - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
 
-      - name: Installer les dépendances
+      # 3. INSTALLATION DES BIBLIOTHEQUES (la correction magique !)
+      - name: Install dependencies
         run: |
-          pip install requests beautifulsoup4 lxml anthropic python-dotenv
+          pip install --upgrade pip
+          pip install -r requirements.txt
 
-      - name: Lancer l'agent
-        env:
-          DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+      # 4. Lance votre script (assurez-vous que le nom du fichier est bon)
+      - name: Run Aviation Agent
         run: python china_aviation_agent.py
+        env:
+          # Récupère votre clé API stockée dans les Secrets de GitHub
+          DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
 
-      - name: Sauvegarder le cache mis à jour
-        uses: actions/cache@v3
-        with:
-          path: seen_aviation_articles.json
-          key: seen-aviation-${{ github.run_id }}
-
-      - name: Sauvegarder le rapport
+      # 5. Optionnel : sauvegarde le rapport généré pour le télécharger facilement
+      - name: Upload generated report
         uses: actions/upload-artifact@v4
         with:
-          name: aviation-chine-${{ github.run_number }}
+          name: aviation-report
           path: rapports/
-          retention-days: 90
