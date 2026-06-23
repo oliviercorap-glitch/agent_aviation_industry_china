@@ -24,34 +24,52 @@ logging.basicConfig(
 )
 log = logging.getLogger(__name__)
 
-# --- Mots-clés GSE (Ground Support Equipment) - Bilingue ---------------------
+# --- MOTS-CLÉS ÉLARGIS : GSE + Signaux macro (indicateurs avancés) ----------
 KEYWORDS_GSE = [
-    # English - Equipment
+    # ========== 1. ÉQUIPEMENTS & OPÉRATIONS AU SOL (GSE pur) ==========
     "ground support equipment", "gse", "ground handling", "tug", "tractor",
     "belt loader", "conveyor belt", "staircase", "passenger boarding bridge",
     "de-icer", "deicing truck", "gpu", "ground power unit", "air start unit",
     "air conditioning unit", "towbar", "towbarless", "baggage cart", "dolly",
     "catering truck", "lavatory truck", "water truck", "apron", "ramp",
     "electric ground support", "hybrid gse", "lithium battery gse",
-    "fast charge", "wireless charging gse", "autonomous gse",
-    # English - Players & Contracts
-    "swissport", "menzies", "dnata", "ground handler", "handling contract",
-    "fleet renewal", "gse maintenance", "mro ground", "tender handling",
-    # English - Regulations & Supply Chain
-    "emission regulation airport", "electric ramp", "diesel ban airport",
-    "raw material steel", "battery supply chain", "semiconductor shortage",
-    "aluminium price", "lithium price", "supply chain disruption",
-    # Chinese - 设备 (Equipment)
+    "autonomous gse", "maintenance gse", "mro ground",
+    # Chinois équipements
     "地勤设备", "地面支持设备", "行李拖车", "客梯车", "电源车", "气源车",
-    "除冰车", "装载机", "传送带车", "飞机牵引车", "机坪", "停机坪",
-    "地面服务", "勤务", "新能源地勤", "电动地勤", "充电桩", "机务",
-    "无拖把", "抱轮", "飞机加油车", "空调车",
-    # Chinese - 市场 & 法规
-    "地勤公司", "机场扩建", "新航站楼", "机位", "远机位", "招标", "采购",
-    "电动化", "柴油车禁行", "机场排放", "碳中和机场"
+    "除冰车", "装载机", "传送带车", "飞机牵引车", "新能源地勤", "电动地勤",
+
+    # ========== 2. ACTEURS DU HANDLING & CLIENTS (Ground Handlers) ==========
+    "swissport", "menzies", "dnata", "ground handler", "handling contract",
+    "tender handling", "地勤公司", "地面服务", "勤务",
+
+    # ========== 3. SIGNALUX MACRO : AÉROPORTS & INFRASTRUCTURES ==========
+    "airport opening", "new runway", "terminal expansion", "airport expansion",
+    "passenger record", "traffic record", "cargo volume record", "load factor",
+    "inauguration", "infrastructure investment", "新机场", "新航站楼", "扩建",
+    "旅客吞吐量创新高", "航班量", "机位", "远机位", "投运",
+
+    # ========== 4. SIGNALUX MACRO : COMPAGNIES AÉRIENNES (Clients) ==========
+    "airline order", "fleet delivery", "fleet expansion", "airline profit",
+    "airline loss", "bankruptcy", "revenue", "EBIT", "load factor",
+    "Air China", "China Eastern", "China Southern", "Hainan Airlines",
+    "订购", "交付", "机队", "盈利", "亏损", "中国国航", "中国东方航空",
+    "中国南方航空", "海南航空",
+
+    # ========== 5. RÉGLEMENTATIONS & SUPPLY CHAIN ==========
+    "emission regulation airport", "electric ramp", "diesel ban airport",
+    "raw material steel", "aluminium price", "lithium price", "battery cost",
+    "semiconductor shortage", "chip shortage", "supply chain disruption",
+    "碳中和机场", "电动化", "柴油车禁行", "carbon peak",
+
+    # ========== 6. GÉOPOLITIQUE, CONCURRENCE & ÉVÉNEMENTS ==========
+    "Belt and Road", "BRI", "tariff", "trade war", "EU tariffs",
+    "acquisition", "merger", "joint venture", "partnership",
+    "BYD", "XCMG", "SANY", "competition",
+    "strike", "labor shortage", "Asian Games", "Olympics",
+    "一带一路", "关税", "收购", "合并", "合作"
 ]
 
-# --- Sources (priorité aux sites GSE, puis Bidcenter, puis chinois) ---------
+# --- SOURCES (Priorité aux appels d'offres, GSE, puis chinois) --------------
 SOURCES = [
     # 0. SOURCE PRIORITAIRE : Appels d'offres Chine
     {
@@ -302,7 +320,7 @@ def collecter_tous_articles():
     return tous_articles
 
 def filtrer_pertinents(articles, vus):
-    """Filtre les articles nouveaux et contenant les mots-clés GSE."""
+    """Filtre les articles nouveaux et contenant les mots-clés (GSE + signaux macro)."""
     nouveaux = []
     for a in articles:
         if a["id"] in vus:
@@ -310,20 +328,28 @@ def filtrer_pertinents(articles, vus):
         texte = (a["titre"] + " " + a.get("desc", "")).lower()
         if any(kw.lower() in texte for kw in KEYWORDS_GSE):
             nouveaux.append(a)
-    log.info(f"Articles GSE pertinents et nouveaux : {len(nouveaux)}")
+    log.info(f"Articles pertinents (GSE + signaux macro) : {len(nouveaux)}")
     return nouveaux
 
 # --- Analyse par DeepSeek (via OpenAI client) --------------------------------
 SYSTEM_PROMPT_GSE = """Tu es un expert du marché des équipements de support au sol (GSE) en Asie-Pacifique, 
 spécialisé en stratégie industrielle et supply chain. Tu conseilles le CEO d'un fabricant / loueur de GSE.
 
-Pour chaque actualité, tu évalues l'impact concret sur :
-- Demande en équipements (tracteurs, chargeurs, passerelles, groupes électrogènes, dégivreuses)
-- Coûts des intrants (acier, aluminium, batteries lithium, semi-conducteurs)
-- Réglementations locales (normes de bruit, émissions CO2, interdictions diesel dans les aéroports chinois/européens)
-- Appels d'offres et contrats de handling (Swissport, Menzies, Dnata, sociétés locales)
-- Maintenance et MRO au sol (pièces détachées, fiabilité, obsolescence)
-- Infrastructure aéroportuaire (nouveaux terminaux, nouvelles aires de stationnement => besoin de GSE supplémentaire)
+**IMPORTANT** : Ne te limite pas aux articles parlant uniquement d'équipements. 
+Les ouvertures d'aéroports, les records de trafic, les commandes de flotte et les résultats financiers des compagnies/handlers sont des **INDICATEURS AVANCÉS**. Tu dois systématiquement traduire ces informations en opportunités ou risques pour le marché GSE (ex: +5% de trafic à Pékin => besoin de 10 tracteurs supplémentaires dans 6 mois).
+
+Accorde une attention particulière aux signaux sur :
+- Les coûts des matières premières (acier, aluminium, lithium, semi-conducteurs)
+- Les fusions-acquisitions chez les handlers (Swissport, Menzies, Dnata)
+- Les politiques commerciales (tarifs douaniers, Belt and Road Initiative)
+- Les réglementations environnementales en Chine (objectifs "carbone neutralité")
+
+Pour chaque actualité importante, évalue l'impact concret sur :
+1. Demande en équipements (tracteurs, chargeurs, passerelles, groupes électrogènes)
+2. Coûts des intrants (impact sur nos marges)
+3. Appels d'offres et contrats de handling
+4. Positionnement concurrentiel face à BYD, XCMG, ou autres entrants
+5. Infrastructure aéroportuaire (nouveaux terminaux => besoin de GSE)
 
 Ton analyse est en français, orientée décisions commerciales et industrielles.
 Niveau d'impact : CRITIQUE / IMPORTANT / À SURVEILLER / INFO
@@ -348,17 +374,17 @@ def analyser_avec_deepseek(articles):
         if a.get('desc'):
             articles_txt += f"    Résumé: {a['desc']}\n"
 
-    prompt = (f"Veille concurrentielle et réglementaire GSE - Chine / Asie-Pacifique — {date_str}\n"
+    prompt = (f"Veille stratégique GSE - Chine / Asie-Pacifique — {date_str}\n"
               f"Nombre d'articles sélectionnés : {len(articles)}\n\n{articles_txt}\n\n"
               "Pour chaque information importante :\n"
               "1. IMPACT : CRITIQUE / IMPORTANT / À SURVEILLER / INFO\n"
-              "2. RÉSUMÉ (1-2 phrases) lié au marché GSE\n"
-              "3. IMPACT BUSINESS (ex: hausse des coûts de production, opportunité de remplacement de flotte, nouveau marché à saisir, risque d'approvisionnement)\n"
-              "4. ACTION RECOMMANDÉE (contacter fournisseur, ajuster stock de sécurité, prospecter tel aéroport, adapter catalogue produit)\n\n"
+              "2. RÉSUMÉ (1-2 phrases) lié au marché GSE ou à ses indicateurs avancés\n"
+              "3. IMPACT BUSINESS (ex: hausse des coûts de production, opportunité de vente, nouveau marché, risque d'approvisionnement)\n"
+              "4. ACTION RECOMMANDÉE (contacter fournisseur, ajuster stock, prospecter client, adapter catalogue)\n\n"
               "Termine par :\n"
               "- SYNTHÈSE EXÉCUTIVE (5 lignes max) pour le comité de direction\n"
-              "- 3 INDICATEURS CLÉS À SURVEILLER cette semaine (ex: prix du lithium, annonces de Swissport, réglementation PEK)\n"
-              "- RISQUE PRINCIPAL pour la chaîne d'approvisionnement GSE en Chine")
+              "- 3 INDICATEURS CLÉS À SURVEILLER cette semaine\n"
+              "- RISQUE PRINCIPAL pour la chaîne d'approvisionnement ou le marché GSE en Chine")
 
     log.info(f"Envoi de {len(articles)} articles à DeepSeek...")
     try:
@@ -380,10 +406,10 @@ def analyser_avec_deepseek(articles):
 def generer_rapport(articles, analyse):
     now = datetime.now().strftime("%Y-%m-%d %H:%M")
     lignes = ["=" * 62,
-              f"  VEILLE STRATÉGIQUE GSE (Chine / Asie) — {now}",
+              f"  VEILLE STRATÉGIQUE GSE & MARCHÉ AVIATION (Chine) — {now}",
               "  Pour : Direction Industrielle & Commerciale",
               "  Modèle : DeepSeek Chat", "=" * 62, "",
-              f"  {len(articles)} information(s) GSE pertinente(s)", "",
+              f"  {len(articles)} information(s) pertinente(s)", "",
               "  SOURCES SURVEILLÉES :"]
     for s in SOURCES:
         lignes.append(f"    - {s['nom']}")
@@ -402,19 +428,19 @@ def generer_rapport(articles, analyse):
 def sauvegarder_rapport(rapport):
     dossier = Path("rapports")
     dossier.mkdir(exist_ok=True, parents=True)
-    fichier = dossier / f"gse_chine_{datetime.now().strftime('%Y%m%d_%H%M')}.txt"
+    fichier = dossier / f"gse_veille_{datetime.now().strftime('%Y%m%d_%H%M')}.txt"
     with open(fichier, "w", encoding="utf-8") as f:
         f.write(rapport)
     log.info(f"Rapport créé : {fichier.absolute()}")
 
 # --- Exécution principale ----------------------------------------------------
 def executer_agent():
-    log.info("Démarrage agent veille GSE Chine (version métier + Bidcenter)")
+    log.info("Démarrage agent veille GSE + signaux marché (version élargie)")
     try:
         vus = charger_vus()
         tous_articles = collecter_tous_articles()
         articles_pertinents = filtrer_pertinents(tous_articles, vus)
-        analyse = analyser_avec_deepseek(articles_pertinents) if articles_pertinents else "Aucune information GSE pertinente aujourd'hui."
+        analyse = analyser_avec_deepseek(articles_pertinents) if articles_pertinents else "Aucune information pertinente aujourd'hui."
         rapport = generer_rapport(articles_pertinents, analyse)
         print(rapport)
         sauvegarder_rapport(rapport)
