@@ -656,42 +656,61 @@ def md(text):
     return html
 
 
-def generer_rapport(articles, signals, summary, raw_text="", truncated=False):
-    now_full = datetime.now().strftime("%B %d, %Y")
-    now_time = datetime.now().strftime("%H:%M")
+def trouver_article(sig, articles):
+    """Match a signal to its most likely source article by keyword overlap.
 
-    counts = {"CRITICAL": 0, "IMPORTANT": 0, "WATCH": 0, "INFO": 0}
-    for s in signals:
-        counts[s["impact"]] = counts.get(s["impact"], 0) + 1
+    Checks signal headline + reading against article title + desc.
+    Handles both English and Chinese content.
+    Returns None if no article scores well enough.
+    """
+    haystack = (
+        sig.get("headline", "") + " " +
+        sig.get("reading", "")
+    ).lower()
 
-    # --- Signal cards ---
-    signals_html = ""
-    if not signals:
-        signals_html = (
-            '<p style="color:#6b7280;font-style:italic;padding:24px 0;">'
-            "No significant signals identified today.</p>"
+    best_article = None
+    best_score   = 0
+
+    for a in articles:
+        # Combine title and excerpt for matching
+        candidate = (a["titre"] + " " + a.get("desc", "")).lower()
+
+        # Split on word boundaries (works for both Latin and CJK tokens)
+        words = [w for w in re.split(r"[\s\W]+", candidate) if len(w) >= 3]
+
+        score = sum(1 for w in words if w in haystack)
+        if score > best_score:
+            best_score   = score
+            best_article = a
+
+    # Require at least 1 strong match (threshold kept low; false positives
+    # are acceptable since it's just a source attribution link)
+    return best_article if best_score >= 1 else None
+
+
+def render_signal_card(sig, articles):
+    """Build HTML for one signal card."""
+    cfg = IMPACT_CONFIG.get(sig["impact"], IMPACT_CONFIG["INFO"])
+
+    article      = trouver_article(sig, articles)
+    source_block = ""
+    if article:
+        titre_esc = (
+            article["titre"]
+            .replace("&", "&amp;")
+            .replace("<", "&lt;")
+            .replace(">", "&gt;")
         )
-    else:
-        for i, sig in enumerate(signals):
-            cfg = IMPACT_CONFIG.get(sig["impact"], IMPACT_CONFIG["INFO"])
-            article = articles[i] if i < len(articles) else None
-            source_block = ""
-            if article:
-                titre_esc = (
-                    article["titre"]
-                    .replace("&", "&amp;")
-                    .replace("<", "&lt;")
-                    .replace(">", "&gt;")
-                )
-                source_block = (
-                    f'<div class="signal-source">'
-                    f'<span class="source-label">Source</span>'
-                    f'<a href="{article.get("lien","#")}" target="_blank" rel="noopener">'
-                    f"{titre_esc}</a>"
-                    f'<span class="source-name"> — {article["source"]}</span>'
-                    f"</div>"
-                )
-            signals_html += f"""
+        source_block = (
+            f'<div class="signal-source">'
+            f'<span class="source-label">Source</span>'
+            f'<a href="{article.get("lien","#")}" target="_blank" rel="noopener">'
+            f"{titre_esc}</a>"
+            f'<span class="source-name"> — {article["source"]}</span>'
+            f"</div>"
+        )
+
+    return f"""
 <div class="signal-card impact-{sig['impact'].lower()}">
   <div class="signal-card-header" style="border-left:4px solid {cfg['color']};">
     <span class="signal-badge"
@@ -716,6 +735,57 @@ def generer_rapport(articles, signals, summary, raw_text="", truncated=False):
     {source_block}
   </div>
 </div>"""
+
+
+def generer_rapport(articles, signals, summary, raw_text="", truncated=False):
+    now_full = datetime.now().strftime("%B %d, %Y")
+    now_time = datetime.now().strftime("%H:%M")
+
+    counts = {"CRITICAL": 0, "IMPORTANT": 0, "WATCH": 0, "INFO": 0}
+    for s in signals:
+        counts[s["impact"]] = counts.get(s["impact"], 0) + 1
+
+    # --- Split signals: actionable (full cards) vs background (collapsed) ---
+    actionable = [s for s in signals if s["impact"] in ("CRITICAL", "IMPORTANT", "WATCH")]
+    background = [s for s in signals if s["impact"] == "INFO"]
+
+    # --- Build signal cards HTML ---
+    signals_html = ""
+    if not actionable and not background:
+        signals_html = (
+            '<p style="color:#6b7280;font-style:italic;padding:24px 0;">'
+            "No significant signals identified today.</p>"
+        )
+    else:
+        # Full cards for CRITICAL / IMPORTANT / WATCH
+        for sig in actionable:
+            signals_html += render_signal_card(sig, articles)
+
+        # Collapsed section for INFO items
+        if background:
+            info_items = "".join(
+                f'<li style="font-size:13px;color:#64748b;padding:3px 0;'
+                f'line-height:1.5;">{sig["headline"]}</li>'
+                for sig in background
+            )
+            signals_html += f"""
+<details style="margin-top:12px;">
+  <summary style="font-size:12px;color:#94a3b8;cursor:pointer;
+                  padding:8px 4px;user-select:none;list-style:none;
+                  display:flex;align-items:center;gap:6px;">
+    <span style="font-size:10px;background:#f1f5f9;border:1px solid #e2e8f0;
+                 border-radius:20px;padding:2px 8px;color:#64748b;font-weight:600;
+                 letter-spacing:.04em;">
+      + {len(background)} background item{"s" if len(background) != 1 else ""}
+    </span>
+    <span style="color:#94a3b8;">— no action required, click to expand</span>
+  </summary>
+  <ul style="list-style:none;padding:12px 16px;margin-top:8px;
+             background:#f8fafc;border:1px solid #e2e8f0;
+             border-radius:8px;">
+    {info_items}
+  </ul>
+</details>"""
 
     # --- Counters ---
     counter_html = "".join(
@@ -904,7 +974,7 @@ body{{font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;
 </div>
 
 <div class="page-footer">
-  GSE Intelligence Agent · Powered by DeepSeek · {now_full}
+  GSE Intelligence Agent v3.1 · Powered by DeepSeek · {now_full}
 </div>
 
 </div>
@@ -932,7 +1002,7 @@ def sauvegarder_rapport(rapport_html):
 
 def executer_agent():
     log.info("=" * 60)
-    log.info("Starting GSE Intelligence Agent v3")
+    log.info("Starting GSE Intelligence Agent v3.1")
     log.info("=" * 60)
     try:
         vus = charger_vus()
