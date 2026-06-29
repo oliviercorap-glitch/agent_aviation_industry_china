@@ -30,7 +30,7 @@ jobs:
 
       # 4. Lance votre script (assurez-vous que le nom du fichier est bon)
       - name: Run Aviation Agent
-        run: python china_aviation_agent.py
+        run: python test_search.py
         env:
           # Récupère votre clé API stockée dans les Secrets de GitHub
           DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
