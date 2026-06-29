@@ -95,9 +95,11 @@ KEYWORDS_GSE = [
     "Red Box International", "Power Systems International", "PSI",
     "GB Barberi", "Jetall GPU", "Aeromax GSE", "Current Power",
     "MRCCS", "Bertoli Power Units",
-    # Chinese GSE competitors
-    "Weihai Guangtai", "Guangtai", "威海广泰",
-    "CIMC Tianda", "中集天达",
+    # Chinese GSE competitors — Guangtai variants (Weihai-based, key rival)
+    "Weihai Guangtai", "Guangtai", "威海广泰", "广泰", "广泰航空",
+    "威海广泰航空", "GT系列", "广泰电动", "广泰牵引",
+    # Chinese GSE competitors — others
+    "CIMC Tianda", "中集天达", "天达", "CIMC",
     "Jiangsu Tianyi", "Tianyi", "江苏天一",
     "Shenzhen TECHKING", "TECHKING", "深圳达航",
     "Hangfu", "航福",
@@ -109,10 +111,15 @@ KEYWORDS_GSE = [
     "Alha GSE", "Shanghai Ifly", "Ifly GSE",
     "TCR Group", "TCR", "Mercury GSE", "Lufthansa Technik",
     "GE Aviation", "AFI KLM E&M", "ST Aerospace", "MTU Maintenance",
+    # Broader Chinese GSE category terms (catch competitor news without brand name)
+    "地面服务设备", "航空地面设备", "机坪设备", "机场特种车",
+    "特种车辆", "航空特种车", "地面保障", "机坪作业",
+    "电动牵引车", "电动拖车", "行李牵引", "飞机拖车",
+    "登机桥", "廊桥", "地面电源", "航空地面",
     # Ground handlers (M&A signals)
     "Swissport", "Menzies Aviation", "Dnata", "Aviapartner",
     "WFS", "Worldwide Flight Services", "SGS", "Celebi",
-    "斯威斯波特", "地面服务",
+    "斯威斯波特", "地面服务", "地面代理", "地服",
 ]
 
 # =============================================================================
@@ -184,6 +191,54 @@ SOURCES = [
         "type": "scrape_generic",
         "selector": "h3.article-title a, .entry-title a, article h2 a, a",
         "base_url": "https://atwonline.com",
+    },
+    {
+        "nom": "民航资源网 (CARNOC News)",
+        "url": "https://news.carnoc.com/",
+        "type": "scrape_generic",
+        "selector": ".news_list a, .list_con a, td a, .title a, a",
+        "base_url": "https://news.carnoc.com",
+        "encoding": "utf-8",
+    },
+    {
+        "nom": "中国民航网 (AviationCN)",
+        "url": "https://www.aviationcn.net/",
+        "type": "scrape_generic",
+        "selector": ".news-list a, .article-list a, h3 a, .title a, a",
+        "base_url": "https://www.aviationcn.net",
+        "encoding": "utf-8",
+    },
+    {
+        "nom": "中国民航 (CCAonline)",
+        "url": "https://www.ccaonline.cn/hangkong/",
+        "type": "scrape_generic",
+        "selector": ".news-list a, ul li a, .list a, .title a, a",
+        "base_url": "https://www.ccaonline.cn",
+        "encoding": "utf-8",
+    },
+    {
+        "nom": "山东新闻 (Shandong News — Guangtai HQ region)",
+        "url": "https://www.sdnews.com.cn/sd/gdxw/",
+        "type": "scrape_generic",
+        "selector": ".news-list a, ul li a, .list a, a",
+        "base_url": "https://www.sdnews.com.cn",
+        "encoding": "utf-8",
+    },
+    {
+        "nom": "威海新闻 (Weihai Daily — Guangtai home city)",
+        "url": "http://www.whdaily.cn/epaper/whwb/latest/",
+        "type": "scrape_generic",
+        "selector": ".news-list a, ul li a, h3 a, .title a, a",
+        "base_url": "http://www.whdaily.cn",
+        "encoding": "utf-8",
+    },
+    {
+        "nom": "中国招标投标网 (China Bidding)",
+        "url": "https://www.chinabidding.com.cn/",
+        "type": "scrape_generic",
+        "selector": ".list a, ul li a, td a, .title a, a",
+        "base_url": "https://www.chinabidding.com.cn",
+        "encoding": "utf-8",
     },
 ]
 
@@ -481,7 +536,7 @@ Rules:
 def construire_prompt_user(articles):
     date_str = datetime.now().strftime("%d %B %Y")
     lines = [
-        f"GSE STRATEGIC WATCH — China / Asia-Pacific",
+        "GSE STRATEGIC WATCH — China / Asia-Pacific",
         f"Date: {date_str}",
         f"Articles to analyze: {len(articles)}",
         "",
@@ -493,9 +548,20 @@ def construire_prompt_user(articles):
         if a.get("desc"):
             lines.append(f"    EXCERPT: {a['desc'][:300]}")
         lines.append("")
+
     lines.append(
         "Analyze each article for signals relevant to TLD Group's GSE business. "
         "Output ONLY the structured blocks defined in your instructions."
+    )
+    lines.append("")
+    lines.append(
+        "CRITICAL RULE: If ANY article mentions a GSE manufacturer or competitor "
+        "by name — including Guangtai (广泰/威海广泰), JBT, Textron, Oshkosh, "
+        "CIMC Tianda (中集天达), Alvest, TLD, or any other GSE brand — you MUST "
+        "generate a signal for it, even if the mention is brief. Never omit a "
+        "competitor signal. Rate it CRITICAL if it involves a product launch, "
+        "contract win, or pricing move; IMPORTANT for M&A or strategic announcements; "
+        "WATCH for general company news."
     )
     return "\n".join(lines)
 
@@ -974,7 +1040,7 @@ body{{font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;
 </div>
 
 <div class="page-footer">
-  GSE Intelligence Agent v3.1 · Powered by DeepSeek · {now_full}
+  GSE Intelligence Agent v3.2 · Powered by DeepSeek · {now_full}
 </div>
 
 </div>
@@ -1002,7 +1068,7 @@ def sauvegarder_rapport(rapport_html):
 
 def executer_agent():
     log.info("=" * 60)
-    log.info("Starting GSE Intelligence Agent v3.1")
+    log.info("Starting GSE Intelligence Agent v3.2")
     log.info("=" * 60)
     try:
         vus = charger_vus()
