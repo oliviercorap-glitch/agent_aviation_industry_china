@@ -11,6 +11,7 @@ from urllib.parse import urljoin, urlparse
 from bs4 import BeautifulSoup
 from dotenv import load_dotenv
 from openai import OpenAI
+import markdown  # <-- NEW
 
 # --- Configuration -----------------------------------------------------------
 load_dotenv()
@@ -397,57 +398,47 @@ def analyser_avec_deepseek(articles):
         log.error(f"DeepSeek error : {e}")
         return "API error."
 
-# --- HTML REPORT GENERATION (enhanced) ----------------------------------------
+# --- HTML REPORT GENERATION (enhanced with Markdown) -------------------------
+def markdown_to_html(text):
+    """Convert Markdown text to HTML using the markdown library."""
+    if not text:
+        return ""
+    # Use nl2br extension to handle line breaks within paragraphs
+    return markdown.markdown(text, extensions=['nl2br'])
+
 def generer_rapport(articles, analyse):
     now = datetime.now().strftime("%Y-%m-%d %H:%M")
 
     # --- Parse analysis into structured blocks ---
-    # We'll try to extract per-article blocks and the final summary sections.
     parsed_blocks = []
     executive_summary = ""
     key_indicators = []
     main_risk = ""
 
-    # Split into blocks using pattern like "[1]" etc.
-    block_pattern = re.compile(r'^\[\d+\]', re.MULTILINE)
-    raw_blocks = block_pattern.split(analyse)
-    # The first element is the text before any [n] (usually empty or intro)
-    # The rest correspond to blocks, but we lose the marker; we need to capture them.
-    # Better: iterate lines and accumulate.
     lines = analyse.splitlines()
     current_block_lines = []
     in_summary = False
     summary_lines = []
-    indicators_lines = []
-    risk_lines = []
+
     for line in lines:
-        # Check if it's a summary/indicators/risk section
         if line.strip().startswith('- EXECUTIVE SUMMARY'):
             in_summary = True
-            # If we were building a block, save it
             if current_block_lines:
                 parsed_blocks.append('\n'.join(current_block_lines))
                 current_block_lines = []
             continue
         if line.strip().startswith('- 3 KEY INDICATORS'):
-            # End summary, start indicators
             if in_summary:
-                summary_lines = current_block_lines  # actually we need to capture previous lines
+                summary_lines = current_block_lines
                 current_block_lines = []
                 in_summary = False
-            # We'll just capture lines until next marker
             continue
         if line.strip().startswith('- MAIN RISK'):
-            # End indicators, start risk
-            if not in_summary:
-                # We were in indicators
-                pass
             continue
 
         if in_summary:
             summary_lines.append(line)
         elif line.strip().startswith('[') and re.match(r'^\[\d+\]', line.strip()):
-            # New block start
             if current_block_lines:
                 parsed_blocks.append('\n'.join(current_block_lines))
                 current_block_lines = []
@@ -455,21 +446,18 @@ def generer_rapport(articles, analyse):
         else:
             if current_block_lines or line.strip():
                 current_block_lines.append(line)
-    # After loop, add remaining block if any
+
     if current_block_lines and not in_summary:
-        # check if it's summary leftovers
         if any('EXECUTIVE SUMMARY' in l for l in current_block_lines):
             summary_lines.extend(current_block_lines)
         else:
             parsed_blocks.append('\n'.join(current_block_lines))
 
-    # Now parse each block to extract impact, summary, biz impact, action
     def extract_block_info(block):
         impact = "INFO"
         summary = ""
         biz_impact = ""
         action = ""
-        # Use regex with DOTALL
         impact_match = re.search(r'IMPACT\s*:\s*(CRITICAL|IMPORTANT|WATCH|INFO)', block, re.IGNORECASE)
         if impact_match:
             impact = impact_match.group(1).upper()
@@ -486,10 +474,7 @@ def generer_rapport(articles, analyse):
 
     block_infos = [extract_block_info(b) for b in parsed_blocks if b.strip()]
 
-    # Now extract executive summary, indicators, risk from the remaining lines (summary_lines)
-    # We'll parse summary_lines for EXECUTIVE SUMMARY content
     summary_text = "\n".join(summary_lines).strip()
-    # Extract executive summary between "- EXECUTIVE SUMMARY" and the next section
     exec_summary_match = re.search(r'- EXECUTIVE SUMMARY\s*(.*?)(?=- 3 KEY INDICATORS|$)', summary_text, re.DOTALL)
     if exec_summary_match:
         executive_summary = exec_summary_match.group(1).strip()
@@ -500,42 +485,30 @@ def generer_rapport(articles, analyse):
     if risk_match:
         main_risk = risk_match.group(1).strip()
 
-    # Fallback if parsing failed: treat entire analyse as plain text inside a card
+    # Fallback
     if not block_infos and not executive_summary:
-        # Just use raw analyse
         block_infos = [{'impact': 'INFO', 'summary': '', 'business_impact': '', 'recommended_action': '', 'raw': analyse}]
         executive_summary = ""
 
+    # Convert Markdown to HTML for all fields
+    for b in block_infos:
+        b['summary'] = markdown_to_html(b.get('summary', ''))
+        b['business_impact'] = markdown_to_html(b.get('business_impact', ''))
+        b['recommended_action'] = markdown_to_html(b.get('recommended_action', ''))
+        if 'raw' in b:
+            b['raw'] = markdown_to_html(b['raw'])
+
+    exec_summary_html = markdown_to_html(executive_summary)
+    main_risk_html = markdown_to_html(main_risk)
+    key_indicators_html = [markdown_to_html(ind) for ind in key_indicators]
+
     # --- Build HTML ---
     impact_icons = {'CRITICAL': '🚨', 'IMPORTANT': '⚠️', 'WATCH': '👀', 'INFO': 'ℹ️'}
-    impact_colors = {'CRITICAL': '#dc2626', 'IMPORTANT': '#f59e0b', 'WATCH': '#eab308', 'INFO': '#3b82f6'}
-
-    # Count impact levels for stats
     impact_counts = {}
     for b in block_infos:
         imp = b.get('impact', 'INFO')
         impact_counts[imp] = impact_counts.get(imp, 0) + 1
 
-    # Escape newlines for display in HTML (must be done outside f-string)
-    # Precompute escaped versions
-    exec_summary_esc = executive_summary.replace('\n', '<br>') if executive_summary else ""
-    key_indicators_esc = [ind.replace('\n', '<br>') for ind in key_indicators]
-    main_risk_esc = main_risk.replace('\n', '<br>') if main_risk else ""
-
-    # For each block, pre-escape fields
-    block_infos_esc = []
-    for b in block_infos:
-        esc = {
-            'impact': b.get('impact', 'INFO'),
-            'summary': b.get('summary', '').replace('\n', '<br>'),
-            'business_impact': b.get('business_impact', '').replace('\n', '<br>'),
-            'recommended_action': b.get('recommended_action', '').replace('\n', '<br>'),
-            'raw': b.get('raw', '').replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;')
-        }
-        # Also escape summary etc. for raw if present
-        block_infos_esc.append(esc)
-
-    # Start HTML
     html = f"""<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -595,7 +568,6 @@ def generer_rapport(articles, analyse):
         .article-table .title a {{ color: #1e40af; text-decoration: none; font-weight: 500; }}
         .article-table .title a:hover {{ text-decoration: underline; }}
 
-        /* Analysis cards */
         .analysis-card {{
             border-left: 6px solid #94a3b8;
             background: #f8fafc;
@@ -691,22 +663,20 @@ def generer_rapport(articles, analyse):
         <h2 class="section-title">📊 Analysis & Recommendations</h2>
     """
 
-    # Executive summary if available
-    if executive_summary:
+    if exec_summary_html:
         html += f"""
         <div class="exec-summary">
             <h3>📌 Executive Summary</h3>
-            <p>{exec_summary_esc}</p>
+            {exec_summary_html}
         </div>
         """
 
-    # Analysis cards
-    for idx, block in enumerate(block_infos_esc):
+    for idx, block in enumerate(block_infos):
         impact = block.get('impact', 'INFO')
         summary = block.get('summary', '')
         biz = block.get('business_impact', '')
         action = block.get('recommended_action', '')
-        # If we have raw and no parsed fields, show raw
+
         if not summary and not biz and not action:
             raw = block.get('raw', '')
             html += f"""
@@ -716,13 +686,12 @@ def generer_rapport(articles, analyse):
                     <span style="font-size:14px; color:#64748b;">Analysis #{idx+1}</span>
                 </div>
                 <div class="card-body">
-                    <p style="white-space:pre-wrap;">{raw}</p>
+                    {raw}
                 </div>
             </div>
             """
             continue
 
-        # Build card with structured fields
         html += f"""
         <div class="analysis-card impact-{impact.lower()}">
             <div class="card-header">
@@ -742,24 +711,23 @@ def generer_rapport(articles, analyse):
         </div>
         """
 
-    # Key indicators and main risk
-    if key_indicators:
+    if key_indicators_html:
         html += """
         <div class="key-indicators">
             <h3>📈 Key Indicators to Watch This Week</h3>
             <ul>
         """
-        for ind in key_indicators_esc:
+        for ind in key_indicators_html:
             html += f"<li>{ind}</li>"
         html += """
             </ul>
         </div>
         """
-    if main_risk:
+    if main_risk_html:
         html += f"""
         <div class="main-risk">
             <h3>⚠️ Main Risk</h3>
-            <p>{main_risk_esc}</p>
+            {main_risk_html}
         </div>
         """
 
@@ -783,7 +751,7 @@ def sauvegarder_rapport(rapport_html):
 
 # --- EXECUTION ---------------------------------------------------------------
 def executer_agent():
-    log.info("Starting GSE + competitors + market signals intelligence agent (HTML/EN)")
+    log.info("Starting GSE + competitors + market signals intelligence agent (HTML/EN + Markdown)")
     try:
         vus = charger_vus()
         tous_articles = collecter_tous_articles()
