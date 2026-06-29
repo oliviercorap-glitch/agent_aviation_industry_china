@@ -25,10 +25,10 @@ logging.basicConfig(
 log = logging.getLogger(__name__)
 
 # =============================================================================
-#  MOTS-CLÉS ÉLARGIS : GSE + AÉROPORTS + COMPAGNIES + CONCURRENTS
+#  EXPANDED KEYWORDS : GSE + AIRPORTS + AIRLINES + COMPETITORS
 # =============================================================================
 KEYWORDS_GSE = [
-    # ---------- GSE & ÉQUIPEMENTS ----------
+    # ---------- GSE & EQUIPMENT ----------
     "ground support", "gse", "tug", "tractor", "loader", "de-icer", "gpu",
     "towbar", "baggage", "passenger boarding bridge", "air start unit",
     "belt loader", "conveyor belt", "staircase", "dolly", "catering truck",
@@ -38,7 +38,7 @@ KEYWORDS_GSE = [
     "地勤设备", "地面支持设备", "行李拖车", "客梯车", "电源车", "气源车",
     "除冰车", "装载机", "传送带车", "飞机牵引车", "新能源地勤", "电动地勤",
 
-    # ---------- AÉROPORTS & INFRASTRUCTURES ----------
+    # ---------- AIRPORTS & INFRASTRUCTURE ----------
     "airport opening", "new runway", "terminal expansion", "airport expansion",
     "passenger record", "traffic record", "cargo volume", "load factor",
     "inauguration", "infrastructure investment",
@@ -46,7 +46,7 @@ KEYWORDS_GSE = [
     "吞吐量", "旅客", "货邮", "航班", "机位", "远机位", "新机场", "新航站楼",
     "旅客吞吐量创新高", "航班量",
 
-    # ---------- COMPAGNIES AÉRIENNES (CLIENTS) ----------
+    # ---------- AIRLINES (CLIENTS) ----------
     "airline order", "fleet delivery", "fleet expansion", "airline profit",
     "airline loss", "bankruptcy", "revenue", "EBIT",
     "Air China", "China Eastern", "China Southern", "Hainan Airlines",
@@ -57,17 +57,17 @@ KEYWORDS_GSE = [
     "订购", "交付", "机队", "盈利", "亏损", "营收", "净利润",
     "复航", "停飞", "航线", "新开航线", "恢复", "破产", "重组",
 
-    # ---------- RÉGLEMENTATIONS & SUPPLY CHAIN ----------
+    # ---------- REGULATIONS & SUPPLY CHAIN ----------
     "emission regulation", "electric ramp", "diesel ban",
     "steel price", "aluminium", "lithium", "battery cost",
     "semiconductor", "chip shortage", "supply chain disruption",
     "碳中和机场", "电动化", "柴油车禁行", "carbon peak",
 
-    # ---------- GÉOPOLITIQUE ----------
+    # ---------- GEOPOLITICS ----------
     "Belt and Road", "BRI", "tariff", "trade war", "EU tariffs",
     "一带一路", "关税",
 
-    # ---------- CONCURRENTS (TOP 20 MONDIAUX) ----------
+    # ---------- COMPETITORS (TOP 20 GLOBAL) ----------
     "TLD Group", "TLD", "Alvest",
     "JBT Corporation", "JBT", "Oshkosh AeroTech", "Oshkosh",
     "Textron GSE", "Textron", "Tug Technologies", "Tronair", "ITW GSE",
@@ -77,7 +77,7 @@ KEYWORDS_GSE = [
     "Global Ground Support", "DOLL", "Nepean", "Gate GSE",
     "Clyde Machines", "Douglas Equipment",
 
-    # ---------- CONCURRENTS (EUROPÉENS & AMÉRICAINS) ----------
+    # ---------- COMPETITORS (EUROPEAN & AMERICAN) ----------
     "FgFlightline", "AMSS GSE", "Avia Equipment", "Teleflex Lionel-Dupont",
     "CargoTec", "Bharat Earth Movers", "Bliss-Fox GSE",
     "Imai Aero-Equipment", "Toyota Industries", "JCB", "Jungheinrich",
@@ -91,7 +91,7 @@ KEYWORDS_GSE = [
     "GB Barberi", "Jetall GPU", "Aeromax GSE", "Current Power",
     "MRCCS", "Bertoli Power Units",
 
-    # ---------- CONCURRENTS CHINOIS ----------
+    # ---------- CHINESE COMPETITORS ----------
     "Weihai Guangtai", "Guangtai", "威海广泰",
     "CIMC Tianda", "中集天达",
     "Jiangsu Tianyi", "Tianyi", "江苏天一",
@@ -110,18 +110,16 @@ KEYWORDS_GSE = [
 ]
 
 # =============================================================================
-#  SOURCES (FONCTIONNELLES)
+#  SOURCES (FUNCTIONAL)
 # =============================================================================
 SOURCES = [
-    # 1. BIDCENTER (Appels d'offres - VITAL)
     {
-        "nom": "Bidcenter (Chine - Appels d'offres)",
+        "nom": "Bidcenter (China - Tenders)",
         "url": "https://www.bidcenter.com.cn",
         "type": "scrape_bidcenter",
         "base_url": "https://www.bidcenter.com.cn",
         "encoding": "utf-8"
     },
-    # 2. CHINA AIRPORT NEWS (Fonctionne - 20 articles)
     {
         "nom": "China Airport News",
         "url": "http://fuwu.caacnews.com.cn/1/5/index.html",
@@ -130,7 +128,6 @@ SOURCES = [
         "base_url": "http://fuwu.caacnews.com.cn",
         "encoding": "utf-8"
     },
-    # 3. CARNOC (Fonctionne)
     {
         "nom": "CARNOC.com (China)",
         "url": "https://www.carnoc.com/",
@@ -139,14 +136,12 @@ SOURCES = [
         "base_url": "https://www.carnoc.com",
         "encoding": "utf-8"
     },
-    # 4. CAAC (URL corrigée)
     {
         "nom": "CAAC News (China)",
         "url": "http://www.caac.gov.cn/PHONE/ZTZL/",
         "type": "scrape_caac",
         "base_url": "http://www.caac.gov.cn"
     },
-    # 5. GROUND HANDLING (URL corrigée)
     {
         "nom": "Ground Handling International",
         "url": "https://www.groundhandling.com/",
@@ -154,7 +149,6 @@ SOURCES = [
         "selector": "article h3 a, .post-title a, a",
         "base_url": "https://www.groundhandling.com",
     },
-    # 6. CGTN (URL corrigée)
     {
         "nom": "CGTN - Aviation",
         "url": "https://www.cgtn.com/",
@@ -165,7 +159,7 @@ SOURCES = [
     }
 ]
 
-# --- FONCTIONS UTILITAIRES ---------------------------------------------------
+# --- UTILITY FUNCTIONS --------------------------------------------------------
 def normaliser_url(url, base=None):
     if not url:
         return None
@@ -204,7 +198,7 @@ def requeter_avec_retry(url, retries=3, **kwargs):
             resp.raise_for_status()
             return resp
         except Exception as e:
-            log.warning(f"Tentative {i+1}/{retries} échouée pour {url} : {e}")
+            log.warning(f"Attempt {i+1}/{retries} failed for {url} : {e}")
             time.sleep(2 ** i)
     return None
 
@@ -232,9 +226,9 @@ def scrape_caac(source):
                     "date": datetime.now().strftime("%Y-%m-%d"),
                     "id": hashlib.md5((titre + href).encode()).hexdigest(),
                 })
-        log.info(f"  Scraping {source['nom']}: {len(articles)} articles")
+        log.info(f"  Scraped {source['nom']}: {len(articles)} articles")
     except Exception as e:
-        log.warning(f"Erreur parsing {source['nom']} : {e}")
+        log.warning(f"Error parsing {source['nom']} : {e}")
     return articles
 
 def scrape_generic(source):
@@ -264,9 +258,9 @@ def scrape_generic(source):
                 "date": datetime.now().strftime("%Y-%m-%d"),
                 "id": hashlib.md5((titre + href).encode()).hexdigest(),
             })
-        log.info(f"  Scraping {source['nom']}: {len(articles)} articles")
+        log.info(f"  Scraped {source['nom']}: {len(articles)} articles")
     except Exception as e:
-        log.warning(f"Erreur scraping {source['nom']} : {e}")
+        log.warning(f"Error scraping {source['nom']} : {e}")
     return articles
 
 def scrape_bidcenter(source):
@@ -305,15 +299,15 @@ def scrape_bidcenter(source):
                 "date": datetime.now().strftime("%Y-%m-%d"),
                 "id": hashlib.md5((titre + href).encode()).hexdigest(),
             })
-        log.info(f"  Scraping {source['nom']}: {len(articles)} appels d'offres")
+        log.info(f"  Scraped {source['nom']}: {len(articles)} tenders")
     except Exception as e:
-        log.warning(f"Erreur scraping {source['nom']} : {e}")
+        log.warning(f"Error scraping {source['nom']} : {e}")
     return articles
 
 def collecter_tous_articles():
     tous_articles = []
     for source in SOURCES:
-        log.info(f"Collecte depuis : {source['nom']}")
+        log.info(f"Collecting from : {source['nom']}")
         if source["type"] == "scrape_caac":
             articles = scrape_caac(source)
         elif source["type"] == "scrape_bidcenter":
@@ -322,7 +316,7 @@ def collecter_tous_articles():
             articles = scrape_generic(source)
         tous_articles.extend(articles)
         time.sleep(1.5)
-    log.info(f"Total articles bruts collectés: {len(tous_articles)}")
+    log.info(f"Total raw articles collected: {len(tous_articles)}")
     return tous_articles
 
 def filtrer_pertinents(articles, vus):
@@ -333,63 +327,62 @@ def filtrer_pertinents(articles, vus):
         texte = (a["titre"] + " " + a.get("desc", "")).lower()
         if any(kw.lower() in texte for kw in KEYWORDS_GSE):
             nouveaux.append(a)
-    log.info(f"Articles pertinents (GSE + signaux macro + concurrents) : {len(nouveaux)}")
+    log.info(f"Relevant articles (GSE + macro signals + competitors): {len(nouveaux)}")
     return nouveaux
 
-# --- PROMPT DEEPSEEK (VERSION FINALE) ----------------------------------------
-SYSTEM_PROMPT_GSE = """Tu es un expert du marché des équipements de support au sol (GSE) en Asie-Pacifique, 
-spécialisé en stratégie industrielle et supply chain. Tu conseilles le CEO d'un fabricant / loueur de GSE (TLD Group).
+# --- DEEPSEEK PROMPTS (ENGLISH) ----------------------------------------------
+SYSTEM_PROMPT_GSE = """You are an expert in the Ground Support Equipment (GSE) market in Asia-Pacific, specializing in industrial strategy and supply chain. You advise the CEO of a GSE manufacturer/lessor (TLD Group).
 
-**IMPORTANT** : Ne te limite pas aux articles parlant uniquement d'équipements. 
-- Les ouvertures d'aéroports, les records de trafic, les commandes de flotte et les résultats financiers des compagnies sont des **INDICATEURS AVANCÉS**.
-- Les annonces de tes concurrents (JBT, Textron, Guangtai, etc.) sont à analyser comme des menaces ou des opportunités.
-- Traduis systématiquement ces informations en volumes d'équipements potentiels (ex: +5% de trafic = +10 tracteurs).
+**IMPORTANT** : Do not limit yourself to articles that only mention equipment.
+- Airport openings, traffic records, fleet orders, and airline financial results are **LEADING INDICATORS**.
+- Announcements from competitors (JBT, Textron, Guangtai, etc.) must be analyzed as threats or opportunities.
+- Translate these signals into potential equipment volumes (e.g., +5% traffic = +10 tractors).
 
-Accorde une attention particulière à :
-1. Les coûts des matières premières (acier, aluminium, lithium, semi-conducteurs)
-2. Les fusions-acquisitions chez les handlers (Swissport, Menzies, Dnata)
-3. Les politiques commerciales (tarifs, Belt and Road)
-4. Les réglementations environnementales en Chine
+Pay special attention to:
+1. Raw material costs (steel, aluminium, lithium, semiconductors)
+2. M&A among handlers (Swissport, Menzies, Dnata)
+3. Trade policies (tariffs, Belt and Road)
+4. Environmental regulations in China
 
-Pour chaque actualité importante, évalue l'impact concret sur :
-1. Demande en équipements (tracteurs, chargeurs, passerelles, GPU)
-2. Coûts des intrants (impact sur nos marges)
-3. Appels d'offres et contrats de handling
-4. Positionnement concurrentiel face aux challengers
+For each major news item, evaluate the concrete impact on:
+1. Equipment demand (tractors, loaders, boarding bridges, GPUs)
+2. Input costs (impact on margins)
+3. Tenders and handling contracts
+4. Competitive positioning against challengers
 
-Ton analyse est en français, orientée décisions commerciales et industrielles.
-Niveau d'impact : CRITIQUE / IMPORTANT / À SURVEILLER / INFO
+Your analysis is in English, focused on commercial and industrial decisions.
+Impact level: CRITICAL / IMPORTANT / WATCH / INFO
 """
 
 def analyser_avec_deepseek(articles):
     if not articles:
-        return "Aucune information sectorielle significative pour la GSE aujourd'hui."
+        return "No significant sector information for GSE today."
 
     api_key = os.environ.get("DEEPSEEK_API_KEY")
     if not api_key:
-        raise ValueError("DEEPSEEK_API_KEY non définie")
+        raise ValueError("DEEPSEEK_API_KEY not set")
 
     client = OpenAI(api_key=api_key, base_url="https://api.deepseek.com/v1")
     date_str = datetime.now().strftime("%d %B %Y")
     articles_txt = ""
     for i, a in enumerate(articles, 1):
         articles_txt += f"\n[{i}] Source : {a['source']}\n"
-        articles_txt += f"    Titre : {a['titre']}\n"
-        articles_txt += f"    Lien  : {a['lien']}\n"
+        articles_txt += f"    Title : {a['titre']}\n"
+        articles_txt += f"    Link  : {a['lien']}\n"
 
-    prompt = (f"Veille stratégique GSE - Chine / Asie-Pacifique — {date_str}\n"
-              f"Nombre d'articles sélectionnés : {len(articles)}\n\n{articles_txt}\n\n"
-              "Pour chaque information importante :\n"
-              "1. IMPACT : CRITIQUE / IMPORTANT / À SURVEILLER / INFO\n"
-              "2. RÉSUMÉ (1-2 phrases) lié au marché GSE\n"
-              "3. IMPACT BUSINESS (ex: hausse des coûts, opportunité de vente, menace concurrentielle)\n"
-              "4. ACTION RECOMMANDÉE (contacter fournisseur, prospecter client, adapter catalogue)\n\n"
-              "Termine par :\n"
-              "- SYNTHÈSE EXÉCUTIVE (5 lignes max) pour le comité de direction\n"
-              "- 3 INDICATEURS CLÉS À SURVEILLER cette semaine\n"
-              "- RISQUE PRINCIPAL pour le marché GSE en Chine")
+    prompt = (f"GSE Strategic Watch - China / Asia-Pacific — {date_str}\n"
+              f"Number of selected articles: {len(articles)}\n\n{articles_txt}\n\n"
+              "For each important piece of information:\n"
+              "1. IMPACT : CRITICAL / IMPORTANT / WATCH / INFO\n"
+              "2. SUMMARY (1-2 sentences) linked to the GSE market\n"
+              "3. BUSINESS IMPACT (e.g., cost increase, sales opportunity, competitive threat)\n"
+              "4. RECOMMENDED ACTION (contact supplier, prospect client, adapt catalogue)\n\n"
+              "Conclude with:\n"
+              "- EXECUTIVE SUMMARY (max 5 lines) for the executive committee\n"
+              "- 3 KEY INDICATORS TO WATCH this week\n"
+              "- MAIN RISK for the GSE market in China")
 
-    log.info(f"Envoi de {len(articles)} articles à DeepSeek...")
+    log.info(f"Sending {len(articles)} articles to DeepSeek...")
     try:
         response = client.chat.completions.create(
             model="deepseek-chat",
@@ -400,54 +393,253 @@ def analyser_avec_deepseek(articles):
         )
         return response.choices[0].message.content
     except Exception as e:
-        log.error(f"Erreur DeepSeek : {e}")
-        return "Erreur API."
+        log.error(f"DeepSeek error : {e}")
+        return "API error."
 
-# --- GÉNÉRATION RAPPORT ------------------------------------------------------
+# --- HTML REPORT GENERATION --------------------------------------------------
 def generer_rapport(articles, analyse):
     now = datetime.now().strftime("%Y-%m-%d %H:%M")
-    lignes = ["=" * 62,
-              f"  VEILLE STRATÉGIQUE GSE & CONCURRENCE (Chine) — {now}",
-              "  Pour : Direction Industrielle & Commerciale", "=" * 62, "",
-              f"  {len(articles)} information(s) pertinente(s)", "",
-              "  SOURCES SURVEILLÉES :"]
-    for s in SOURCES:
-        lignes.append(f"    - {s['nom']}")
-    if articles:
-        lignes += ["", "-" * 62, "  ARTICLES DU JOUR", "-" * 62]
-        for i, a in enumerate(articles, 1):
-            lignes.append(f"\n  [{i}] {a['source']}")
-            lignes.append(f"      {a['titre']}")
-            if a["lien"]:
-                lignes.append(f"      {a['lien']}")
-    lignes += ["", "-" * 62, "  ANALYSE & RECOMMANDATIONS", "-" * 62, analyse, "", "=" * 62]
-    return "\n".join(lignes)
+    # Build HTML
+    html = f"""<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GSE Strategic Watch - {now}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+    <style>
+        * {{
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }}
+        body {{
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background: #f8fafc;
+            color: #0f172a;
+            padding: 40px 20px;
+            line-height: 1.6;
+        }}
+        .container {{
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 24px;
+            padding: 40px 45px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05), 0 10px 15px -3px rgba(0,0,0,0.08);
+        }}
+        h1 {{
+            font-size: 28px;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            margin-bottom: 6px;
+        }}
+        .subhead {{
+            font-size: 16px;
+            color: #64748b;
+            margin-bottom: 30px;
+        }}
+        .stats {{
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px 40px;
+            background: #f1f5f9;
+            border-radius: 16px;
+            padding: 18px 24px;
+            margin-bottom: 32px;
+        }}
+        .stat-item {{
+            font-size: 15px;
+        }}
+        .stat-item strong {{
+            font-weight: 600;
+            color: #0f172a;
+        }}
+        .section-title {{
+            font-size: 20px;
+            font-weight: 600;
+            margin: 36px 0 16px 0;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #e2e8f0;
+        }}
+        .sources-list {{
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px 16px;
+            background: #f8fafc;
+            padding: 12px 16px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }}
+        .source-tag {{
+            font-size: 14px;
+            background: #e2e8f0;
+            padding: 2px 12px;
+            border-radius: 20px;
+            color: #1e293b;
+        }}
+        .article-table {{
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+            margin-top: 8px;
+        }}
+        .article-table th {{
+            text-align: left;
+            padding: 10px 12px;
+            background: #f1f5f9;
+            font-weight: 600;
+            border-bottom: 2px solid #cbd5e1;
+        }}
+        .article-table td {{
+            padding: 10px 12px;
+            border-bottom: 1px solid #e2e8f0;
+            vertical-align: top;
+        }}
+        .article-table tr:last-child td {{
+            border-bottom: none;
+        }}
+        .article-table .source {{
+            font-weight: 500;
+            color: #1e293b;
+            white-space: nowrap;
+        }}
+        .article-table .title a {{
+            color: #1e40af;
+            text-decoration: none;
+            font-weight: 500;
+        }}
+        .article-table .title a:hover {{
+            text-decoration: underline;
+        }}
+        .analysis {{
+            background: #f8fafc;
+            border-radius: 16px;
+            padding: 20px 24px;
+            margin-top: 10px;
+            white-space: pre-wrap;
+            font-size: 15px;
+            line-height: 1.7;
+        }}
+        .analysis h2, .analysis h3, .analysis h4 {{
+            margin-top: 1.2em;
+            margin-bottom: 0.4em;
+        }}
+        .analysis h2:first-child {{
+            margin-top: 0;
+        }}
+        .footer {{
+            margin-top: 36px;
+            font-size: 13px;
+            color: #94a3b8;
+            text-align: center;
+            border-top: 1px solid #e2e8f0;
+            padding-top: 24px;
+        }}
+        @media (max-width: 640px) {{
+            .container {{
+                padding: 20px 16px;
+            }}
+            .stats {{
+                flex-direction: column;
+                gap: 8px;
+            }}
+            .article-table th, .article-table td {{
+                padding: 8px 6px;
+            }}
+            .article-table .source {{
+                white-space: normal;
+            }}
+        }}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🛫 GSE Strategic Watch</h1>
+        <div class="subhead">{now} · Asia-Pacific Focus</div>
 
-def sauvegarder_rapport(rapport):
+        <div class="stats">
+            <span class="stat-item"><strong>{len(articles)}</strong> relevant article(s)</span>
+            <span class="stat-item"><strong>{len(SOURCES)}</strong> sources monitored</span>
+        </div>
+
+        <div class="sources-list">
+            {''.join(f'<span class="source-tag">{s["nom"]}</span>' for s in SOURCES)}
+        </div>
+
+        <h2 class="section-title">📰 Articles of the Day</h2>
+        <table class="article-table">
+            <thead>
+                <tr><th>#</th><th>Source</th><th>Title</th></tr>
+            </thead>
+            <tbody>
+    """
+    for i, a in enumerate(articles, 1):
+        # Escape possible HTML in title
+        titre_esc = a['titre'].replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;')
+        lien = a['lien'] or '#'
+        html += f"""
+                <tr>
+                    <td>{i}</td>
+                    <td class="source">{a['source']}</td>
+                    <td class="title"><a href="{lien}" target="_blank">{titre_esc}</a></td>
+                </tr>
+        """
+    html += """
+            </tbody>
+        </table>
+
+        <h2 class="section-title">📊 Analysis & Recommendations</h2>
+        <div class="analysis">
+    """
+    # Convert analysis text: simple markdown-ish to HTML (preserve line breaks, bold)
+    # We'll just wrap in <pre>? But better to use white-space: pre-wrap and let user have plain text.
+    # We can also try to detect headings with ** or something, but we'll keep it as plain text with pre-wrap.
+    # For better presentation, we could use a simple markdown parser, but we'll keep it simple.
+    # We'll escape any HTML tags in the analysis, but we want to preserve formatting.
+    # We'll just put it inside a div with white-space: pre-wrap.
+    analyse_esc = analyse.replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;')
+    html += analyse_esc
+    html += """
+        </div>
+
+        <div class="footer">
+            Generated by GSE Intelligence Agent · Powered by DeepSeek
+        </div>
+    </div>
+</body>
+</html>
+    """
+    return html
+
+def sauvegarder_rapport(rapport_html):
     dossier = Path("rapports")
     dossier.mkdir(exist_ok=True, parents=True)
-    fichier = dossier / f"gse_veille_{datetime.now().strftime('%Y%m%d_%H%M')}.txt"
+    fichier = dossier / f"gse_veille_{datetime.now().strftime('%Y%m%d_%H%M')}.html"
     with open(fichier, "w", encoding="utf-8") as f:
-        f.write(rapport)
-    log.info(f"Rapport créé : {fichier.absolute()}")
+        f.write(rapport_html)
+    log.info(f"Report saved: {fichier.absolute()}")
 
-# --- EXÉCUTION ---------------------------------------------------------------
+# --- EXECUTION ---------------------------------------------------------------
 def executer_agent():
-    log.info("Démarrage agent veille GSE + concurrents + signaux marché (version finale)")
+    log.info("Starting GSE + competitors + market signals intelligence agent (HTML/EN)")
     try:
         vus = charger_vus()
         tous_articles = collecter_tous_articles()
         articles_pertinents = filtrer_pertinents(tous_articles, vus)
-        analyse = analyser_avec_deepseek(articles_pertinents) if articles_pertinents else "Aucune information pertinente aujourd'hui."
-        rapport = generer_rapport(articles_pertinents, analyse)
-        print(rapport)
-        sauvegarder_rapport(rapport)
+        analyse = analyser_avec_deepseek(articles_pertinents) if articles_pertinents else "No relevant information today."
+        rapport_html = generer_rapport(articles_pertinents, analyse)
+        sauvegarder_rapport(rapport_html)
+        # Optionally, also print a plain text version to console? Not necessary.
+        # But we can still print the HTML to console? Better not; it's huge.
+        # We'll just print a message.
+        print(f"✅ HTML report generated: rapports/gse_veille_{datetime.now().strftime('%Y%m%d_%H%M')}.html")
         for a in articles_pertinents:
             vus.add(a["id"])
         sauvegarder_vus(vus)
-        log.info("Terminé.")
+        log.info("Done.")
     except Exception as e:
-        log.exception(f"Erreur fatale : {e}")
+        log.exception(f"Fatal error : {e}")
 
 if __name__ == "__main__":
     executer_agent()
