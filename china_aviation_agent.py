@@ -823,6 +823,15 @@ def generer_rapport(articles, analyse):
     """
     return html
 
+# --- SAVE REPORT ------------------------------------------------------------
+def sauvegarder_rapport(rapport_html):
+    dossier = Path("rapports")
+    dossier.mkdir(exist_ok=True, parents=True)
+    fichier = dossier / f"gse_veille_{datetime.now().strftime('%Y%m%d_%H%M')}.html"
+    with open(fichier, "w", encoding="utf-8") as f:
+        f.write(rapport_html)
+    log.info(f"Report saved: {fichier.absolute()}")
+
 # --- EXECUTION ---------------------------------------------------------------
 def executer_agent():
     log.info("Starting GSE + competitors + market signals intelligence agent (HTML/EN + TOC)")
