@@ -13,37 +13,51 @@ from dotenv import load_dotenv
 from openai import OpenAI
 import markdown
 
-# --- Configuration -----------------------------------------------------------
+# =============================================================================
+#  CONFIGURATION
+# =============================================================================
 load_dotenv()
-LOG_FILE = Path("logs/agent_gse.log")
-SEEN_FILE = Path("seen_gse_articles.json")
+LOG_FILE   = Path("logs/agent_gse.log")
+SEEN_FILE  = Path("seen_gse_articles.json")
 Path("logs").mkdir(exist_ok=True)
 
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s [%(levelname)s] %(message)s",
-    handlers=[logging.StreamHandler(), logging.FileHandler(LOG_FILE, encoding="utf-8")],
+    handlers=[
+        logging.StreamHandler(),
+        logging.FileHandler(LOG_FILE, encoding="utf-8"),
+    ],
 )
 log = logging.getLogger(__name__)
 
+# Max articles to enrich with body excerpt (costs extra HTTP requests)
+ENRICH_MAX = 20
+# Max articles sent to DeepSeek in one call (keep prompt manageable)
+DEEPSEEK_MAX_ARTICLES = 30
+
 # =============================================================================
-#  EXPANDED KEYWORDS : GSE + AIRPORTS + AIRLINES + COMPETITORS
+#  KEYWORDS
 # =============================================================================
 KEYWORDS_GSE = [
+    # Core GSE equipment
     "ground support", "gse", "tug", "tractor", "loader", "de-icer", "gpu",
     "towbar", "baggage", "passenger boarding bridge", "air start unit",
     "belt loader", "conveyor belt", "staircase", "dolly", "catering truck",
     "lavatory truck", "water truck", "apron", "ramp", "electric ground support",
     "hybrid gse", "lithium battery gse", "autonomous gse", "maintenance gse",
     "mro ground",
+    # Chinese GSE terms
     "地勤设备", "地面支持设备", "行李拖车", "客梯车", "电源车", "气源车",
     "除冰车", "装载机", "传送带车", "飞机牵引车", "新能源地勤", "电动地勤",
+    # Airport infrastructure (demand drivers)
     "airport opening", "new runway", "terminal expansion", "airport expansion",
     "passenger record", "traffic record", "cargo volume", "load factor",
     "inauguration", "infrastructure investment",
     "机场", "航空", "航站楼", "停机坪", "扩建", "招标", "采购", "项目", "投运",
     "吞吐量", "旅客", "货邮", "航班", "机位", "远机位", "新机场", "新航站楼",
     "旅客吞吐量创新高", "航班量",
+    # Airlines (fleet = GSE demand)
     "airline order", "fleet delivery", "fleet expansion", "airline profit",
     "airline loss", "bankruptcy", "revenue", "EBIT",
     "Air China", "China Eastern", "China Southern", "Hainan Airlines",
@@ -53,12 +67,15 @@ KEYWORDS_GSE = [
     "吉祥航空", "吉祥", "四川航空", "川航", "山东航空", "山航",
     "订购", "交付", "机队", "盈利", "亏损", "营收", "净利润",
     "复航", "停飞", "航线", "新开航线", "恢复", "破产", "重组",
+    # Electrification / regulation
     "emission regulation", "electric ramp", "diesel ban",
     "steel price", "aluminium", "lithium", "battery cost",
     "semiconductor", "chip shortage", "supply chain disruption",
     "碳中和机场", "电动化", "柴油车禁行", "carbon peak",
+    # Trade / macro
     "Belt and Road", "BRI", "tariff", "trade war", "EU tariffs",
     "一带一路", "关税",
+    # Western GSE competitors
     "TLD Group", "TLD", "Alvest", "JBT Corporation", "JBT",
     "Oshkosh AeroTech", "Oshkosh", "Textron GSE", "Textron",
     "Tug Technologies", "Tronair", "ITW GSE", "Fast Global Solutions",
@@ -78,6 +95,7 @@ KEYWORDS_GSE = [
     "Red Box International", "Power Systems International", "PSI",
     "GB Barberi", "Jetall GPU", "Aeromax GSE", "Current Power",
     "MRCCS", "Bertoli Power Units",
+    # Chinese GSE competitors
     "Weihai Guangtai", "Guangtai", "威海广泰",
     "CIMC Tianda", "中集天达",
     "Jiangsu Tianyi", "Tianyi", "江苏天一",
@@ -90,60 +108,89 @@ KEYWORDS_GSE = [
     "Zhejiang Goodsense", "浙江中力",
     "Alha GSE", "Shanghai Ifly", "Ifly GSE",
     "TCR Group", "TCR", "Mercury GSE", "Lufthansa Technik",
-    "GE Aviation", "AFI KLM E&M", "ST Aerospace", "MTU Maintenance"
+    "GE Aviation", "AFI KLM E&M", "ST Aerospace", "MTU Maintenance",
+    # Ground handlers (M&A signals)
+    "Swissport", "Menzies Aviation", "Dnata", "Aviapartner",
+    "WFS", "Worldwide Flight Services", "SGS", "Celebi",
+    "斯威斯波特", "地面服务",
 ]
 
 # =============================================================================
-#  SOURCES (FUNCTIONAL)
+#  SOURCES
 # =============================================================================
 SOURCES = [
     {
-        "nom": "Bidcenter (China - Tenders)",
+        "nom": "Bidcenter (China Tenders)",
         "url": "https://www.bidcenter.com.cn",
         "type": "scrape_bidcenter",
         "base_url": "https://www.bidcenter.com.cn",
-        "encoding": "utf-8"
+        "encoding": "utf-8",
     },
     {
-        "nom": "China Airport News",
+        "nom": "China Airport News (CAAC)",
         "url": "http://fuwu.caacnews.com.cn/1/5/index.html",
         "type": "scrape_generic",
         "selector": "div.newsList ul li a, .list li a, a",
         "base_url": "http://fuwu.caacnews.com.cn",
-        "encoding": "utf-8"
+        "encoding": "utf-8",
     },
     {
-        "nom": "CARNOC.com (China)",
+        "nom": "CAAC News Portal",
+        "url": "http://www.caacnews.com.cn/1/5/",
+        "type": "scrape_generic",
+        "selector": ".news-list a, ul.list a, .newslist a, a",
+        "base_url": "http://www.caacnews.com.cn",
+        "encoding": "utf-8",
+    },
+    {
+        "nom": "CARNOC.com",
         "url": "https://www.carnoc.com/",
         "type": "scrape_generic",
         "selector": "div.news_list a, .article_list a, a",
         "base_url": "https://www.carnoc.com",
-        "encoding": "utf-8"
+        "encoding": "utf-8",
     },
     {
-        "nom": "CAAC News (China)",
+        "nom": "CAAC Gov (China)",
         "url": "http://www.caac.gov.cn/PHONE/ZTZL/",
         "type": "scrape_caac",
-        "base_url": "http://www.caac.gov.cn"
+        "base_url": "http://www.caac.gov.cn",
     },
     {
         "nom": "Ground Handling International",
         "url": "https://www.groundhandling.com/",
         "type": "scrape_generic",
-        "selector": "article h3 a, .post-title a, a",
+        "selector": "article h3 a, .post-title a, h2.entry-title a, a",
         "base_url": "https://www.groundhandling.com",
     },
     {
-        "nom": "CGTN - Aviation",
+        "nom": "Aviation Week MRO",
+        "url": "https://aviationweek.com/mro/ground-operations",
+        "type": "scrape_generic",
+        "selector": "h3.article-title a, .headline a, article h2 a, a",
+        "base_url": "https://aviationweek.com",
+    },
+    {
+        "nom": "CGTN Aviation",
         "url": "https://www.cgtn.com/",
         "type": "scrape_generic",
         "selector": "div.newsList a, a",
         "base_url": "https://www.cgtn.com",
-        "encoding": "utf-8"
-    }
+        "encoding": "utf-8",
+    },
+    {
+        "nom": "Air Transport World",
+        "url": "https://atwonline.com/ground-handling",
+        "type": "scrape_generic",
+        "selector": "h3.article-title a, .entry-title a, article h2 a, a",
+        "base_url": "https://atwonline.com",
+    },
 ]
 
-# --- UTILITY FUNCTIONS --------------------------------------------------------
+# =============================================================================
+#  UTILITY FUNCTIONS
+# =============================================================================
+
 def normaliser_url(url, base=None):
     if not url:
         return None
@@ -151,40 +198,52 @@ def normaliser_url(url, base=None):
         url = urljoin(base, url)
     parsed = urlparse(url)
     url_propre = parsed._replace(query="", fragment="").geturl()
-    if url_propre.endswith('/'):
+    if url_propre.endswith("/"):
         url_propre = url_propre[:-1]
     return url_propre
+
 
 def charger_vus():
     if SEEN_FILE.exists():
         with open(SEEN_FILE, "r", encoding="utf-8") as f:
             try:
                 return set(json.load(f))
-            except:
+            except Exception:
                 return set()
     return set()
+
 
 def sauvegarder_vus(vus):
     with open(SEEN_FILE, "w", encoding="utf-8") as f:
         json.dump(list(vus), f, ensure_ascii=False, indent=2)
 
-def requeter_avec_retry(url, retries=3, **kwargs):
+
+def requeter_avec_retry(url, retries=3, timeout=30, **kwargs):
     headers = {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36",
-        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
-        "Accept-Language": "zh-CN,zh;q=0.8,en-US;q=0.5,en;q=0.3"
+        "User-Agent": (
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+            "AppleWebKit/537.36 (KHTML, like Gecko) "
+            "Chrome/126.0.0.0 Safari/537.36"
+        ),
+        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+        "Accept-Language": "zh-CN,zh;q=0.8,en-US;q=0.5,en;q=0.3",
     }
     if "headers" in kwargs:
         headers.update(kwargs.pop("headers"))
     for i in range(retries):
         try:
-            resp = requests.get(url, timeout=30, headers=headers, **kwargs)
+            resp = requests.get(url, timeout=timeout, headers=headers, **kwargs)
             resp.raise_for_status()
             return resp
         except Exception as e:
-            log.warning(f"Attempt {i+1}/{retries} failed for {url} : {e}")
+            log.warning(f"Attempt {i+1}/{retries} failed for {url}: {e}")
             time.sleep(2 ** i)
     return None
+
+
+# =============================================================================
+#  SCRAPERS
+# =============================================================================
 
 def scrape_caac(source):
     articles = []
@@ -192,15 +251,12 @@ def scrape_caac(source):
     if not resp:
         return articles
     try:
-        soup = BeautifulSoup(resp.content, "html.parser", from_encoding='utf-8')
-        links = soup.find_all('a', href=True)
-        for link in links[:15]:
+        soup = BeautifulSoup(resp.content, "html.parser", from_encoding="utf-8")
+        for link in soup.find_all("a", href=True)[:20]:
             titre = link.get_text(strip=True)
             if not titre or len(titre) < 10:
                 continue
-            href = link.get('href')
-            if href:
-                href = normaliser_url(href, source["base_url"])
+            href = normaliser_url(link.get("href"), source["base_url"])
             if titre and href:
                 articles.append({
                     "source": source["nom"],
@@ -210,10 +266,11 @@ def scrape_caac(source):
                     "date": datetime.now().strftime("%Y-%m-%d"),
                     "id": hashlib.md5((titre + href).encode()).hexdigest(),
                 })
-        log.info(f"  Scraped {source['nom']}: {len(articles)} articles")
     except Exception as e:
-        log.warning(f"Error parsing {source['nom']} : {e}")
+        log.warning(f"Error parsing {source['nom']}: {e}")
+    log.info(f"  Scraped {source['nom']}: {len(articles)} articles")
     return articles
+
 
 def scrape_generic(source):
     articles = []
@@ -221,16 +278,15 @@ def scrape_generic(source):
     if not resp:
         return articles
     try:
-        encoding = source.get('encoding', 'utf-8')
+        encoding = source.get("encoding", "utf-8")
         soup = BeautifulSoup(resp.content, "html.parser", from_encoding=encoding)
-        links = soup.select(source["selector"])
         unique_links = {}
-        for link in links:
-            href = link.get('href')
+        for link in soup.select(source["selector"]):
+            href = link.get("href")
             titre = link.get_text(strip=True)
             if not href or not titre or len(titre) < 10:
                 continue
-            href = normaliser_url(href, source["base_url"])
+            href = normaliser_url(href, source.get("base_url"))
             if href:
                 unique_links[href] = titre
         for href, titre in list(unique_links.items())[:20]:
@@ -242,37 +298,39 @@ def scrape_generic(source):
                 "date": datetime.now().strftime("%Y-%m-%d"),
                 "id": hashlib.md5((titre + href).encode()).hexdigest(),
             })
-        log.info(f"  Scraped {source['nom']}: {len(articles)} articles")
     except Exception as e:
-        log.warning(f"Error scraping {source['nom']} : {e}")
+        log.warning(f"Error scraping {source['nom']}: {e}")
+    log.info(f"  Scraped {source['nom']}: {len(articles)} articles")
     return articles
+
 
 def scrape_bidcenter(source):
     articles = []
     headers = {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
         "Referer": "https://www.bidcenter.com.cn/",
-        "Accept-Language": "zh-CN,zh;q=0.9"
+        "Accept-Language": "zh-CN,zh;q=0.9",
     }
     resp = requeter_avec_retry(source["url"], headers=headers)
     if not resp:
         return articles
     try:
-        soup = BeautifulSoup(resp.content, "html.parser", from_encoding='utf-8')
-        links = soup.select('div.tender_list a, ul.tender-list a, .gg_list a, table a, .list-item a')
+        soup = BeautifulSoup(resp.content, "html.parser", from_encoding="utf-8")
+        links = soup.select(
+            "div.tender_list a, ul.tender-list a, .gg_list a, table a, .list-item a"
+        )
         if not links:
-            links = soup.find_all('a', href=True)
+            links = soup.find_all("a", href=True)
+        SKIP = {"首页", "上一页", "下一页", "末页", "登录", "注册", "发布", "搜索"}
         unique_links = {}
         for link in links:
-            href = link.get('href')
+            href = link.get("href")
             titre = link.get_text(strip=True)
             if not href or not titre or len(titre) < 8:
                 continue
-            mots_exclus = ['首页', '上一页', '下一页', '末页', '登录', '注册', '发布', '搜索']
-            if any(mot in titre for mot in mots_exclus):
+            if any(s in titre for s in SKIP):
                 continue
             href = normaliser_url(href, source["base_url"])
-            if href and 'bidcenter.com.cn' in href:
+            if href and "bidcenter.com.cn" in href:
                 unique_links[href] = titre
         for href, titre in list(unique_links.items())[:15]:
             articles.append({
@@ -283,25 +341,31 @@ def scrape_bidcenter(source):
                 "date": datetime.now().strftime("%Y-%m-%d"),
                 "id": hashlib.md5((titre + href).encode()).hexdigest(),
             })
-        log.info(f"  Scraped {source['nom']}: {len(articles)} tenders")
     except Exception as e:
-        log.warning(f"Error scraping {source['nom']} : {e}")
+        log.warning(f"Error scraping {source['nom']}: {e}")
+    log.info(f"  Scraped {source['nom']}: {len(articles)} tenders")
     return articles
 
+
 def collecter_tous_articles():
-    tous_articles = []
+    tous = []
     for source in SOURCES:
-        log.info(f"Collecting from : {source['nom']}")
+        log.info(f"Collecting from: {source['nom']}")
         if source["type"] == "scrape_caac":
             articles = scrape_caac(source)
         elif source["type"] == "scrape_bidcenter":
             articles = scrape_bidcenter(source)
         else:
             articles = scrape_generic(source)
-        tous_articles.extend(articles)
+        tous.extend(articles)
         time.sleep(1.5)
-    log.info(f"Total raw articles collected: {len(tous_articles)}")
-    return tous_articles
+    log.info(f"Total raw articles collected: {len(tous)}")
+    return tous
+
+
+# =============================================================================
+#  FILTERING — with verbose match logging
+# =============================================================================
 
 def filtrer_pertinents(articles, vus):
     nouveaux = []
@@ -309,274 +373,381 @@ def filtrer_pertinents(articles, vus):
         if a["id"] in vus:
             continue
         texte = (a["titre"] + " " + a.get("desc", "")).lower()
-        if any(kw.lower() in texte for kw in KEYWORDS_GSE):
+        matched = [kw for kw in KEYWORDS_GSE if kw.lower() in texte]
+        if matched:
+            log.info(
+                f"  KEPT [{a['source']}] {a['titre'][:70]} "
+                f"— matched: {matched[:3]}"
+            )
             nouveaux.append(a)
-    log.info(f"Relevant articles (GSE + macro signals + competitors): {len(nouveaux)}")
+        else:
+            log.debug(f"  SKIP [{a['source']}] {a['titre'][:70]}")
+    log.info(f"Relevant articles after filtering: {len(nouveaux)}")
     return nouveaux
 
 
 # =============================================================================
-#  DEEPSEEK — IMPROVED PROMPTS WITH STRUCTURED DELIMITERS
+#  ARTICLE ENRICHMENT — fetch body excerpt for better DeepSeek context
 # =============================================================================
 
-SYSTEM_PROMPT_GSE = """You are a senior strategy analyst advising the CEO of TLD Group, a global GSE (Ground Support Equipment) manufacturer and lessor operating primarily in China and Asia-Pacific.
+def enrichir_article(article):
+    """Fetch first ~400 chars of article body to give DeepSeek more context."""
+    try:
+        resp = requests.get(
+            article["lien"],
+            timeout=8,
+            headers={"User-Agent": "Mozilla/5.0"},
+            allow_redirects=True,
+        )
+        soup = BeautifulSoup(resp.content, "html.parser")
+        for tag in soup(["script", "style", "nav", "footer", "header", "aside"]):
+            tag.decompose()
+        text = soup.get_text(separator=" ", strip=True)
+        # Collapse whitespace and take first 400 chars
+        text = re.sub(r"\s+", " ", text).strip()
+        article["desc"] = text[:400]
+    except Exception as e:
+        log.debug(f"Could not enrich {article['lien']}: {e}")
+    return article
+
+
+def enrichir_articles(articles):
+    """Enrich up to ENRICH_MAX articles with body excerpts."""
+    log.info(f"Enriching up to {ENRICH_MAX} articles with body excerpts...")
+    enriched = []
+    for i, a in enumerate(articles):
+        if i < ENRICH_MAX:
+            enriched.append(enrichir_article(a))
+            time.sleep(0.4)
+        else:
+            enriched.append(a)
+    log.info("Enrichment complete.")
+    return enriched
+
+
+# =============================================================================
+#  DEEPSEEK — STRUCTURED PROMPT
+# =============================================================================
+
+SYSTEM_PROMPT = """You are a senior strategy analyst advising the CEO of TLD Group, a global GSE (Ground Support Equipment) manufacturer and lessor with primary operations in China and Asia-Pacific.
 
 Your role: translate raw news signals into actionable commercial and industrial intelligence.
 
-ANALYSIS SCOPE — do not limit yourself to articles that explicitly mention equipment:
-- Airport openings, capacity expansions, traffic records → leading demand indicators (quantify: +5% traffic ≈ +10 aircraft tractors per hub)
-- Airline fleet orders, deliveries, profitability → fleet-driven GSE procurement cycles
-- Competitor announcements (JBT, Textron, Guangtai, etc.) → competitive threats or market gaps
-- Raw material costs (steel, aluminium, lithium, semiconductors) → margin pressure signals
-- M&A among ground handlers (Swissport, Menzies, Dnata) → contract consolidation risk
-- Trade policy (tariffs, BRI) → supply chain and pricing implications
-- Environmental regulations in China → electrification timeline and diesel phase-out pace
+ANALYSIS SCOPE — do not limit yourself to articles explicitly mentioning equipment:
+- Airport openings, capacity expansions, traffic records → leading demand indicators (quantify where possible: +5% traffic ≈ +10 aircraft tractors per hub)
+- Airline fleet orders, deliveries, financial results → fleet-driven GSE procurement cycles
+- Competitor moves (JBT, Textron, Guangtai, CIMC Tianda, etc.) → threats or market gaps
+- Raw material costs (steel, aluminium, lithium, semiconductors) → margin pressure
+- Ground handler M&A (Swissport, Menzies, Dnata) → contract consolidation risk
+- Trade policy (tariffs, BRI, US-China) → supply chain and pricing implications
+- Environmental regulations in China → electrification timeline and diesel phase-out
 
-IMPACT CLASSIFICATION:
-- CRITICAL: Immediate action required within 48h (major competitor move, urgent tender, direct threat/opportunity)
-- IMPORTANT: Action required this week (significant market shift, pricing signal, client development)
-- WATCH: Monitor closely, no immediate action (emerging trend, early-stage development)
-- INFO: Background context, file for reference
+IMPACT LEVELS:
+- CRITICAL: Act within 48h (major competitor move, urgent tender, direct threat/opportunity)
+- IMPORTANT: Act this week (significant market shift, pricing signal, client development)
+- WATCH: Monitor closely, no immediate action (emerging trend, early-stage signal)
+- INFO: Background context only
 
-OUTPUT FORMAT — You must use EXACTLY this structure. Do not deviate.
+OUTPUT FORMAT — use EXACTLY this structure. Do not add any text outside the delimited blocks.
 
-For each signal, output:
+For each meaningful signal:
 ===SIGNAL_START===
-SIGNAL_ID: [number, e.g. 1]
+SIGNAL_ID: [number]
 IMPACT: [CRITICAL | IMPORTANT | WATCH | INFO]
-HEADLINE: [One sharp sentence summarizing the signal — max 15 words]
-READING: [2-3 sentences explaining what happened and why it matters for the GSE market]
-BUSINESS_IMPACT: [2-3 sentences on concrete commercial/financial consequences for TLD — volumes, margins, contracts, competition]
-ACTION: [1-2 sentences on the recommended action — specific, time-bound, named if possible]
+HEADLINE: [One sharp sentence — max 15 words]
+READING: [2-3 sentences: what happened and why it matters for the GSE market]
+BUSINESS_IMPACT: [2-3 sentences: concrete commercial/financial consequences for TLD — volumes, margins, contracts, competition]
+ACTION: [1-2 sentences: specific recommended action, time-bound if possible]
 ===SIGNAL_END===
 
-After all signals, output the closing section EXACTLY as follows:
+After ALL signals, output this closing block:
 ===SUMMARY_START===
-EXECUTIVE_SUMMARY: [4-5 sentences max. Written for an executive committee presentation. What happened, what it means, what we should do.]
+EXECUTIVE_SUMMARY: [4-5 sentences for an executive committee. What happened, what it means, what we do.]
 WATCH_1: [Key indicator #1 to monitor this week]
 WATCH_2: [Key indicator #2 to monitor this week]
 WATCH_3: [Key indicator #3 to monitor this week]
-MAIN_RISK: [The single biggest risk for TLD's GSE business in China this week — one sentence]
+MAIN_RISK: [Single biggest risk for TLD GSE business in China this week — one sentence]
 ===SUMMARY_END===
 
 Rules:
-- Write in English
-- Be specific and quantitative when possible (volumes, %, timelines)
-- No bullet points inside field values — use plain prose
-- Do not add any text outside the delimited blocks
-- If fewer than 3 signals are meaningful, still output the SUMMARY block
+- English only
+- Specific and quantitative when possible (volumes, %, timelines, EUR values)
+- No bullet points inside field values — plain prose only
+- Skip articles with no connection to GSE market or its demand drivers
+- Always output the SUMMARY block even if there are few signals
 """
+
 
 def construire_prompt_user(articles):
     date_str = datetime.now().strftime("%d %B %Y")
-    articles_txt = ""
+    lines = [
+        f"GSE STRATEGIC WATCH — China / Asia-Pacific",
+        f"Date: {date_str}",
+        f"Articles to analyze: {len(articles)}",
+        "",
+    ]
     for i, a in enumerate(articles, 1):
-        articles_txt += f"\n[{i}] SOURCE: {a['source']}\n"
-        articles_txt += f"    TITLE: {a['titre']}\n"
-        articles_txt += f"    URL: {a['lien']}\n"
-        if a.get('desc'):
-            articles_txt += f"    EXCERPT: {a['desc'][:200]}\n"
-
-    return f"""GSE STRATEGIC WATCH — China / Asia-Pacific
-Date: {date_str}
-Articles to analyze: {len(articles)}
-
-{articles_txt}
-
-Analyze each article that carries a meaningful signal for TLD Group's GSE business. Skip pure noise (irrelevant articles with no connection to the GSE market or its demand drivers). Output ONLY the structured blocks defined in your instructions."""
+        lines.append(f"[{i}] SOURCE: {a['source']}")
+        lines.append(f"    TITLE: {a['titre']}")
+        lines.append(f"    URL: {a['lien']}")
+        if a.get("desc"):
+            lines.append(f"    EXCERPT: {a['desc'][:300]}")
+        lines.append("")
+    lines.append(
+        "Analyze each article for signals relevant to TLD Group's GSE business. "
+        "Output ONLY the structured blocks defined in your instructions."
+    )
+    return "\n".join(lines)
 
 
 def analyser_avec_deepseek(articles):
     if not articles:
+        log.info("No articles to analyze.")
         return ""
 
     api_key = os.environ.get("DEEPSEEK_API_KEY")
     if not api_key:
-        raise ValueError("DEEPSEEK_API_KEY not set")
+        raise ValueError("DEEPSEEK_API_KEY environment variable not set.")
+
+    # Cap at DEEPSEEK_MAX_ARTICLES to avoid prompt overflow
+    batch = articles[:DEEPSEEK_MAX_ARTICLES]
+    if len(articles) > DEEPSEEK_MAX_ARTICLES:
+        log.warning(
+            f"Capped input at {DEEPSEEK_MAX_ARTICLES} articles "
+            f"(had {len(articles)})."
+        )
 
     client = OpenAI(api_key=api_key, base_url="https://api.deepseek.com/v1")
+    log.info(f"Sending {len(batch)} articles to DeepSeek...")
 
-    log.info(f"Sending {len(articles)} articles to DeepSeek...")
     try:
         response = client.chat.completions.create(
             model="deepseek-chat",
             messages=[
-                {"role": "system", "content": SYSTEM_PROMPT_GSE},
-                {"role": "user", "content": construire_prompt_user(articles)}
+                {"role": "system", "content": SYSTEM_PROMPT},
+                {"role": "user", "content": construire_prompt_user(batch)},
             ],
-            max_tokens=4096,
-            temperature=0.2  # Lower temperature = more consistent formatting
+            max_tokens=8192,   # raised from 4096 — prevents silent truncation
+            temperature=0.2,
         )
-        return response.choices[0].message.content
+        raw = response.choices[0].message.content
+        log.info(f"DeepSeek response: {len(raw)} chars")
+        return raw
     except Exception as e:
-        log.error(f"DeepSeek error : {e}")
+        log.error(f"DeepSeek API error: {e}")
         return ""
 
 
 # =============================================================================
-#  PARSER — Delimiter-based (no fragile regex)
+#  PARSER — delimiter-based, with truncation detection
 # =============================================================================
+
+def extract_field(block, field):
+    """Extract a named field value from a delimited block."""
+    pattern = rf"^{field}:\s*(.+?)(?=\n[A-Z_]{{2,}}:|$)"
+    match = re.search(pattern, block, re.MULTILINE | re.DOTALL)
+    return match.group(1).strip() if match else ""
+
 
 def parser_analyse(raw_text):
-    """Parse the structured DeepSeek output into clean Python dicts."""
     signals = []
-    summary = {
-        "executive_summary": "",
-        "watch": [],
-        "main_risk": ""
-    }
+    summary = {"executive_summary": "", "watch": [], "main_risk": ""}
 
     if not raw_text:
+        log.warning("Empty DeepSeek response — nothing to parse.")
         return signals, summary
 
-    def extract_field(block, field):
-        """Extract a named field value from a delimited block."""
-        pattern = rf'^{field}:\s*(.+?)(?=\n[A-Z_]+:|$)'
-        match = re.search(pattern, block, re.MULTILINE | re.DOTALL)
-        if match:
-            return match.group(1).strip()
-        return ""
+    # --- Truncation detection ---
+    n_starts = raw_text.count("===SIGNAL_START===")
+    n_ends   = raw_text.count("===SIGNAL_END===")
+    has_summary = "===SUMMARY_START===" in raw_text
+
+    if n_starts != n_ends:
+        log.warning(
+            f"TRUNCATION DETECTED: {n_starts} signal starts but only "
+            f"{n_ends} ends. Raise max_tokens or reduce input."
+        )
+    if n_starts > 0 and not has_summary:
+        log.warning(
+            "TRUNCATION DETECTED: signals found but no SUMMARY block. "
+            "Output was cut before the end."
+        )
 
     # --- Parse signals ---
-    signal_blocks = re.findall(
-        r'===SIGNAL_START===(.*?)===SIGNAL_END===',
-        raw_text,
-        re.DOTALL
-    )
-    for block in signal_blocks:
-        signal = {
-            "id": extract_field(block, "SIGNAL_ID"),
-            "impact": extract_field(block, "IMPACT").upper() or "INFO",
-            "headline": extract_field(block, "HEADLINE"),
-            "reading": extract_field(block, "READING"),
+    for block in re.findall(
+        r"===SIGNAL_START===(.*?)===SIGNAL_END===", raw_text, re.DOTALL
+    ):
+        impact = extract_field(block, "IMPACT").upper() or "INFO"
+        if impact not in ("CRITICAL", "IMPORTANT", "WATCH", "INFO"):
+            impact = "INFO"
+        signals.append({
+            "id":              extract_field(block, "SIGNAL_ID"),
+            "impact":          impact,
+            "headline":        extract_field(block, "HEADLINE"),
+            "reading":         extract_field(block, "READING"),
             "business_impact": extract_field(block, "BUSINESS_IMPACT"),
-            "action": extract_field(block, "ACTION"),
-        }
-        # Validate impact level
-        if signal["impact"] not in ("CRITICAL", "IMPORTANT", "WATCH", "INFO"):
-            signal["impact"] = "INFO"
-        signals.append(signal)
+            "action":          extract_field(block, "ACTION"),
+        })
 
     # --- Parse summary ---
-    summary_match = re.search(
-        r'===SUMMARY_START===(.*?)===SUMMARY_END===',
-        raw_text,
-        re.DOTALL
+    sm = re.search(
+        r"===SUMMARY_START===(.*?)===SUMMARY_END===", raw_text, re.DOTALL
     )
-    if summary_match:
-        block = summary_match.group(1)
-        summary["executive_summary"] = extract_field(block, "EXECUTIVE_SUMMARY")
-        summary["main_risk"] = extract_field(block, "MAIN_RISK")
-        for i in range(1, 4):
-            watch = extract_field(block, f"WATCH_{i}")
-            if watch:
-                summary["watch"].append(watch)
+    if sm:
+        b = sm.group(1)
+        summary["executive_summary"] = extract_field(b, "EXECUTIVE_SUMMARY")
+        summary["main_risk"]         = extract_field(b, "MAIN_RISK")
+        summary["watch"] = [
+            extract_field(b, f"WATCH_{i}")
+            for i in range(1, 4)
+            if extract_field(b, f"WATCH_{i}")
+        ]
 
-    log.info(f"Parsed: {len(signals)} signals, summary={'yes' if summary['executive_summary'] else 'no'}")
+    log.info(
+        f"Parsed: {len(signals)} signals, "
+        f"summary={'yes' if summary['executive_summary'] else 'NO'}"
+    )
     return signals, summary
 
 
 # =============================================================================
-#  HTML REPORT — Clean professional design
+#  HTML REPORT
 # =============================================================================
 
 IMPACT_CONFIG = {
-    "CRITICAL": {"label": "Critical",  "color": "#dc2626", "bg": "#fef2f2", "border": "#fecaca", "text": "#991b1b"},
-    "IMPORTANT": {"label": "Important", "color": "#d97706", "bg": "#fffbeb", "border": "#fde68a", "text": "#92400e"},
-    "WATCH":     {"label": "Watch",     "color": "#0369a1", "bg": "#f0f9ff", "border": "#bae6fd", "text": "#0c4a6e"},
-    "INFO":      {"label": "Info",      "color": "#6b7280", "bg": "#f9fafb", "border": "#e5e7eb", "text": "#374151"},
+    "CRITICAL": {
+        "label": "Critical",
+        "color": "#dc2626",
+        "bg": "#fef2f2",
+        "border": "#fecaca",
+        "text": "#991b1b",
+    },
+    "IMPORTANT": {
+        "label": "Important",
+        "color": "#d97706",
+        "bg": "#fffbeb",
+        "border": "#fde68a",
+        "text": "#92400e",
+    },
+    "WATCH": {
+        "label": "Watch",
+        "color": "#0369a1",
+        "bg": "#f0f9ff",
+        "border": "#bae6fd",
+        "text": "#0c4a6e",
+    },
+    "INFO": {
+        "label": "Info",
+        "color": "#6b7280",
+        "bg": "#f9fafb",
+        "border": "#e5e7eb",
+        "text": "#374151",
+    },
 }
 
+
 def md(text):
-    """Convert markdown to HTML, stripping outer <p> for inline use."""
+    """Convert markdown to HTML; strip single wrapping <p> for inline use."""
     if not text:
         return ""
-    html = markdown.markdown(text.strip(), extensions=['nl2br'])
-    # Remove wrapping <p> tags for short single-paragraph content
-    if html.count('<p>') == 1:
-        html = re.sub(r'^<p>(.*)</p>$', r'\1', html, flags=re.DOTALL)
+    html = markdown.markdown(text.strip(), extensions=["nl2br"])
+    if html.count("<p>") == 1:
+        html = re.sub(r"^<p>(.*)</p>$", r"\1", html, flags=re.DOTALL)
     return html
 
-def generer_rapport(articles, signals, summary):
+
+def generer_rapport(articles, signals, summary, raw_text="", truncated=False):
     now_full = datetime.now().strftime("%B %d, %Y")
     now_time = datetime.now().strftime("%H:%M")
 
-    # Count by impact level
     counts = {"CRITICAL": 0, "IMPORTANT": 0, "WATCH": 0, "INFO": 0}
     for s in signals:
         counts[s["impact"]] = counts.get(s["impact"], 0) + 1
 
-    # Map signals to source articles (by index)
-    def get_article(idx):
-        if idx < len(articles):
-            return articles[idx]
-        return None
-
-    # --- Build signal cards HTML ---
+    # --- Signal cards ---
     signals_html = ""
     if not signals:
-        signals_html = '<p style="color:#6b7280; font-style:italic; padding:24px 0;">No significant signals identified today.</p>'
+        signals_html = (
+            '<p style="color:#6b7280;font-style:italic;padding:24px 0;">'
+            "No significant signals identified today.</p>"
+        )
     else:
         for i, sig in enumerate(signals):
             cfg = IMPACT_CONFIG.get(sig["impact"], IMPACT_CONFIG["INFO"])
-            article = get_article(i)
+            article = articles[i] if i < len(articles) else None
             source_block = ""
             if article:
-                titre_esc = article['titre'].replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;')
-                lien = article.get('lien', '#')
-                source_nom = article['source']
-                source_block = f'''
-                <div class="signal-source">
-                    <span class="source-label">Source</span>
-                    <a href="{lien}" target="_blank" rel="noopener">{titre_esc}</a>
-                    <span class="source-name">— {source_nom}</span>
-                </div>'''
+                titre_esc = (
+                    article["titre"]
+                    .replace("&", "&amp;")
+                    .replace("<", "&lt;")
+                    .replace(">", "&gt;")
+                )
+                source_block = (
+                    f'<div class="signal-source">'
+                    f'<span class="source-label">Source</span>'
+                    f'<a href="{article.get("lien","#")}" target="_blank" rel="noopener">'
+                    f"{titre_esc}</a>"
+                    f'<span class="source-name"> — {article["source"]}</span>'
+                    f"</div>"
+                )
+            signals_html += f"""
+<div class="signal-card impact-{sig['impact'].lower()}">
+  <div class="signal-card-header" style="border-left:4px solid {cfg['color']};">
+    <span class="signal-badge"
+          style="background:{cfg['bg']};color:{cfg['text']};border:1px solid {cfg['border']};">
+      {cfg['label']}
+    </span>
+    <h3 class="signal-headline">{md(sig['headline'])}</h3>
+  </div>
+  <div class="signal-body">
+    <div class="signal-section">
+      <div class="signal-section-label">Reading</div>
+      <div class="signal-section-text">{md(sig['reading'])}</div>
+    </div>
+    <div class="signal-section">
+      <div class="signal-section-label">Business impact</div>
+      <div class="signal-section-text">{md(sig['business_impact'])}</div>
+    </div>
+    <div class="signal-section signal-action">
+      <div class="signal-section-label">Recommended action</div>
+      <div class="signal-section-text">{md(sig['action'])}</div>
+    </div>
+    {source_block}
+  </div>
+</div>"""
 
-            signals_html += f'''
-            <div class="signal-card" data-impact="{sig['impact'].lower()}">
-                <div class="signal-card-header" style="border-left: 4px solid {cfg['color']};">
-                    <div class="signal-badge" style="background:{cfg['bg']}; color:{cfg['text']}; border:1px solid {cfg['border']};">
-                        {cfg['label']}
-                    </div>
-                    <h3 class="signal-headline">{md(sig['headline'])}</h3>
-                </div>
-                <div class="signal-body">
-                    <div class="signal-section">
-                        <div class="signal-section-label">Reading</div>
-                        <div class="signal-section-text">{md(sig['reading'])}</div>
-                    </div>
-                    <div class="signal-section">
-                        <div class="signal-section-label">Business impact</div>
-                        <div class="signal-section-text">{md(sig['business_impact'])}</div>
-                    </div>
-                    <div class="signal-section signal-action">
-                        <div class="signal-section-label">Recommended action</div>
-                        <div class="signal-section-text">{md(sig['action'])}</div>
-                    </div>
-                    {source_block}
-                </div>
-            </div>'''
+    # --- Counters ---
+    counter_html = "".join(
+        f'<span class="counter-pill" '
+        f'style="background:{IMPACT_CONFIG[lvl]["bg"]};'
+        f'color:{IMPACT_CONFIG[lvl]["text"]};'
+        f'border:1px solid {IMPACT_CONFIG[lvl]["border"]};">'
+        f'{counts[lvl]} {IMPACT_CONFIG[lvl]["label"]}</span>'
+        for lvl in ("CRITICAL", "IMPORTANT", "WATCH", "INFO")
+        if counts[lvl] > 0
+    )
 
-    # --- Build watch indicators HTML ---
-    watch_html = ""
-    for w in summary.get("watch", []):
-        watch_html += f'<li>{md(w)}</li>'
+    # --- Watch / Risk ---
+    watch_html = "".join(f"<li>{md(w)}</li>" for w in summary.get("watch", []))
+    exec_html  = md(summary.get("executive_summary", ""))
+    risk_html  = md(summary.get("main_risk", ""))
 
-    # --- Build impact counter pills ---
-    counter_html = ""
-    for level in ["CRITICAL", "IMPORTANT", "WATCH", "INFO"]:
-        c = counts.get(level, 0)
-        if c > 0:
-            cfg = IMPACT_CONFIG[level]
-            counter_html += f'<span class="counter-pill" style="background:{cfg["bg"]}; color:{cfg["text"]}; border:1px solid {cfg["border"]};">{c} {cfg["label"]}</span>'
+    # --- Truncation warning banner ---
+    trunc_banner = ""
+    if truncated:
+        trunc_banner = """
+<div style="background:#fef9c3;border:1px solid #fde047;border-radius:8px;
+            padding:12px 16px;margin-bottom:24px;font-size:13px;color:#713f12;">
+  <strong>Warning:</strong> DeepSeek output was truncated — some signals or the
+  summary block may be missing. Raise <code>max_tokens</code> or reduce the
+  number of input articles.
+</div>"""
 
     # --- Sources list ---
-    sources_list = "".join(f'<li>{s["nom"]}</li>' for s in SOURCES)
+    sources_list = "".join(f"<li>{s['nom']}</li>" for s in SOURCES)
 
-    exec_summary_html = md(summary.get("executive_summary", ""))
-    main_risk_html = md(summary.get("main_risk", ""))
-
-    html = f"""<!DOCTYPE html>
+    return f"""<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -584,419 +755,167 @@ def generer_rapport(articles, signals, summary):
 <title>GSE Intelligence Brief — {now_full}</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-  *, *::before, *::after {{ box-sizing: border-box; margin: 0; padding: 0; }}
+*,*::before,*::after{{box-sizing:border-box;margin:0;padding:0}}
+:root{{
+  --ink:#0f172a;--ink-2:#334155;--ink-3:#64748b;--ink-4:#94a3b8;
+  --surface:#ffffff;--surface-1:#f8fafc;--border:#e2e8f0;
+  --radius:8px;--radius-lg:12px;
+}}
+body{{font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;
+      background:#f0f2f5;color:var(--ink);line-height:1.6;padding:32px 16px 64px}}
+.wrapper{{max-width:900px;margin:0 auto}}
 
-  :root {{
-    --ink: #0f172a;
-    --ink-2: #334155;
-    --ink-3: #64748b;
-    --ink-4: #94a3b8;
-    --surface: #ffffff;
-    --surface-1: #f8fafc;
-    --surface-2: #f1f5f9;
-    --border: #e2e8f0;
-    --border-2: #cbd5e1;
-    --accent: #0f172a;
-    --radius: 8px;
-    --radius-lg: 12px;
-  }}
+/* ── MASTHEAD ── */
+.masthead{{background:var(--ink);border-radius:var(--radius-lg) var(--radius-lg) 0 0;
+           padding:28px 36px 24px}}
+.masthead-eyebrow{{font-family:'IBM Plex Mono',monospace;font-size:10px;
+                   letter-spacing:.12em;text-transform:uppercase;
+                   color:#64748b;margin-bottom:8px}}
+.masthead-title{{font-size:22px;font-weight:600;letter-spacing:-.02em;
+                 color:#fff;margin-bottom:12px}}
+.masthead-meta{{display:flex;align-items:center;gap:20px;flex-wrap:wrap}}
+.meta-item{{font-size:13px;color:#94a3b8;display:flex;align-items:center;gap:6px}}
+.meta-item strong{{color:#e2e8f0;font-weight:500}}
+.masthead-counters{{display:flex;gap:8px;flex-wrap:wrap;
+                    margin-top:16px;padding-top:16px;border-top:1px solid #1e293b}}
+.counter-pill{{font-size:11px;font-weight:500;padding:3px 10px;
+               border-radius:20px;letter-spacing:.02em}}
 
-  body {{
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-    background: #f0f2f5;
-    color: var(--ink);
-    line-height: 1.6;
-    padding: 32px 16px 64px;
-  }}
+/* ── CARD BODY ── */
+.card-body{{background:var(--surface);border:1px solid var(--border);
+            border-top:none;border-radius:0 0 var(--radius-lg) var(--radius-lg);
+            padding:36px}}
+.section-header{{display:flex;align-items:center;gap:10px;
+                 margin-bottom:20px;padding-bottom:12px;
+                 border-bottom:1px solid var(--border)}}
+.section-header h2{{font-size:13px;font-weight:600;text-transform:uppercase;
+                    letter-spacing:.08em;color:var(--ink-3)}}
+.section-divider{{margin:36px 0;border:none;border-top:1px solid var(--border)}}
 
-  /* ── LAYOUT ── */
-  .wrapper {{
-    max-width: 900px;
-    margin: 0 auto;
-  }}
+/* ── EXEC SUMMARY ── */
+.exec-panel{{background:var(--ink);border-radius:var(--radius-lg);
+             padding:24px 28px;margin-bottom:32px;
+             color:#e2e8f0;font-size:15px;line-height:1.75}}
+.exec-panel-label{{font-family:'IBM Plex Mono',monospace;font-size:10px;
+                   letter-spacing:.1em;text-transform:uppercase;
+                   color:#475569;margin-bottom:10px}}
+.exec-panel p{{margin:0}}
 
-  /* ── MASTHEAD ── */
-  .masthead {{
-    background: var(--ink);
-    color: white;
-    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
-    padding: 28px 36px 24px;
-  }}
-  .masthead-eyebrow {{
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 10px;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: #94a3b8;
-    margin-bottom: 8px;
-  }}
-  .masthead-title {{
-    font-size: 22px;
-    font-weight: 600;
-    letter-spacing: -0.02em;
-    color: white;
-    margin-bottom: 12px;
-  }}
-  .masthead-meta {{
-    display: flex;
-    align-items: center;
-    gap: 20px;
-    flex-wrap: wrap;
-  }}
-  .meta-item {{
-    font-size: 13px;
-    color: #94a3b8;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-  }}
-  .meta-item strong {{ color: #e2e8f0; font-weight: 500; }}
-  .masthead-counters {{
-    display: flex;
-    gap: 8px;
-    flex-wrap: wrap;
-    margin-top: 16px;
-    padding-top: 16px;
-    border-top: 1px solid #1e293b;
-  }}
-  .counter-pill {{
-    font-size: 11px;
-    font-weight: 500;
-    padding: 3px 10px;
-    border-radius: 20px;
-    letter-spacing: 0.02em;
-  }}
+/* ── SIGNAL CARDS ── */
+.signal-card{{border:1px solid var(--border);border-radius:var(--radius-lg);
+              margin-bottom:16px;overflow:hidden;
+              transition:box-shadow .15s}}
+.signal-card:hover{{box-shadow:0 4px 12px rgba(0,0,0,.06)}}
+.signal-card-header{{padding:16px 20px;background:var(--surface-1);
+                     display:flex;align-items:flex-start;gap:12px}}
+.signal-badge{{font-size:11px;font-weight:600;padding:3px 9px;
+               border-radius:20px;white-space:nowrap;
+               letter-spacing:.03em;margin-top:2px;flex-shrink:0}}
+.signal-headline{{font-size:15px;font-weight:600;
+                  color:var(--ink);line-height:1.4}}
+.signal-headline p{{margin:0}}
+.signal-body{{padding:20px;display:grid;gap:16px}}
+.signal-section-label{{font-size:10px;font-weight:600;text-transform:uppercase;
+                        letter-spacing:.1em;color:var(--ink-4);margin-bottom:4px}}
+.signal-section-text{{font-size:14px;color:var(--ink-2);line-height:1.65}}
+.signal-section-text p{{margin:0}}
+.signal-action .signal-section-text{{color:var(--ink);font-weight:500}}
+.signal-source{{padding-top:12px;border-top:1px dashed var(--border);
+                font-size:12px;color:var(--ink-4);
+                display:flex;flex-wrap:wrap;gap:4px;align-items:center}}
+.source-label{{font-weight:600;text-transform:uppercase;letter-spacing:.06em;
+               font-size:10px;color:var(--ink-4);margin-right:4px}}
+.signal-source a{{color:#2563eb;text-decoration:none;font-weight:500}}
+.signal-source a:hover{{text-decoration:underline}}
+.source-name{{color:var(--ink-4)}}
 
-  /* ── MAIN CARD BODY ── */
-  .card-body {{
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-top: none;
-    border-radius: 0 0 var(--radius-lg) var(--radius-lg);
-    padding: 36px;
-  }}
+/* ── WATCH / RISK ── */
+.watch-panel{{background:#fffbeb;border:1px solid #fde68a;
+              border-radius:var(--radius-lg);padding:20px 24px;margin-bottom:16px}}
+.watch-panel-label{{font-size:11px;font-weight:600;text-transform:uppercase;
+                    letter-spacing:.08em;color:#92400e;margin-bottom:12px}}
+.watch-panel ol{{padding-left:20px;display:grid;gap:6px}}
+.watch-panel li{{font-size:14px;color:#78350f;line-height:1.5}}
+.watch-panel li p{{margin:0}}
+.risk-panel{{background:#fef2f2;border:1px solid #fecaca;
+             border-radius:var(--radius-lg);padding:20px 24px}}
+.risk-panel-label{{font-size:11px;font-weight:600;text-transform:uppercase;
+                   letter-spacing:.08em;color:#991b1b;margin-bottom:8px}}
+.risk-panel-text{{font-size:14px;color:#7f1d1d;line-height:1.6;font-weight:500}}
+.risk-panel-text p{{margin:0}}
 
-  /* ── SECTION HEADER ── */
-  .section-header {{
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 20px;
-    padding-bottom: 12px;
-    border-bottom: 1px solid var(--border);
-  }}
-  .section-header h2 {{
-    font-size: 13px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: var(--ink-3);
-  }}
-  .section-divider {{
-    margin: 36px 0;
-    border: none;
-    border-top: 1px solid var(--border);
-  }}
+/* ── SOURCES ── */
+.sources-panel{{background:var(--surface-1);border:1px solid var(--border);
+                border-radius:var(--radius);padding:16px 20px;margin-top:36px}}
+.sources-panel-label{{font-size:10px;font-weight:600;text-transform:uppercase;
+                       letter-spacing:.1em;color:var(--ink-4);margin-bottom:10px}}
+.sources-panel ul{{list-style:none;display:flex;flex-wrap:wrap;
+                   gap:6px 0;column-gap:24px;columns:2}}
+.sources-panel li{{font-size:12px;color:var(--ink-3);break-inside:avoid}}
+.sources-panel li::before{{content:"·";margin-right:6px;color:var(--ink-4)}}
 
-  /* ── EXECUTIVE SUMMARY ── */
-  .exec-panel {{
-    background: var(--ink);
-    border-radius: var(--radius-lg);
-    padding: 24px 28px;
-    margin-bottom: 32px;
-    color: #e2e8f0;
-    font-size: 15px;
-    line-height: 1.75;
-  }}
-  .exec-panel-label {{
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 10px;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: #64748b;
-    margin-bottom: 10px;
-  }}
+/* ── FOOTER ── */
+.page-footer{{text-align:center;font-size:11px;color:var(--ink-4);
+              margin-top:24px;font-family:'IBM Plex Mono',monospace;
+              letter-spacing:.04em}}
 
-  /* ── SIGNAL CARDS ── */
-  .signal-card {{
-    border: 1px solid var(--border);
-    border-radius: var(--radius-lg);
-    margin-bottom: 16px;
-    overflow: hidden;
-    transition: box-shadow 0.15s;
-  }}
-  .signal-card:hover {{ box-shadow: 0 4px 12px rgba(0,0,0,0.06); }}
-  .signal-card-header {{
-    padding: 16px 20px;
-    background: var(--surface-1);
-    display: flex;
-    align-items: flex-start;
-    gap: 12px;
-  }}
-  .signal-badge {{
-    font-size: 11px;
-    font-weight: 600;
-    padding: 3px 9px;
-    border-radius: 20px;
-    white-space: nowrap;
-    letter-spacing: 0.03em;
-    margin-top: 2px;
-    flex-shrink: 0;
-  }}
-  .signal-headline {{
-    font-size: 15px;
-    font-weight: 600;
-    color: var(--ink);
-    line-height: 1.4;
-  }}
-  .signal-headline p {{ margin: 0; }}
-  .signal-body {{
-    padding: 20px;
-    display: grid;
-    gap: 16px;
-  }}
-  .signal-section {{}}
-  .signal-section-label {{
-    font-size: 10px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    color: var(--ink-4);
-    margin-bottom: 4px;
-  }}
-  .signal-section-text {{
-    font-size: 14px;
-    color: var(--ink-2);
-    line-height: 1.65;
-  }}
-  .signal-section-text p {{ margin: 0; }}
-  .signal-action .signal-section-text {{
-    color: var(--ink);
-    font-weight: 500;
-  }}
-  .signal-source {{
-    padding-top: 12px;
-    border-top: 1px dashed var(--border);
-    font-size: 12px;
-    color: var(--ink-4);
-    display: flex;
-    flex-wrap: wrap;
-    gap: 4px;
-    align-items: center;
-  }}
-  .source-label {{
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    font-size: 10px;
-    color: var(--ink-4);
-    margin-right: 4px;
-  }}
-  .signal-source a {{
-    color: #2563eb;
-    text-decoration: none;
-    font-weight: 500;
-  }}
-  .signal-source a:hover {{ text-decoration: underline; }}
-  .source-name {{ color: var(--ink-4); }}
-
-  /* ── WATCH & RISK PANELS ── */
-  .watch-panel {{
-    background: #fffbeb;
-    border: 1px solid #fde68a;
-    border-radius: var(--radius-lg);
-    padding: 20px 24px;
-    margin-bottom: 16px;
-  }}
-  .watch-panel-label {{
-    font-size: 11px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: #92400e;
-    margin-bottom: 12px;
-  }}
-  .watch-panel ol {{
-    padding-left: 20px;
-    display: grid;
-    gap: 6px;
-  }}
-  .watch-panel li {{
-    font-size: 14px;
-    color: #78350f;
-    line-height: 1.5;
-  }}
-  .watch-panel li p {{ margin: 0; }}
-  .risk-panel {{
-    background: #fef2f2;
-    border: 1px solid #fecaca;
-    border-radius: var(--radius-lg);
-    padding: 20px 24px;
-  }}
-  .risk-panel-label {{
-    font-size: 11px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: #991b1b;
-    margin-bottom: 8px;
-  }}
-  .risk-panel-text {{
-    font-size: 14px;
-    color: #7f1d1d;
-    line-height: 1.6;
-    font-weight: 500;
-  }}
-  .risk-panel-text p {{ margin: 0; }}
-
-  /* ── SOURCES FOOTER ── */
-  .sources-panel {{
-    background: var(--surface-1);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 16px 20px;
-    margin-top: 36px;
-  }}
-  .sources-panel-label {{
-    font-size: 10px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    color: var(--ink-4);
-    margin-bottom: 10px;
-  }}
-  .sources-panel ul {{
-    list-style: none;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px 0;
-    column-gap: 24px;
-    columns: 2;
-  }}
-  .sources-panel li {{
-    font-size: 12px;
-    color: var(--ink-3);
-    break-inside: avoid;
-  }}
-  .sources-panel li::before {{
-    content: "·";
-    margin-right: 6px;
-    color: var(--ink-4);
-  }}
-
-  /* ── FOOTER ── */
-  .page-footer {{
-    text-align: center;
-    font-size: 11px;
-    color: var(--ink-4);
-    margin-top: 24px;
-    font-family: 'IBM Plex Mono', monospace;
-    letter-spacing: 0.04em;
-  }}
-
-  /* ── EMPTY STATE ── */
-  .no-news {{
-    text-align: center;
-    padding: 48px 0;
-    color: var(--ink-3);
-    font-size: 14px;
-  }}
-
-  @media (max-width: 600px) {{
-    body {{ padding: 12px 8px 48px; }}
-    .masthead, .card-body {{ padding: 20px 16px; }}
-    .sources-panel ul {{ columns: 1; }}
-  }}
+@media(max-width:600px){{
+  body{{padding:12px 8px 48px}}
+  .masthead,.card-body{{padding:20px 16px}}
+  .sources-panel ul{{columns:1}}
+}}
 </style>
 </head>
 <body>
 <div class="wrapper">
 
-  <!-- MASTHEAD -->
-  <div class="masthead">
-    <div class="masthead-eyebrow">TLD Group · Market Intelligence</div>
-    <div class="masthead-title">GSE Intelligence Brief</div>
-    <div class="masthead-meta">
-      <div class="meta-item">
-        <span>Date</span>
-        <strong>{now_full}</strong>
-      </div>
-      <div class="meta-item">
-        <span>Generated</span>
-        <strong>{now_time}</strong>
-      </div>
-      <div class="meta-item">
-        <span>Articles analyzed</span>
-        <strong>{len(articles)}</strong>
-      </div>
-      <div class="meta-item">
-        <span>Signals identified</span>
-        <strong>{len(signals)}</strong>
-      </div>
-    </div>
-    {f'<div class="masthead-counters">{counter_html}</div>' if counter_html else ''}
+<div class="masthead">
+  <div class="masthead-eyebrow">TLD Group · Market Intelligence</div>
+  <div class="masthead-title">GSE Intelligence Brief</div>
+  <div class="masthead-meta">
+    <div class="meta-item"><span>Date</span><strong>{now_full}</strong></div>
+    <div class="meta-item"><span>Generated</span><strong>{now_time}</strong></div>
+    <div class="meta-item"><span>Articles analyzed</span><strong>{len(articles)}</strong></div>
+    <div class="meta-item"><span>Signals</span><strong>{len(signals)}</strong></div>
+  </div>
+  {f'<div class="masthead-counters">{counter_html}</div>' if counter_html else ''}
+</div>
+
+<div class="card-body">
+
+  {trunc_banner}
+
+  {f'<div class="exec-panel"><div class="exec-panel-label">Executive summary</div>{exec_html}</div>' if exec_html else ''}
+
+  <div class="section-header"><h2>Signals</h2></div>
+  {signals_html}
+
+  {'<hr class="section-divider">' if watch_html or risk_html else ''}
+
+  {f'<div class="section-header"><h2>To watch this week</h2></div><div class="watch-panel"><div class="watch-panel-label">Key indicators</div><ol>{watch_html}</ol></div>' if watch_html else ''}
+
+  {f'<div class="risk-panel"><div class="risk-panel-label">Main risk</div><div class="risk-panel-text">{risk_html}</div></div>' if risk_html else ''}
+
+  <div class="sources-panel">
+    <div class="sources-panel-label">Monitored sources</div>
+    <ul>{sources_list}</ul>
   </div>
 
-  <!-- MAIN BODY -->
-  <div class="card-body">
+</div>
 
-    <!-- Executive Summary -->
-    {f'''
-    <div class="exec-panel">
-      <div class="exec-panel-label">Executive summary</div>
-      {exec_summary_html if exec_summary_html else '<em style="color:#475569;">No summary available.</em>'}
-    </div>
-    ''' if exec_summary_html else ''}
+<div class="page-footer">
+  GSE Intelligence Agent · Powered by DeepSeek · {now_full}
+</div>
 
-    <!-- Signals -->
-    <div class="section-header">
-      <h2>Signals</h2>
-    </div>
-    {signals_html}
-
-    {f'''
-    <hr class="section-divider">
-
-    <!-- To Watch -->
-    <div class="section-header">
-      <h2>To watch this week</h2>
-    </div>
-    <div class="watch-panel">
-      <div class="watch-panel-label">Key indicators</div>
-      <ol>
-        {watch_html}
-      </ol>
-    </div>
-
-    <!-- Main Risk -->
-    <div class="risk-panel">
-      <div class="risk-panel-label">Main risk</div>
-      <div class="risk-panel-text">{main_risk_html}</div>
-    </div>
-    ''' if watch_html or main_risk_html else ''}
-
-    <!-- Sources -->
-    <div class="sources-panel">
-      <div class="sources-panel-label">Monitored sources</div>
-      <ul>
-        {sources_list}
-      </ul>
-    </div>
-
-  </div><!-- /card-body -->
-
-  <div class="page-footer">
-    GSE Intelligence Agent · Powered by DeepSeek · {now_full}
-  </div>
-
-</div><!-- /wrapper -->
+</div>
 </body>
 </html>"""
 
-    return html
 
+# =============================================================================
+#  SAVE
+# =============================================================================
 
-# --- SAVE REPORT ------------------------------------------------------------
 def sauvegarder_rapport(rapport_html):
     dossier = Path("rapports")
     dossier.mkdir(exist_ok=True, parents=True)
@@ -1007,28 +926,67 @@ def sauvegarder_rapport(rapport_html):
     return fichier
 
 
-# --- EXECUTION ---------------------------------------------------------------
+# =============================================================================
+#  MAIN
+# =============================================================================
+
 def executer_agent():
-    log.info("Starting GSE intelligence agent")
+    log.info("=" * 60)
+    log.info("Starting GSE Intelligence Agent v3")
+    log.info("=" * 60)
     try:
         vus = charger_vus()
+
+        # 1. Collect
         tous_articles = collecter_tous_articles()
+
+        # 2. Filter
         articles_pertinents = filtrer_pertinents(tous_articles, vus)
 
-        raw_analyse = analyser_avec_deepseek(articles_pertinents) if articles_pertinents else ""
+        # 3. Enrich with body excerpts
+        if articles_pertinents:
+            articles_pertinents = enrichir_articles(articles_pertinents)
+
+        # 4. Analyze with DeepSeek
+        raw_analyse = (
+            analyser_avec_deepseek(articles_pertinents)
+            if articles_pertinents
+            else ""
+        )
+
+        # 5. Save raw output for debugging
+        Path("rapports").mkdir(exist_ok=True, parents=True)
+        Path("rapports/debug_raw.txt").write_text(raw_analyse or "", encoding="utf-8")
+        log.info("Raw DeepSeek output saved to rapports/debug_raw.txt")
+
+        # 6. Detect truncation
+        n_starts = raw_analyse.count("===SIGNAL_START===")
+        n_ends   = raw_analyse.count("===SIGNAL_END===")
+        has_sum  = "===SUMMARY_START===" in raw_analyse
+        truncated = (n_starts != n_ends) or (n_starts > 0 and not has_sum)
+
+        # 7. Parse
         signals, summary = parser_analyse(raw_analyse)
 
-        rapport_html = generer_rapport(articles_pertinents, signals, summary)
+        # 8. Generate report
+        rapport_html = generer_rapport(
+            articles_pertinents, signals, summary,
+            raw_text=raw_analyse, truncated=truncated
+        )
+
+        # 9. Save
         fichier = sauvegarder_rapport(rapport_html)
         print(f"✅ Report generated: {fichier}")
 
+        # 10. Mark articles as seen
         for a in articles_pertinents:
             vus.add(a["id"])
         sauvegarder_vus(vus)
         log.info("Done.")
 
     except Exception as e:
-        log.exception(f"Fatal error : {e}")
+        log.exception(f"Fatal error: {e}")
+        raise
 
 
 if __name__ == "__main__":
