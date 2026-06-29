@@ -314,529 +314,687 @@ def filtrer_pertinents(articles, vus):
     log.info(f"Relevant articles (GSE + macro signals + competitors): {len(nouveaux)}")
     return nouveaux
 
-# --- DEEPSEEK PROMPTS (ENGLISH) ----------------------------------------------
-SYSTEM_PROMPT_GSE = """You are an expert in the Ground Support Equipment (GSE) market in Asia-Pacific, specializing in industrial strategy and supply chain. You advise the CEO of a GSE manufacturer/lessor (TLD Group).
 
-**IMPORTANT** : Do not limit yourself to articles that only mention equipment.
-- Airport openings, traffic records, fleet orders, and airline financial results are **LEADING INDICATORS**.
-- Announcements from competitors (JBT, Textron, Guangtai, etc.) must be analyzed as threats or opportunities.
-- Translate these signals into potential equipment volumes (e.g., +5% traffic = +10 tractors).
+# =============================================================================
+#  DEEPSEEK — IMPROVED PROMPTS WITH STRUCTURED DELIMITERS
+# =============================================================================
 
-Pay special attention to:
-1. Raw material costs (steel, aluminium, lithium, semiconductors)
-2. M&A among handlers (Swissport, Menzies, Dnata)
-3. Trade policies (tariffs, Belt and Road)
-4. Environmental regulations in China
+SYSTEM_PROMPT_GSE = """You are a senior strategy analyst advising the CEO of TLD Group, a global GSE (Ground Support Equipment) manufacturer and lessor operating primarily in China and Asia-Pacific.
 
-For each major news item, evaluate the concrete impact on:
-1. Equipment demand (tractors, loaders, boarding bridges, GPUs)
-2. Input costs (impact on margins)
-3. Tenders and handling contracts
-4. Competitive positioning against challengers
+Your role: translate raw news signals into actionable commercial and industrial intelligence.
 
-Your analysis is in English, focused on commercial and industrial decisions.
-Impact level: CRITICAL / IMPORTANT / WATCH / INFO
+ANALYSIS SCOPE — do not limit yourself to articles that explicitly mention equipment:
+- Airport openings, capacity expansions, traffic records → leading demand indicators (quantify: +5% traffic ≈ +10 aircraft tractors per hub)
+- Airline fleet orders, deliveries, profitability → fleet-driven GSE procurement cycles
+- Competitor announcements (JBT, Textron, Guangtai, etc.) → competitive threats or market gaps
+- Raw material costs (steel, aluminium, lithium, semiconductors) → margin pressure signals
+- M&A among ground handlers (Swissport, Menzies, Dnata) → contract consolidation risk
+- Trade policy (tariffs, BRI) → supply chain and pricing implications
+- Environmental regulations in China → electrification timeline and diesel phase-out pace
+
+IMPACT CLASSIFICATION:
+- CRITICAL: Immediate action required within 48h (major competitor move, urgent tender, direct threat/opportunity)
+- IMPORTANT: Action required this week (significant market shift, pricing signal, client development)
+- WATCH: Monitor closely, no immediate action (emerging trend, early-stage development)
+- INFO: Background context, file for reference
+
+OUTPUT FORMAT — You must use EXACTLY this structure. Do not deviate.
+
+For each signal, output:
+===SIGNAL_START===
+SIGNAL_ID: [number, e.g. 1]
+IMPACT: [CRITICAL | IMPORTANT | WATCH | INFO]
+HEADLINE: [One sharp sentence summarizing the signal — max 15 words]
+READING: [2-3 sentences explaining what happened and why it matters for the GSE market]
+BUSINESS_IMPACT: [2-3 sentences on concrete commercial/financial consequences for TLD — volumes, margins, contracts, competition]
+ACTION: [1-2 sentences on the recommended action — specific, time-bound, named if possible]
+===SIGNAL_END===
+
+After all signals, output the closing section EXACTLY as follows:
+===SUMMARY_START===
+EXECUTIVE_SUMMARY: [4-5 sentences max. Written for an executive committee presentation. What happened, what it means, what we should do.]
+WATCH_1: [Key indicator #1 to monitor this week]
+WATCH_2: [Key indicator #2 to monitor this week]
+WATCH_3: [Key indicator #3 to monitor this week]
+MAIN_RISK: [The single biggest risk for TLD's GSE business in China this week — one sentence]
+===SUMMARY_END===
+
+Rules:
+- Write in English
+- Be specific and quantitative when possible (volumes, %, timelines)
+- No bullet points inside field values — use plain prose
+- Do not add any text outside the delimited blocks
+- If fewer than 3 signals are meaningful, still output the SUMMARY block
 """
+
+def construire_prompt_user(articles):
+    date_str = datetime.now().strftime("%d %B %Y")
+    articles_txt = ""
+    for i, a in enumerate(articles, 1):
+        articles_txt += f"\n[{i}] SOURCE: {a['source']}\n"
+        articles_txt += f"    TITLE: {a['titre']}\n"
+        articles_txt += f"    URL: {a['lien']}\n"
+        if a.get('desc'):
+            articles_txt += f"    EXCERPT: {a['desc'][:200]}\n"
+
+    return f"""GSE STRATEGIC WATCH — China / Asia-Pacific
+Date: {date_str}
+Articles to analyze: {len(articles)}
+
+{articles_txt}
+
+Analyze each article that carries a meaningful signal for TLD Group's GSE business. Skip pure noise (irrelevant articles with no connection to the GSE market or its demand drivers). Output ONLY the structured blocks defined in your instructions."""
+
 
 def analyser_avec_deepseek(articles):
     if not articles:
-        return "No significant sector information for GSE today."
+        return ""
 
     api_key = os.environ.get("DEEPSEEK_API_KEY")
     if not api_key:
         raise ValueError("DEEPSEEK_API_KEY not set")
 
     client = OpenAI(api_key=api_key, base_url="https://api.deepseek.com/v1")
-    date_str = datetime.now().strftime("%d %B %Y")
-    articles_txt = ""
-    for i, a in enumerate(articles, 1):
-        articles_txt += f"\n[{i}] Source : {a['source']}\n"
-        articles_txt += f"    Title : {a['titre']}\n"
-        articles_txt += f"    Link  : {a['lien']}\n"
-
-    prompt = (f"GSE Strategic Watch - China / Asia-Pacific — {date_str}\n"
-              f"Number of selected articles: {len(articles)}\n\n{articles_txt}\n\n"
-              "For each important piece of information:\n"
-              "1. IMPACT : CRITICAL / IMPORTANT / WATCH / INFO\n"
-              "2. SUMMARY (1-2 sentences) linked to the GSE market\n"
-              "3. BUSINESS IMPACT (e.g., cost increase, sales opportunity, competitive threat)\n"
-              "4. RECOMMENDED ACTION (contact supplier, prospect client, adapt catalogue)\n\n"
-              "Conclude with:\n"
-              "- EXECUTIVE SUMMARY (max 5 lines) for the executive committee\n"
-              "- 3 KEY INDICATORS TO WATCH this week\n"
-              "- MAIN RISK for the GSE market in China")
 
     log.info(f"Sending {len(articles)} articles to DeepSeek...")
     try:
         response = client.chat.completions.create(
             model="deepseek-chat",
-            messages=[{"role": "system", "content": SYSTEM_PROMPT_GSE},
-                      {"role": "user", "content": prompt}],
+            messages=[
+                {"role": "system", "content": SYSTEM_PROMPT_GSE},
+                {"role": "user", "content": construire_prompt_user(articles)}
+            ],
             max_tokens=4096,
-            temperature=0.3
+            temperature=0.2  # Lower temperature = more consistent formatting
         )
         return response.choices[0].message.content
     except Exception as e:
         log.error(f"DeepSeek error : {e}")
-        return "API error."
+        return ""
+
 
 # =============================================================================
-#  HTML REPORT GENERATION – MEMO STYLE
+#  PARSER — Delimiter-based (no fragile regex)
 # =============================================================================
-def markdown_to_html(text):
+
+def parser_analyse(raw_text):
+    """Parse the structured DeepSeek output into clean Python dicts."""
+    signals = []
+    summary = {
+        "executive_summary": "",
+        "watch": [],
+        "main_risk": ""
+    }
+
+    if not raw_text:
+        return signals, summary
+
+    def extract_field(block, field):
+        """Extract a named field value from a delimited block."""
+        pattern = rf'^{field}:\s*(.+?)(?=\n[A-Z_]+:|$)'
+        match = re.search(pattern, block, re.MULTILINE | re.DOTALL)
+        if match:
+            return match.group(1).strip()
+        return ""
+
+    # --- Parse signals ---
+    signal_blocks = re.findall(
+        r'===SIGNAL_START===(.*?)===SIGNAL_END===',
+        raw_text,
+        re.DOTALL
+    )
+    for block in signal_blocks:
+        signal = {
+            "id": extract_field(block, "SIGNAL_ID"),
+            "impact": extract_field(block, "IMPACT").upper() or "INFO",
+            "headline": extract_field(block, "HEADLINE"),
+            "reading": extract_field(block, "READING"),
+            "business_impact": extract_field(block, "BUSINESS_IMPACT"),
+            "action": extract_field(block, "ACTION"),
+        }
+        # Validate impact level
+        if signal["impact"] not in ("CRITICAL", "IMPORTANT", "WATCH", "INFO"):
+            signal["impact"] = "INFO"
+        signals.append(signal)
+
+    # --- Parse summary ---
+    summary_match = re.search(
+        r'===SUMMARY_START===(.*?)===SUMMARY_END===',
+        raw_text,
+        re.DOTALL
+    )
+    if summary_match:
+        block = summary_match.group(1)
+        summary["executive_summary"] = extract_field(block, "EXECUTIVE_SUMMARY")
+        summary["main_risk"] = extract_field(block, "MAIN_RISK")
+        for i in range(1, 4):
+            watch = extract_field(block, f"WATCH_{i}")
+            if watch:
+                summary["watch"].append(watch)
+
+    log.info(f"Parsed: {len(signals)} signals, summary={'yes' if summary['executive_summary'] else 'no'}")
+    return signals, summary
+
+
+# =============================================================================
+#  HTML REPORT — Clean professional design
+# =============================================================================
+
+IMPACT_CONFIG = {
+    "CRITICAL": {"label": "Critical",  "color": "#dc2626", "bg": "#fef2f2", "border": "#fecaca", "text": "#991b1b"},
+    "IMPORTANT": {"label": "Important", "color": "#d97706", "bg": "#fffbeb", "border": "#fde68a", "text": "#92400e"},
+    "WATCH":     {"label": "Watch",     "color": "#0369a1", "bg": "#f0f9ff", "border": "#bae6fd", "text": "#0c4a6e"},
+    "INFO":      {"label": "Info",      "color": "#6b7280", "bg": "#f9fafb", "border": "#e5e7eb", "text": "#374151"},
+}
+
+def md(text):
+    """Convert markdown to HTML, stripping outer <p> for inline use."""
     if not text:
         return ""
-    return markdown.markdown(text, extensions=['nl2br'])
+    html = markdown.markdown(text.strip(), extensions=['nl2br'])
+    # Remove wrapping <p> tags for short single-paragraph content
+    if html.count('<p>') == 1:
+        html = re.sub(r'^<p>(.*)</p>$', r'\1', html, flags=re.DOTALL)
+    return html
 
-def generer_rapport(articles, analyse):
-    now = datetime.now().strftime("%d %B %Y")
-    analyst = "GSE Market Intelligence"
+def generer_rapport(articles, signals, summary):
+    now_full = datetime.now().strftime("%B %d, %Y")
+    now_time = datetime.now().strftime("%H:%M")
 
-    # --- Parse analysis into blocks ---
-    parsed_blocks = []
-    executive_summary = ""
-    key_indicators = []
-    main_risk = ""
+    # Count by impact level
+    counts = {"CRITICAL": 0, "IMPORTANT": 0, "WATCH": 0, "INFO": 0}
+    for s in signals:
+        counts[s["impact"]] = counts.get(s["impact"], 0) + 1
 
-    lines = analyse.splitlines()
-    current_block_lines = []
-    in_summary = False
-    summary_lines = []
+    # Map signals to source articles (by index)
+    def get_article(idx):
+        if idx < len(articles):
+            return articles[idx]
+        return None
 
-    for line in lines:
-        if line.strip().startswith('- EXECUTIVE SUMMARY'):
-            in_summary = True
-            if current_block_lines:
-                parsed_blocks.append('\n'.join(current_block_lines))
-                current_block_lines = []
-            continue
-        if line.strip().startswith('- 3 KEY INDICATORS'):
-            if in_summary:
-                summary_lines = current_block_lines
-                current_block_lines = []
-                in_summary = False
-            continue
-        if line.strip().startswith('- MAIN RISK'):
-            continue
+    # --- Build signal cards HTML ---
+    signals_html = ""
+    if not signals:
+        signals_html = '<p style="color:#6b7280; font-style:italic; padding:24px 0;">No significant signals identified today.</p>'
+    else:
+        for i, sig in enumerate(signals):
+            cfg = IMPACT_CONFIG.get(sig["impact"], IMPACT_CONFIG["INFO"])
+            article = get_article(i)
+            source_block = ""
+            if article:
+                titre_esc = article['titre'].replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;')
+                lien = article.get('lien', '#')
+                source_nom = article['source']
+                source_block = f'''
+                <div class="signal-source">
+                    <span class="source-label">Source</span>
+                    <a href="{lien}" target="_blank" rel="noopener">{titre_esc}</a>
+                    <span class="source-name">— {source_nom}</span>
+                </div>'''
 
-        if in_summary:
-            summary_lines.append(line)
-        elif line.strip().startswith('[') and re.match(r'^\[\d+\]', line.strip()):
-            if current_block_lines:
-                parsed_blocks.append('\n'.join(current_block_lines))
-                current_block_lines = []
-            current_block_lines.append(line)
-        else:
-            if current_block_lines or line.strip():
-                current_block_lines.append(line)
+            signals_html += f'''
+            <div class="signal-card" data-impact="{sig['impact'].lower()}">
+                <div class="signal-card-header" style="border-left: 4px solid {cfg['color']};">
+                    <div class="signal-badge" style="background:{cfg['bg']}; color:{cfg['text']}; border:1px solid {cfg['border']};">
+                        {cfg['label']}
+                    </div>
+                    <h3 class="signal-headline">{md(sig['headline'])}</h3>
+                </div>
+                <div class="signal-body">
+                    <div class="signal-section">
+                        <div class="signal-section-label">Reading</div>
+                        <div class="signal-section-text">{md(sig['reading'])}</div>
+                    </div>
+                    <div class="signal-section">
+                        <div class="signal-section-label">Business impact</div>
+                        <div class="signal-section-text">{md(sig['business_impact'])}</div>
+                    </div>
+                    <div class="signal-section signal-action">
+                        <div class="signal-section-label">Recommended action</div>
+                        <div class="signal-section-text">{md(sig['action'])}</div>
+                    </div>
+                    {source_block}
+                </div>
+            </div>'''
 
-    if current_block_lines and not in_summary:
-        if any('EXECUTIVE SUMMARY' in l for l in current_block_lines):
-            summary_lines.extend(current_block_lines)
-        else:
-            parsed_blocks.append('\n'.join(current_block_lines))
+    # --- Build watch indicators HTML ---
+    watch_html = ""
+    for w in summary.get("watch", []):
+        watch_html += f'<li>{md(w)}</li>'
 
-    def extract_block_info(block):
-        impact = "INFO"
-        summary = ""
-        biz_impact = ""
-        action = ""
-        impact_match = re.search(r'IMPACT\s*:\s*(CRITICAL|IMPORTANT|WATCH|INFO)', block, re.IGNORECASE)
-        if impact_match:
-            impact = impact_match.group(1).upper()
-        summary_match = re.search(r'SUMMARY\s*\([^)]*\)\s*:\s*(.*?)(?=\d\.\s*BUSINESS IMPACT|$)', block, re.DOTALL | re.IGNORECASE)
-        if summary_match:
-            summary = summary_match.group(1).strip()
-        biz_match = re.search(r'BUSINESS IMPACT\s*:\s*(.*?)(?=\d\.\s*RECOMMENDED ACTION|$)', block, re.DOTALL | re.IGNORECASE)
-        if biz_match:
-            biz_impact = biz_match.group(1).strip()
-        action_match = re.search(r'RECOMMENDED ACTION\s*:\s*(.*?)(?=\[\d+\]|$)', block, re.DOTALL | re.IGNORECASE)
-        if action_match:
-            action = action_match.group(1).strip()
-        return {'impact': impact, 'summary': summary, 'business_impact': biz_impact, 'recommended_action': action}
+    # --- Build impact counter pills ---
+    counter_html = ""
+    for level in ["CRITICAL", "IMPORTANT", "WATCH", "INFO"]:
+        c = counts.get(level, 0)
+        if c > 0:
+            cfg = IMPACT_CONFIG[level]
+            counter_html += f'<span class="counter-pill" style="background:{cfg["bg"]}; color:{cfg["text"]}; border:1px solid {cfg["border"]};">{c} {cfg["label"]}</span>'
 
-    block_infos = [extract_block_info(b) for b in parsed_blocks if b.strip()]
+    # --- Sources list ---
+    sources_list = "".join(f'<li>{s["nom"]}</li>' for s in SOURCES)
 
-    summary_text = "\n".join(summary_lines).strip()
-    exec_summary_match = re.search(r'- EXECUTIVE SUMMARY\s*(.*?)(?=- 3 KEY INDICATORS|$)', summary_text, re.DOTALL)
-    if exec_summary_match:
-        executive_summary = exec_summary_match.group(1).strip()
-    indicators_match = re.search(r'- 3 KEY INDICATORS TO WATCH this week\s*(.*?)(?=- MAIN RISK|$)', summary_text, re.DOTALL)
-    if indicators_match:
-        key_indicators = [i.strip() for i in indicators_match.group(1).strip().split('\n') if i.strip()]
-    risk_match = re.search(r'- MAIN RISK\s*(.*?)$', summary_text, re.DOTALL)
-    if risk_match:
-        main_risk = risk_match.group(1).strip()
+    exec_summary_html = md(summary.get("executive_summary", ""))
+    main_risk_html = md(summary.get("main_risk", ""))
 
-    if not block_infos and not executive_summary:
-        block_infos = [{'impact': 'INFO', 'summary': '', 'business_impact': '', 'recommended_action': '', 'raw': analyse}]
-        executive_summary = ""
-
-    # Convert Markdown for all fields
-    for b in block_infos:
-        b['summary'] = markdown_to_html(b.get('summary', ''))
-        b['business_impact'] = markdown_to_html(b.get('business_impact', ''))
-        b['recommended_action'] = markdown_to_html(b.get('recommended_action', ''))
-        if 'raw' in b:
-            b['raw'] = markdown_to_html(b['raw'])
-
-    exec_summary_html = markdown_to_html(executive_summary)
-    main_risk_html = markdown_to_html(main_risk)
-    key_indicators_html = [markdown_to_html(ind) for ind in key_indicators]
-
-    impact_icons = {'CRITICAL': '🚨', 'IMPORTANT': '⚠️', 'WATCH': '👀', 'INFO': 'ℹ️'}
-    impact_counts = {}
-    for b in block_infos:
-        imp = b.get('impact', 'INFO')
-        impact_counts[imp] = impact_counts.get(imp, 0) + 1
-
-    # --- Build HTML (memo style) ---
     html = f"""<!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aviation Intelligence Memorandum - {now}</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
-    <style>
-        * {{ margin: 0; padding: 0; box-sizing: border-box; }}
-        body {{
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: #f5f7fa;
-            color: #1e293b;
-            padding: 40px 20px;
-            line-height: 1.7;
-        }}
-        .container {{
-            max-width: 1000px;
-            margin: 0 auto;
-            background: white;
-            border-radius: 20px;
-            padding: 40px 45px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.06);
-        }}
-        .memo-header {{
-            border-bottom: 3px solid #e2e8f0;
-            padding-bottom: 16px;
-            margin-bottom: 24px;
-        }}
-        .memo-title {{
-            font-size: 28px;
-            font-weight: 700;
-            letter-spacing: -0.02em;
-            color: #0f172a;
-            margin-bottom: 4px;
-        }}
-        .memo-meta {{
-            font-size: 15px;
-            color: #475569;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 20px 40px;
-        }}
-        .memo-meta span {{
-            background: #f1f5f9;
-            padding: 2px 12px;
-            border-radius: 30px;
-        }}
-        .section-title {{
-            font-size: 20px;
-            font-weight: 600;
-            margin: 36px 0 16px 0;
-            padding-bottom: 6px;
-            border-bottom: 2px solid #e2e8f0;
-        }}
-        .stats {{
-            display: flex;
-            flex-wrap: wrap;
-            gap: 12px 24px;
-            background: #f8fafc;
-            border-radius: 12px;
-            padding: 14px 20px;
-            margin-bottom: 20px;
-            font-size: 14px;
-        }}
-        .stats strong {{ font-weight: 600; }}
-        .impact-badge {{
-            display: inline-block;
-            padding: 2px 12px;
-            border-radius: 30px;
-            font-weight: 600;
-            font-size: 13px;
-            color: white;
-            background: #94a3b8;
-        }}
-        .impact-badge.critical {{ background: #dc2626; }}
-        .impact-badge.important {{ background: #f59e0b; }}
-        .impact-badge.watch {{ background: #eab308; color: #0f172a; }}
-        .impact-badge.info {{ background: #3b82f6; }}
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GSE Intelligence Brief — {now_full}</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after {{ box-sizing: border-box; margin: 0; padding: 0; }}
 
-        .signal-card {{
-            border-left: 6px solid #94a3b8;
-            background: #fafcff;
-            border-radius: 12px;
-            padding: 20px 24px;
-            margin-bottom: 24px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.04);
-            transition: box-shadow 0.2s;
-        }}
-        .signal-card:hover {{ box-shadow: 0 6px 16px rgba(0,0,0,0.06); }}
-        .signal-card.impact-critical {{ border-left-color: #dc2626; }}
-        .signal-card.impact-important {{ border-left-color: #f59e0b; }}
-        .signal-card.impact-watch {{ border-left-color: #eab308; }}
-        .signal-card.impact-info {{ border-left-color: #3b82f6; }}
+  :root {{
+    --ink: #0f172a;
+    --ink-2: #334155;
+    --ink-3: #64748b;
+    --ink-4: #94a3b8;
+    --surface: #ffffff;
+    --surface-1: #f8fafc;
+    --surface-2: #f1f5f9;
+    --border: #e2e8f0;
+    --border-2: #cbd5e1;
+    --accent: #0f172a;
+    --radius: 8px;
+    --radius-lg: 12px;
+  }}
 
-        .signal-header {{
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            flex-wrap: wrap;
-            margin-bottom: 8px;
-        }}
-        .signal-label {{
-            font-weight: 600;
-            font-size: 16px;
-            color: #0f172a;
-        }}
-        .signal-reading {{
-            margin-top: 4px;
-        }}
-        .signal-reading p {{
-            margin: 0.4em 0;
-        }}
-        .signal-reading strong {{
-            font-weight: 600;
-        }}
-        .impact-detail {{
-            margin-top: 10px;
-            padding-top: 10px;
-            border-top: 1px dashed #e2e8f0;
-        }}
-        .impact-detail p {{
-            margin: 0.3em 0;
-        }}
-        .impact-detail ul, .impact-detail ol {{
-            margin: 0.3em 0 0.3em 1.5em;
-        }}
-        .source-link {{
-            margin-top: 8px;
-            font-size: 14px;
-            color: #475569;
-        }}
-        .source-link a {{
-            color: #1e40af;
-            text-decoration: none;
-            font-weight: 500;
-        }}
-        .source-link a:hover {{ text-decoration: underline; }}
-        .back-link {{
-            font-size: 13px;
-            color: #64748b;
-            text-decoration: none;
-            display: inline-block;
-            margin-top: 10px;
-        }}
-        .back-link:hover {{ color: #1e40af; }}
+  body {{
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: #f0f2f5;
+    color: var(--ink);
+    line-height: 1.6;
+    padding: 32px 16px 64px;
+  }}
 
-        .exec-summary {{
-            background: #dbeafe;
-            border-left: 6px solid #2563eb;
-            border-radius: 12px;
-            padding: 16px 24px;
-            margin-bottom: 28px;
-        }}
-        .exec-summary h3 {{ font-size: 18px; font-weight: 600; margin-bottom: 4px; color: #1e3a8a; }}
-        .key-indicators {{
-            background: #fef3c7;
-            border-left: 6px solid #d97706;
-            border-radius: 12px;
-            padding: 16px 24px;
-            margin-bottom: 28px;
-        }}
-        .key-indicators h3 {{ font-size: 18px; font-weight: 600; margin-bottom: 4px; color: #92400e; }}
-        .key-indicators ul {{ list-style: disc; margin-left: 20px; }}
-        .main-risk {{
-            background: #fee2e2;
-            border-left: 6px solid #dc2626;
-            border-radius: 12px;
-            padding: 16px 24px;
-            margin-bottom: 28px;
-        }}
-        .main-risk h3 {{ font-size: 18px; font-weight: 600; margin-bottom: 4px; color: #991b1b; }}
-        .sources-footer {{
-            margin-top: 32px;
-            padding: 16px 20px;
-            background: #f8fafc;
-            border-radius: 12px;
-            border: 1px solid #e2e8f0;
-        }}
-        .sources-footer h3 {{
-            font-size: 16px;
-            font-weight: 600;
-            margin-bottom: 6px;
-            color: #0f172a;
-        }}
-        .sources-footer ul {{
-            list-style: none;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 6px 16px;
-            margin: 0;
-            padding: 0;
-        }}
-        .sources-footer li {{
-            font-size: 14px;
-            color: #475569;
-        }}
-        .sources-footer li::before {{
-            content: "•";
-            margin-right: 6px;
-            color: #94a3b8;
-        }}
+  /* ── LAYOUT ── */
+  .wrapper {{
+    max-width: 900px;
+    margin: 0 auto;
+  }}
 
-        .footer {{
-            margin-top: 48px;
-            font-size: 13px;
-            color: #94a3b8;
-            text-align: center;
-            border-top: 1px solid #e2e8f0;
-            padding-top: 20px;
-        }}
-        @media (max-width: 640px) {{
-            .container {{ padding: 20px 16px; }}
-            .memo-meta {{ flex-direction: column; gap: 8px; }}
-        }}
-    </style>
+  /* ── MASTHEAD ── */
+  .masthead {{
+    background: var(--ink);
+    color: white;
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+    padding: 28px 36px 24px;
+  }}
+  .masthead-eyebrow {{
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #94a3b8;
+    margin-bottom: 8px;
+  }}
+  .masthead-title {{
+    font-size: 22px;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    color: white;
+    margin-bottom: 12px;
+  }}
+  .masthead-meta {{
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    flex-wrap: wrap;
+  }}
+  .meta-item {{
+    font-size: 13px;
+    color: #94a3b8;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }}
+  .meta-item strong {{ color: #e2e8f0; font-weight: 500; }}
+  .masthead-counters {{
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid #1e293b;
+  }}
+  .counter-pill {{
+    font-size: 11px;
+    font-weight: 500;
+    padding: 3px 10px;
+    border-radius: 20px;
+    letter-spacing: 0.02em;
+  }}
+
+  /* ── MAIN CARD BODY ── */
+  .card-body {{
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-top: none;
+    border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+    padding: 36px;
+  }}
+
+  /* ── SECTION HEADER ── */
+  .section-header {{
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border);
+  }}
+  .section-header h2 {{
+    font-size: 13px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--ink-3);
+  }}
+  .section-divider {{
+    margin: 36px 0;
+    border: none;
+    border-top: 1px solid var(--border);
+  }}
+
+  /* ── EXECUTIVE SUMMARY ── */
+  .exec-panel {{
+    background: var(--ink);
+    border-radius: var(--radius-lg);
+    padding: 24px 28px;
+    margin-bottom: 32px;
+    color: #e2e8f0;
+    font-size: 15px;
+    line-height: 1.75;
+  }}
+  .exec-panel-label {{
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #64748b;
+    margin-bottom: 10px;
+  }}
+
+  /* ── SIGNAL CARDS ── */
+  .signal-card {{
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    margin-bottom: 16px;
+    overflow: hidden;
+    transition: box-shadow 0.15s;
+  }}
+  .signal-card:hover {{ box-shadow: 0 4px 12px rgba(0,0,0,0.06); }}
+  .signal-card-header {{
+    padding: 16px 20px;
+    background: var(--surface-1);
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+  }}
+  .signal-badge {{
+    font-size: 11px;
+    font-weight: 600;
+    padding: 3px 9px;
+    border-radius: 20px;
+    white-space: nowrap;
+    letter-spacing: 0.03em;
+    margin-top: 2px;
+    flex-shrink: 0;
+  }}
+  .signal-headline {{
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--ink);
+    line-height: 1.4;
+  }}
+  .signal-headline p {{ margin: 0; }}
+  .signal-body {{
+    padding: 20px;
+    display: grid;
+    gap: 16px;
+  }}
+  .signal-section {{}}
+  .signal-section-label {{
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--ink-4);
+    margin-bottom: 4px;
+  }}
+  .signal-section-text {{
+    font-size: 14px;
+    color: var(--ink-2);
+    line-height: 1.65;
+  }}
+  .signal-section-text p {{ margin: 0; }}
+  .signal-action .signal-section-text {{
+    color: var(--ink);
+    font-weight: 500;
+  }}
+  .signal-source {{
+    padding-top: 12px;
+    border-top: 1px dashed var(--border);
+    font-size: 12px;
+    color: var(--ink-4);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    align-items: center;
+  }}
+  .source-label {{
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-size: 10px;
+    color: var(--ink-4);
+    margin-right: 4px;
+  }}
+  .signal-source a {{
+    color: #2563eb;
+    text-decoration: none;
+    font-weight: 500;
+  }}
+  .signal-source a:hover {{ text-decoration: underline; }}
+  .source-name {{ color: var(--ink-4); }}
+
+  /* ── WATCH & RISK PANELS ── */
+  .watch-panel {{
+    background: #fffbeb;
+    border: 1px solid #fde68a;
+    border-radius: var(--radius-lg);
+    padding: 20px 24px;
+    margin-bottom: 16px;
+  }}
+  .watch-panel-label {{
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #92400e;
+    margin-bottom: 12px;
+  }}
+  .watch-panel ol {{
+    padding-left: 20px;
+    display: grid;
+    gap: 6px;
+  }}
+  .watch-panel li {{
+    font-size: 14px;
+    color: #78350f;
+    line-height: 1.5;
+  }}
+  .watch-panel li p {{ margin: 0; }}
+  .risk-panel {{
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    border-radius: var(--radius-lg);
+    padding: 20px 24px;
+  }}
+  .risk-panel-label {{
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #991b1b;
+    margin-bottom: 8px;
+  }}
+  .risk-panel-text {{
+    font-size: 14px;
+    color: #7f1d1d;
+    line-height: 1.6;
+    font-weight: 500;
+  }}
+  .risk-panel-text p {{ margin: 0; }}
+
+  /* ── SOURCES FOOTER ── */
+  .sources-panel {{
+    background: var(--surface-1);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px 20px;
+    margin-top: 36px;
+  }}
+  .sources-panel-label {{
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--ink-4);
+    margin-bottom: 10px;
+  }}
+  .sources-panel ul {{
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 0;
+    column-gap: 24px;
+    columns: 2;
+  }}
+  .sources-panel li {{
+    font-size: 12px;
+    color: var(--ink-3);
+    break-inside: avoid;
+  }}
+  .sources-panel li::before {{
+    content: "·";
+    margin-right: 6px;
+    color: var(--ink-4);
+  }}
+
+  /* ── FOOTER ── */
+  .page-footer {{
+    text-align: center;
+    font-size: 11px;
+    color: var(--ink-4);
+    margin-top: 24px;
+    font-family: 'IBM Plex Mono', monospace;
+    letter-spacing: 0.04em;
+  }}
+
+  /* ── EMPTY STATE ── */
+  .no-news {{
+    text-align: center;
+    padding: 48px 0;
+    color: var(--ink-3);
+    font-size: 14px;
+  }}
+
+  @media (max-width: 600px) {{
+    body {{ padding: 12px 8px 48px; }}
+    .masthead, .card-body {{ padding: 20px 16px; }}
+    .sources-panel ul {{ columns: 1; }}
+  }}
+</style>
 </head>
 <body>
-    <div class="container">
-        <div class="memo-header">
-            <div class="memo-title">AVIATION INTELLIGENCE MEMORANDUM</div>
-            <div class="memo-meta">
-                <span>📅 {now}</span>
-                <span>🧑‍💼 Analyst: {analyst}</span>
-            </div>
-        </div>
+<div class="wrapper">
 
-        <!-- Executive Summary (moved to the top) -->
-        <div id="exec-summary" class="exec-summary">
-            <h3>📌 Executive Summary</h3>
-            {exec_summary_html if exec_summary_html else '<p>No executive summary provided.</p>'}
-            <a href="#" class="back-link">↑ Back to top</a>
-        </div>
-
-        <!-- Stats & quick links -->
-        <div class="stats">
-            <span><strong>{len(articles)}</strong> relevant article(s)</span>
-            <span><strong>{len(SOURCES)}</strong> sources monitored</span>
-            <span>Impact levels: 
-                {''.join(f'<span class="impact-badge {k.lower()}">{v}</span> ' for k,v in impact_counts.items())}
-            </span>
-        </div>
-
-        <div style="margin-bottom:24px; font-size:14px; background:#f8fafc; padding:12px 16px; border-radius:10px;">
-            <strong>📑 Jump to:</strong> 
-            <a href="#signals" style="color:#1e40af; text-decoration:none; margin:0 8px;">Signals</a>
-            <span style="color:#94a3b8;">|</span>
-            <a href="#watch" style="color:#1e40af; text-decoration:none; margin:0 8px;">To Watch</a>
-            <span style="color:#94a3b8;">|</span>
-            <a href="#risk" style="color:#1e40af; text-decoration:none; margin:0 8px;">Main Risk</a>
-        </div>
-
-        <!-- Signals -->
-        <h2 class="section-title" id="signals">📡 Signals</h2>
-    """
-    if not block_infos:
-        html += "<p>No signals identified today.</p>"
-    else:
-        for idx, block in enumerate(block_infos):
-            impact = block.get('impact', 'INFO')
-            summary = block.get('summary', '')
-            biz = block.get('business_impact', '')
-            action = block.get('recommended_action', '')
-            impact_text = ""
-            if biz:
-                impact_text += f"<p><strong>Business Impact:</strong> {biz}</p>"
-            if action:
-                impact_text += f"<p><strong>Recommended Action:</strong> {action}</p>"
-            if not impact_text and 'raw' in block:
-                impact_text = block['raw']
-
-            article = articles[idx] if idx < len(articles) else None
-            source_html = ""
-            if article:
-                source_nom = article['source']
-                titre_esc = article['titre'].replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;')
-                lien = article.get('lien', '#')
-                source_html = f'<div class="source-link"><strong>Source:</strong> <a href="{lien}" target="_blank">{titre_esc}</a> ({source_nom})</div>'
-            else:
-                source_html = '<div class="source-link"><strong>Source:</strong> Not available</div>'
-
-            html += f"""
-        <div class="signal-card impact-{impact.lower()}" id="signal-{idx}">
-            <div class="signal-header">
-                <span class="impact-badge {impact.lower()}">{impact_icons.get(impact, '')} {impact}</span>
-                <span class="signal-label">Signal #{idx+1}</span>
-            </div>
-            <div class="signal-reading">
-                <strong>READING:</strong> {summary if summary else 'No summary provided.'}
-            </div>
-            <div class="impact-detail">
-                <strong>CFO IMPACT:</strong>
-                {impact_text if impact_text else '<p>No specific impact details.</p>'}
-            </div>
-            {source_html}
-            <a href="#signals" class="back-link">↑ Back to top</a>
-        </div>
-        """
-
-    # Key Indicators
-    if key_indicators_html:
-        html += """
-        <div id="watch" class="key-indicators">
-            <h3>📈 TO WATCH</h3>
-            <ul>
-        """
-        for ind in key_indicators_html:
-            html += f"<li>{ind}</li>"
-        html += """
-            </ul>
-            <a href="#" class="back-link">↑ Back to top</a>
-        </div>
-        """
-
-    # Main Risk
-    if main_risk_html:
-        html += f"""
-        <div id="risk" class="main-risk">
-            <h3>⚠️ MAIN RISK</h3>
-            {main_risk_html}
-            <a href="#" class="back-link">↑ Back to top</a>
-        </div>
-        """
-
-    # --- Monitored Sources (added at the bottom) ---
-    html += """
-        <div class="sources-footer">
-            <h3>📋 Monitored Sources</h3>
-            <ul>
-    """
-    for s in SOURCES:
-        html += f"<li>{s['nom']}</li>"
-    html += """
-            </ul>
-        </div>
-    """
-
-    html += """
-        <div class="footer">
-            Generated by GSE Intelligence Agent · Powered by DeepSeek
-        </div>
+  <!-- MASTHEAD -->
+  <div class="masthead">
+    <div class="masthead-eyebrow">TLD Group · Market Intelligence</div>
+    <div class="masthead-title">GSE Intelligence Brief</div>
+    <div class="masthead-meta">
+      <div class="meta-item">
+        <span>Date</span>
+        <strong>{now_full}</strong>
+      </div>
+      <div class="meta-item">
+        <span>Generated</span>
+        <strong>{now_time}</strong>
+      </div>
+      <div class="meta-item">
+        <span>Articles analyzed</span>
+        <strong>{len(articles)}</strong>
+      </div>
+      <div class="meta-item">
+        <span>Signals identified</span>
+        <strong>{len(signals)}</strong>
+      </div>
     </div>
+    {f'<div class="masthead-counters">{counter_html}</div>' if counter_html else ''}
+  </div>
+
+  <!-- MAIN BODY -->
+  <div class="card-body">
+
+    <!-- Executive Summary -->
+    {f'''
+    <div class="exec-panel">
+      <div class="exec-panel-label">Executive summary</div>
+      {exec_summary_html if exec_summary_html else '<em style="color:#475569;">No summary available.</em>'}
+    </div>
+    ''' if exec_summary_html else ''}
+
+    <!-- Signals -->
+    <div class="section-header">
+      <h2>Signals</h2>
+    </div>
+    {signals_html}
+
+    {f'''
+    <hr class="section-divider">
+
+    <!-- To Watch -->
+    <div class="section-header">
+      <h2>To watch this week</h2>
+    </div>
+    <div class="watch-panel">
+      <div class="watch-panel-label">Key indicators</div>
+      <ol>
+        {watch_html}
+      </ol>
+    </div>
+
+    <!-- Main Risk -->
+    <div class="risk-panel">
+      <div class="risk-panel-label">Main risk</div>
+      <div class="risk-panel-text">{main_risk_html}</div>
+    </div>
+    ''' if watch_html or main_risk_html else ''}
+
+    <!-- Sources -->
+    <div class="sources-panel">
+      <div class="sources-panel-label">Monitored sources</div>
+      <ul>
+        {sources_list}
+      </ul>
+    </div>
+
+  </div><!-- /card-body -->
+
+  <div class="page-footer">
+    GSE Intelligence Agent · Powered by DeepSeek · {now_full}
+  </div>
+
+</div><!-- /wrapper -->
 </body>
-</html>
-    """
+</html>"""
+
     return html
+
 
 # --- SAVE REPORT ------------------------------------------------------------
 def sauvegarder_rapport(rapport_html):
@@ -846,24 +1004,32 @@ def sauvegarder_rapport(rapport_html):
     with open(fichier, "w", encoding="utf-8") as f:
         f.write(rapport_html)
     log.info(f"Report saved: {fichier.absolute()}")
+    return fichier
+
 
 # --- EXECUTION ---------------------------------------------------------------
 def executer_agent():
-    log.info("Starting GSE + competitors + market signals intelligence agent (HTML/EN + TOC)")
+    log.info("Starting GSE intelligence agent")
     try:
         vus = charger_vus()
         tous_articles = collecter_tous_articles()
         articles_pertinents = filtrer_pertinents(tous_articles, vus)
-        analyse = analyser_avec_deepseek(articles_pertinents) if articles_pertinents else "No relevant information today."
-        rapport_html = generer_rapport(articles_pertinents, analyse)
-        sauvegarder_rapport(rapport_html)
-        print(f"✅ HTML report generated: rapports/gse_veille_{datetime.now().strftime('%Y%m%d_%H%M')}.html")
+
+        raw_analyse = analyser_avec_deepseek(articles_pertinents) if articles_pertinents else ""
+        signals, summary = parser_analyse(raw_analyse)
+
+        rapport_html = generer_rapport(articles_pertinents, signals, summary)
+        fichier = sauvegarder_rapport(rapport_html)
+        print(f"✅ Report generated: {fichier}")
+
         for a in articles_pertinents:
             vus.add(a["id"])
         sauvegarder_vus(vus)
         log.info("Done.")
+
     except Exception as e:
         log.exception(f"Fatal error : {e}")
+
 
 if __name__ == "__main__":
     executer_agent()
