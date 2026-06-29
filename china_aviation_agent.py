@@ -481,127 +481,146 @@ def enrichir_articles(articles):
 
 
 # =============================================================================
-#  DEEPSEEK WEB SEARCH — competitor & GSE-specific queries
-#  Bypasses the IP-blocking problem: DeepSeek searches from Chinese servers,
-#  reaching sources (Guangtai, Chinese trade press) that block GitHub Actions
-#  US runners. Runs independently of the scraper pipeline.
+#  DEEPSEEK COMPETITOR BRIEF — no web search tool needed
+#
+#  DeepSeek's training data includes Chinese trade press, manufacturer press
+#  releases, and industry publications (CARNOC, 民航资源网, etc.) that GitHub
+#  Actions US runners cannot scrape due to IP blocking.
+#
+#  This function asks DeepSeek to report on competitor activity from its
+#  training knowledge. Not real-time, but covers structural intelligence
+#  (product lines, positioning, recent launches) that changes slowly and
+#  is invisible to the scraper pipeline.
+#
+#  Runs once per week (Monday) to avoid redundant daily API calls.
+#  Results are injected as synthetic articles into the filtering pipeline
+#  so DeepSeek's main analysis call sees them alongside scraped content.
 # =============================================================================
 
-# Queries sent to DeepSeek web search each run.
-# Format: (query_string, language_hint)
-# Keep to ≤8 queries — each costs a separate API call.
-COMPETITOR_SEARCH_QUERIES = [
-    # Guangtai — primary Chinese rival, Weihai-based
-    ("威海广泰 航空地面设备 新产品 最新消息", "zh"),
-    ("广泰 机场牵引车 电动GSE 2026", "zh"),
-    # CIMC Tianda — second major Chinese rival
-    ("中集天达 地面支持设备 新闻 2026", "zh"),
-    # Chinese GSE market broadly — catches smaller competitors
-    ("中国机场特种车 地面保障设备 招标 采购 2026", "zh"),
-    # Western competitors in APAC
-    ("JBT Corporation GSE Asia Pacific 2026", "en"),
-    ("Textron GSE China airport ground support 2026", "en"),
-    # Electrification / regulation signal
-    ("中国机场 电动地勤设备 禁柴油 政策 2026", "zh"),
-    # Ground handler M&A
-    ("Swissport Menzies ground handling China contract 2026", "en"),
-]
+COMPETITOR_BRIEF_PROMPT = """You are a GSE (Ground Support Equipment) market intelligence analyst 
+specializing in the Chinese and Asia-Pacific market.
+
+Based on your training knowledge of the Chinese aviation ground support equipment 
+industry, provide a competitive intelligence brief on the following manufacturers.
+Focus on information relevant to TLD Group (Alvest subsidiary), a Western GSE 
+manufacturer competing in China.
+
+For each company below, report what you know about:
+- Their current main product lines competing with TLD
+- Any recent product launches, contract wins, or strategic moves
+- Their pricing strategy and market positioning vs TLD
+- Their geographic focus within China and export ambitions
+
+Companies to cover:
+1. 威海广泰航空科技 (Weihai Guangtai Aviation Technology) — ticker: primary rival
+2. 中集天达控股 (CIMC Tianda Holdings)
+3. 江苏天一航空工业 (Jiangsu Tianyi Aviation Industry)
+4. Any other Chinese GSE manufacturers you have significant knowledge about
+
+Return ONLY a JSON array. Each element must have exactly these fields:
+  "company_cn": Chinese company name
+  "company_en": English name  
+  "products": main products competing with TLD (one sentence)
+  "recent": most notable recent activity or development you know about
+  "positioning": how they position vs TLD on price/quality/service
+  "threat": "HIGH", "MEDIUM", or "LOW" for TLD's China business
+  "confidence": "HIGH", "MEDIUM", or "LOW" — your confidence in this information
+
+Return ONLY the JSON array. No markdown fences, no preamble, no explanation."""
 
 
-def rechercher_concurrents_deepseek():
-    """Query DeepSeek's web search for competitor and GSE-specific news.
+def synthese_concurrents_deepseek():
+    """Ask DeepSeek for a competitor brief using its training knowledge.
 
-    DeepSeek runs searches from its own infrastructure (China-accessible),
-    bypassing the IP blocks that prevent GitHub Actions runners from reaching
-    Chinese aviation and industry news sites.
-
-    Returns a list of article dicts in the same format as the scraper output,
-    ready to be merged into tous_articles before filtering.
+    Only runs on Mondays to avoid redundant daily calls — competitor
+    intelligence changes slowly. On other days returns an empty list.
     """
+    # Only run on Mondays (weekday 0)
+    if datetime.now().weekday() != 0:
+        log.info("Competitor brief: skipping (runs Mondays only)")
+        return []
+
     api_key = os.environ.get("DEEPSEEK_API_KEY")
     if not api_key:
-        log.warning("DEEPSEEK_API_KEY not set — skipping competitor web search.")
+        log.warning("DEEPSEEK_API_KEY not set — skipping competitor brief.")
         return []
 
     client = OpenAI(api_key=api_key, base_url="https://api.deepseek.com/v1")
-    found  = []
-    seen_urls = set()
+    log.info("Requesting competitor intelligence brief from DeepSeek...")
 
-    for query, lang in COMPETITOR_SEARCH_QUERIES:
-        instruction = (
-            f'Search the web for: {query}\n\n'
-            'Return results as a JSON array. Each item must have exactly these fields:\n'
-            '  "title": article headline (string)\n'
-            '  "url": full URL (string)\n'
-            '  "snippet": 1-2 sentence summary of the article (string)\n'
-            'Return ONLY the JSON array. No markdown, no preamble, no explanation.\n'
-            'If no relevant results found, return an empty array: []'
+    try:
+        response = client.chat.completions.create(
+            model="deepseek-chat",
+            messages=[{"role": "user", "content": COMPETITOR_BRIEF_PROMPT}],
+            max_tokens=2000,
+            temperature=0.3,
         )
-        try:
-            response = client.chat.completions.create(
-                model="deepseek-chat",
-                messages=[{"role": "user", "content": instruction}],
-                tools=[{"type": "web_search_20250305", "name": "web_search"}],
-                max_tokens=1500,
-                temperature=0.1,
-            )
 
-            # Extract text from response (content may be string or list of blocks)
-            content = response.choices[0].message.content
-            if isinstance(content, list):
-                text = "".join(
-                    block.text for block in content
-                    if hasattr(block, "text") and block.text
-                )
-            else:
-                text = content or ""
+        text = response.choices[0].message.content or ""
+        # Strip markdown fences if present
+        text = re.sub(r"```(?:json)?|```", "", text).strip()
 
-            # Strip markdown fences if present
-            text = re.sub(r"```(?:json)?|```", "", text).strip()
+        # Extract JSON array even if surrounded by stray text
+        array_match = re.search(r"\[.*\]", text, re.DOTALL)
+        if not array_match:
+            log.warning("Competitor brief: no JSON array found in response")
+            log.debug(f"Raw response: {text[:500]}")
+            return []
 
-            # Find the JSON array even if there's surrounding text
-            array_match = re.search(r"\[.*\]", text, re.DOTALL)
-            if not array_match:
-                log.debug(f"No JSON array in DeepSeek search response for: {query}")
+        competitors = json.loads(array_match.group(0))
+        if not isinstance(competitors, list):
+            log.warning("Competitor brief: response is not a JSON array")
+            return []
+
+        articles = []
+        for c in competitors:
+            company    = c.get("company_en") or c.get("company_cn", "Unknown")
+            products   = c.get("products", "")
+            recent     = c.get("recent", "")
+            positioning = c.get("positioning", "")
+            threat     = c.get("threat", "MEDIUM")
+            confidence = c.get("confidence", "MEDIUM")
+
+            # Skip low-confidence entries to avoid hallucinated signal noise
+            if confidence == "LOW":
+                log.debug(f"Competitor brief: skipping {company} (low confidence)")
                 continue
 
-            results = json.loads(array_match.group(0))
-            if not isinstance(results, list):
-                continue
+            # Build a rich description that will survive keyword filtering
+            # and give DeepSeek's main analysis call good context
+            desc = (
+                f"Products competing with TLD: {products}. "
+                f"Recent activity: {recent}. "
+                f"Positioning vs TLD: {positioning}. "
+                f"Threat level for TLD China: {threat}."
+            )[:400]
 
-            batch_count = 0
-            for r in results:
-                url   = str(r.get("url", "")).strip()
-                title = str(r.get("title", "")).strip()[:150]
-                snip  = str(r.get("snippet", "")).strip()[:300]
+            title = f"{company} — GSE competitor brief [{threat} threat to TLD]"
 
-                if not url or not title or url in seen_urls:
-                    continue
-                seen_urls.add(url)
+            articles.append({
+                "source": "DeepSeek Competitor Intelligence",
+                "titre":  title[:150],
+                "lien":   "#competitor-brief",
+                "desc":   desc,
+                "date":   datetime.now().strftime("%Y-%m-%d"),
+                # Use weekly key so same company isn't re-injected daily
+                "id": hashlib.md5(
+                    (company + datetime.now().strftime("%Y-W%W")).encode()
+                ).hexdigest(),
+            })
 
-                found.append({
-                    "source": f"DeepSeek Search [{lang.upper()}]",
-                    "titre":  title,
-                    "lien":   url,
-                    "desc":   snip,
-                    "date":   datetime.now().strftime("%Y-%m-%d"),
-                    "id":     hashlib.md5((title + url).encode()).hexdigest(),
-                })
-                batch_count += 1
+        log.info(
+            f"Competitor brief: {len(articles)} companies "
+            f"(skipped low-confidence entries)"
+        )
+        return articles
 
-            log.info(
-                f"  DeepSeek search '{query[:50]}...': {batch_count} results"
-            )
-
-        except json.JSONDecodeError as e:
-            log.warning(f"JSON parse error for query '{query[:40]}': {e}")
-        except Exception as e:
-            log.warning(f"DeepSeek search failed for '{query[:40]}': {e}")
-
-        time.sleep(1.5)  # polite rate limiting between search calls
-
-    log.info(f"DeepSeek web search total: {len(found)} articles found")
-    return found
+    except json.JSONDecodeError as e:
+        log.warning(f"Competitor brief: JSON parse error — {e}")
+        return []
+    except Exception as e:
+        log.warning(f"Competitor brief failed: {e}")
+        return []
 
 
 # =============================================================================
@@ -1164,7 +1183,7 @@ body{{font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;
 </div>
 
 <div class="page-footer">
-  GSE Intelligence Agent v3.3 · Powered by DeepSeek · {now_full}
+  GSE Intelligence Agent v3.4 · Powered by DeepSeek · {now_full}
 </div>
 
 </div>
@@ -1192,7 +1211,7 @@ def sauvegarder_rapport(rapport_html):
 
 def executer_agent():
     log.info("=" * 60)
-    log.info("Starting GSE Intelligence Agent v3.3")
+    log.info("Starting GSE Intelligence Agent v3.4")
     log.info("=" * 60)
     try:
         vus = charger_vus()
@@ -1200,22 +1219,22 @@ def executer_agent():
         # 1. Collect from scrapers
         tous_articles = collecter_tous_articles()
 
-        # 2. DeepSeek web search — competitor & GSE-specific queries
-        #    Runs from DeepSeek's servers (China-accessible), bypassing the
-        #    IP blocks that prevent GitHub Actions US runners from reaching
-        #    Chinese sources like Guangtai / CARNOC / trade press.
-        competitor_articles = rechercher_concurrents_deepseek()
-        tous_articles.extend(competitor_articles)
-        log.info(
-            f"Total articles after adding DeepSeek search results: "
-            f"{len(tous_articles)}"
-        )
+        # 2. DeepSeek competitor brief (runs Mondays only)
+        #    Uses DeepSeek training knowledge on Chinese GSE manufacturers
+        #    (Guangtai, CIMC Tianda, etc.) — bypasses the IP-blocking
+        #    problem since no scraping is involved.
+        competitor_articles = synthese_concurrents_deepseek()
+        if competitor_articles:
+            tous_articles.extend(competitor_articles)
+            log.info(
+                f"Total articles after competitor brief: {len(tous_articles)}"
+            )
 
         # 3. Filter
         articles_pertinents = filtrer_pertinents(tous_articles, vus)
 
         # 4. Enrich scraped articles with body excerpts
-        #    (DeepSeek search results already have snippets as desc)
+        #    (competitor brief articles already have rich desc fields)
         if articles_pertinents:
             articles_pertinents = enrichir_articles(articles_pertinents)
 
@@ -1228,7 +1247,9 @@ def executer_agent():
 
         # 6. Save raw output for debugging
         Path("rapports").mkdir(exist_ok=True, parents=True)
-        Path("rapports/debug_raw.txt").write_text(raw_analyse or "", encoding="utf-8")
+        Path("rapports/debug_raw.txt").write_text(
+            raw_analyse or "", encoding="utf-8"
+        )
         log.info("Raw DeepSeek output saved to rapports/debug_raw.txt")
 
         # 7. Detect truncation
