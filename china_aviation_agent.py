@@ -516,6 +516,25 @@ def generer_rapport(articles, analyse):
         imp = b.get('impact', 'INFO')
         impact_counts[imp] = impact_counts.get(imp, 0) + 1
 
+    # Escape newlines for display in HTML (must be done outside f-string)
+    # Precompute escaped versions
+    exec_summary_esc = executive_summary.replace('\n', '<br>') if executive_summary else ""
+    key_indicators_esc = [ind.replace('\n', '<br>') for ind in key_indicators]
+    main_risk_esc = main_risk.replace('\n', '<br>') if main_risk else ""
+
+    # For each block, pre-escape fields
+    block_infos_esc = []
+    for b in block_infos:
+        esc = {
+            'impact': b.get('impact', 'INFO'),
+            'summary': b.get('summary', '').replace('\n', '<br>'),
+            'business_impact': b.get('business_impact', '').replace('\n', '<br>'),
+            'recommended_action': b.get('recommended_action', '').replace('\n', '<br>'),
+            'raw': b.get('raw', '').replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;')
+        }
+        # Also escape summary etc. for raw if present
+        block_infos_esc.append(esc)
+
     # Start HTML
     html = f"""<!DOCTYPE html>
 <html lang="en">
@@ -677,12 +696,12 @@ def generer_rapport(articles, analyse):
         html += f"""
         <div class="exec-summary">
             <h3>📌 Executive Summary</h3>
-            <p>{executive_summary.replace('\n', '<br>')}</p>
+            <p>{exec_summary_esc}</p>
         </div>
         """
 
     # Analysis cards
-    for idx, block in enumerate(block_infos):
+    for idx, block in enumerate(block_infos_esc):
         impact = block.get('impact', 'INFO')
         summary = block.get('summary', '')
         biz = block.get('business_impact', '')
@@ -697,7 +716,7 @@ def generer_rapport(articles, analyse):
                     <span style="font-size:14px; color:#64748b;">Analysis #{idx+1}</span>
                 </div>
                 <div class="card-body">
-                    <p style="white-space:pre-wrap;">{raw.replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;')}</p>
+                    <p style="white-space:pre-wrap;">{raw}</p>
                 </div>
             </div>
             """
@@ -713,11 +732,11 @@ def generer_rapport(articles, analyse):
             <div class="card-body">
         """
         if summary:
-            html += f"<p><strong>📝 Summary:</strong> {summary.replace('\n', '<br>')}</p>"
+            html += f"<p><strong>📝 Summary:</strong> {summary}</p>"
         if biz:
-            html += f"<p><strong>💼 Business Impact:</strong> {biz.replace('\n', '<br>')}</p>"
+            html += f"<p><strong>💼 Business Impact:</strong> {biz}</p>"
         if action:
-            html += f"<p><strong>✅ Recommended Action:</strong> {action.replace('\n', '<br>')}</p>"
+            html += f"<p><strong>✅ Recommended Action:</strong> {action}</p>"
         html += """
             </div>
         </div>
@@ -730,7 +749,7 @@ def generer_rapport(articles, analyse):
             <h3>📈 Key Indicators to Watch This Week</h3>
             <ul>
         """
-        for ind in key_indicators:
+        for ind in key_indicators_esc:
             html += f"<li>{ind}</li>"
         html += """
             </ul>
@@ -740,7 +759,7 @@ def generer_rapport(articles, analyse):
         html += f"""
         <div class="main-risk">
             <h3>⚠️ Main Risk</h3>
-            <p>{main_risk.replace('\n', '<br>')}</p>
+            <p>{main_risk_esc}</p>
         </div>
         """
 
