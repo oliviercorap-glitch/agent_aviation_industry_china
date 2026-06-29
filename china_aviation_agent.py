@@ -481,6 +481,130 @@ def enrichir_articles(articles):
 
 
 # =============================================================================
+#  DEEPSEEK WEB SEARCH — competitor & GSE-specific queries
+#  Bypasses the IP-blocking problem: DeepSeek searches from Chinese servers,
+#  reaching sources (Guangtai, Chinese trade press) that block GitHub Actions
+#  US runners. Runs independently of the scraper pipeline.
+# =============================================================================
+
+# Queries sent to DeepSeek web search each run.
+# Format: (query_string, language_hint)
+# Keep to ≤8 queries — each costs a separate API call.
+COMPETITOR_SEARCH_QUERIES = [
+    # Guangtai — primary Chinese rival, Weihai-based
+    ("威海广泰 航空地面设备 新产品 最新消息", "zh"),
+    ("广泰 机场牵引车 电动GSE 2026", "zh"),
+    # CIMC Tianda — second major Chinese rival
+    ("中集天达 地面支持设备 新闻 2026", "zh"),
+    # Chinese GSE market broadly — catches smaller competitors
+    ("中国机场特种车 地面保障设备 招标 采购 2026", "zh"),
+    # Western competitors in APAC
+    ("JBT Corporation GSE Asia Pacific 2026", "en"),
+    ("Textron GSE China airport ground support 2026", "en"),
+    # Electrification / regulation signal
+    ("中国机场 电动地勤设备 禁柴油 政策 2026", "zh"),
+    # Ground handler M&A
+    ("Swissport Menzies ground handling China contract 2026", "en"),
+]
+
+
+def rechercher_concurrents_deepseek():
+    """Query DeepSeek's web search for competitor and GSE-specific news.
+
+    DeepSeek runs searches from its own infrastructure (China-accessible),
+    bypassing the IP blocks that prevent GitHub Actions runners from reaching
+    Chinese aviation and industry news sites.
+
+    Returns a list of article dicts in the same format as the scraper output,
+    ready to be merged into tous_articles before filtering.
+    """
+    api_key = os.environ.get("DEEPSEEK_API_KEY")
+    if not api_key:
+        log.warning("DEEPSEEK_API_KEY not set — skipping competitor web search.")
+        return []
+
+    client = OpenAI(api_key=api_key, base_url="https://api.deepseek.com/v1")
+    found  = []
+    seen_urls = set()
+
+    for query, lang in COMPETITOR_SEARCH_QUERIES:
+        instruction = (
+            f'Search the web for: {query}\n\n'
+            'Return results as a JSON array. Each item must have exactly these fields:\n'
+            '  "title": article headline (string)\n'
+            '  "url": full URL (string)\n'
+            '  "snippet": 1-2 sentence summary of the article (string)\n'
+            'Return ONLY the JSON array. No markdown, no preamble, no explanation.\n'
+            'If no relevant results found, return an empty array: []'
+        )
+        try:
+            response = client.chat.completions.create(
+                model="deepseek-chat",
+                messages=[{"role": "user", "content": instruction}],
+                tools=[{"type": "web_search_20250305", "name": "web_search"}],
+                max_tokens=1500,
+                temperature=0.1,
+            )
+
+            # Extract text from response (content may be string or list of blocks)
+            content = response.choices[0].message.content
+            if isinstance(content, list):
+                text = "".join(
+                    block.text for block in content
+                    if hasattr(block, "text") and block.text
+                )
+            else:
+                text = content or ""
+
+            # Strip markdown fences if present
+            text = re.sub(r"```(?:json)?|```", "", text).strip()
+
+            # Find the JSON array even if there's surrounding text
+            array_match = re.search(r"\[.*\]", text, re.DOTALL)
+            if not array_match:
+                log.debug(f"No JSON array in DeepSeek search response for: {query}")
+                continue
+
+            results = json.loads(array_match.group(0))
+            if not isinstance(results, list):
+                continue
+
+            batch_count = 0
+            for r in results:
+                url   = str(r.get("url", "")).strip()
+                title = str(r.get("title", "")).strip()[:150]
+                snip  = str(r.get("snippet", "")).strip()[:300]
+
+                if not url or not title or url in seen_urls:
+                    continue
+                seen_urls.add(url)
+
+                found.append({
+                    "source": f"DeepSeek Search [{lang.upper()}]",
+                    "titre":  title,
+                    "lien":   url,
+                    "desc":   snip,
+                    "date":   datetime.now().strftime("%Y-%m-%d"),
+                    "id":     hashlib.md5((title + url).encode()).hexdigest(),
+                })
+                batch_count += 1
+
+            log.info(
+                f"  DeepSeek search '{query[:50]}...': {batch_count} results"
+            )
+
+        except json.JSONDecodeError as e:
+            log.warning(f"JSON parse error for query '{query[:40]}': {e}")
+        except Exception as e:
+            log.warning(f"DeepSeek search failed for '{query[:40]}': {e}")
+
+        time.sleep(1.5)  # polite rate limiting between search calls
+
+    log.info(f"DeepSeek web search total: {len(found)} articles found")
+    return found
+
+
+# =============================================================================
 #  DEEPSEEK — STRUCTURED PROMPT
 # =============================================================================
 
@@ -1040,7 +1164,7 @@ body{{font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;
 </div>
 
 <div class="page-footer">
-  GSE Intelligence Agent v3.2 · Powered by DeepSeek · {now_full}
+  GSE Intelligence Agent v3.3 · Powered by DeepSeek · {now_full}
 </div>
 
 </div>
@@ -1068,53 +1192,65 @@ def sauvegarder_rapport(rapport_html):
 
 def executer_agent():
     log.info("=" * 60)
-    log.info("Starting GSE Intelligence Agent v3.2")
+    log.info("Starting GSE Intelligence Agent v3.3")
     log.info("=" * 60)
     try:
         vus = charger_vus()
 
-        # 1. Collect
+        # 1. Collect from scrapers
         tous_articles = collecter_tous_articles()
 
-        # 2. Filter
+        # 2. DeepSeek web search — competitor & GSE-specific queries
+        #    Runs from DeepSeek's servers (China-accessible), bypassing the
+        #    IP blocks that prevent GitHub Actions US runners from reaching
+        #    Chinese sources like Guangtai / CARNOC / trade press.
+        competitor_articles = rechercher_concurrents_deepseek()
+        tous_articles.extend(competitor_articles)
+        log.info(
+            f"Total articles after adding DeepSeek search results: "
+            f"{len(tous_articles)}"
+        )
+
+        # 3. Filter
         articles_pertinents = filtrer_pertinents(tous_articles, vus)
 
-        # 3. Enrich with body excerpts
+        # 4. Enrich scraped articles with body excerpts
+        #    (DeepSeek search results already have snippets as desc)
         if articles_pertinents:
             articles_pertinents = enrichir_articles(articles_pertinents)
 
-        # 4. Analyze with DeepSeek
+        # 5. Analyze with DeepSeek
         raw_analyse = (
             analyser_avec_deepseek(articles_pertinents)
             if articles_pertinents
             else ""
         )
 
-        # 5. Save raw output for debugging
+        # 6. Save raw output for debugging
         Path("rapports").mkdir(exist_ok=True, parents=True)
         Path("rapports/debug_raw.txt").write_text(raw_analyse or "", encoding="utf-8")
         log.info("Raw DeepSeek output saved to rapports/debug_raw.txt")
 
-        # 6. Detect truncation
-        n_starts = raw_analyse.count("===SIGNAL_START===")
-        n_ends   = raw_analyse.count("===SIGNAL_END===")
-        has_sum  = "===SUMMARY_START===" in raw_analyse
+        # 7. Detect truncation
+        n_starts  = raw_analyse.count("===SIGNAL_START===")
+        n_ends    = raw_analyse.count("===SIGNAL_END===")
+        has_sum   = "===SUMMARY_START===" in raw_analyse
         truncated = (n_starts != n_ends) or (n_starts > 0 and not has_sum)
 
-        # 7. Parse
+        # 8. Parse
         signals, summary = parser_analyse(raw_analyse)
 
-        # 8. Generate report
+        # 9. Generate report
         rapport_html = generer_rapport(
             articles_pertinents, signals, summary,
             raw_text=raw_analyse, truncated=truncated
         )
 
-        # 9. Save
+        # 10. Save
         fichier = sauvegarder_rapport(rapport_html)
         print(f"✅ Report generated: {fichier}")
 
-        # 10. Mark articles as seen
+        # 11. Mark articles as seen
         for a in articles_pertinents:
             vus.add(a["id"])
         sauvegarder_vus(vus)
