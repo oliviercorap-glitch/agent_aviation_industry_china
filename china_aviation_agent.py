@@ -398,14 +398,17 @@ def analyser_avec_deepseek(articles):
         log.error(f"DeepSeek error : {e}")
         return "API error."
 
-# --- HTML REPORT GENERATION (enhanced with Markdown and TOC) -----------------
+# =============================================================================
+#  HTML REPORT GENERATION – MEMO STYLE
+# =============================================================================
 def markdown_to_html(text):
     if not text:
         return ""
     return markdown.markdown(text, extensions=['nl2br'])
 
 def generer_rapport(articles, analyse):
-    now = datetime.now().strftime("%Y-%m-%d %H:%M")
+    now = datetime.now().strftime("%d %B %Y")
+    analyst = "GSE Market Intelligence"
 
     # --- Parse analysis into blocks ---
     parsed_blocks = []
@@ -487,7 +490,7 @@ def generer_rapport(articles, analyse):
         block_infos = [{'impact': 'INFO', 'summary': '', 'business_impact': '', 'recommended_action': '', 'raw': analyse}]
         executive_summary = ""
 
-    # Convert Markdown
+    # Convert Markdown for all fields
     for b in block_infos:
         b['summary'] = markdown_to_html(b.get('summary', ''))
         b['business_impact'] = markdown_to_html(b.get('business_impact', ''))
@@ -505,294 +508,263 @@ def generer_rapport(articles, analyse):
         imp = b.get('impact', 'INFO')
         impact_counts[imp] = impact_counts.get(imp, 0) + 1
 
-    # --- Generate HTML with TOC ---
+    # --- Build HTML (memo style) ---
     html = f"""<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GSE Strategic Watch - {now}</title>
+    <title>Aviation Intelligence Memorandum - {now}</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
     <style>
         * {{ margin: 0; padding: 0; box-sizing: border-box; }}
         body {{
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: #f8fafc;
-            color: #0f172a;
+            background: #f5f7fa;
+            color: #1e293b;
             padding: 40px 20px;
-            line-height: 1.8;
+            line-height: 1.7;
         }}
         .container {{
-            max-width: 1100px;
+            max-width: 1000px;
             margin: 0 auto;
             background: white;
-            border-radius: 24px;
+            border-radius: 20px;
             padding: 40px 45px;
-            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05), 0 10px 15px -3px rgba(0,0,0,0.08);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.06);
         }}
-        h1 {{ font-size: 28px; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 6px; }}
-        .subhead {{ font-size: 16px; color: #64748b; margin-bottom: 30px; }}
+        .memo-header {{
+            border-bottom: 3px solid #e2e8f0;
+            padding-bottom: 16px;
+            margin-bottom: 24px;
+        }}
+        .memo-title {{
+            font-size: 28px;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            color: #0f172a;
+            margin-bottom: 4px;
+        }}
+        .memo-meta {{
+            font-size: 15px;
+            color: #475569;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px 40px;
+        }}
+        .memo-meta span {{
+            background: #f1f5f9;
+            padding: 2px 12px;
+            border-radius: 30px;
+        }}
+        .section-title {{
+            font-size: 20px;
+            font-weight: 600;
+            margin: 36px 0 16px 0;
+            padding-bottom: 6px;
+            border-bottom: 2px solid #e2e8f0;
+        }}
         .stats {{
-            display: flex; flex-wrap: wrap; gap: 20px 40px;
-            background: #f1f5f9; border-radius: 16px; padding: 18px 24px; margin-bottom: 30px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px 24px;
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 14px 20px;
+            margin-bottom: 20px;
+            font-size: 14px;
         }}
-        .stat-item {{ font-size: 15px; }}
-        .stat-item strong {{ font-weight: 600; color: #0f172a; }}
+        .stats strong {{ font-weight: 600; }}
         .impact-badge {{
-            display: inline-block; padding: 2px 12px; border-radius: 20px; font-weight: 600; font-size: 13px;
-            color: white; background: #94a3b8;
+            display: inline-block;
+            padding: 2px 12px;
+            border-radius: 30px;
+            font-weight: 600;
+            font-size: 13px;
+            color: white;
+            background: #94a3b8;
         }}
         .impact-badge.critical {{ background: #dc2626; }}
         .impact-badge.important {{ background: #f59e0b; }}
         .impact-badge.watch {{ background: #eab308; color: #0f172a; }}
         .impact-badge.info {{ background: #3b82f6; }}
 
-        .section-title {{
-            font-size: 20px; font-weight: 600; margin: 48px 0 16px 0;
-            padding-bottom: 8px; border-bottom: 2px solid #e2e8f0;
-        }}
-        .sources-list {{
-            display: flex; flex-wrap: wrap; gap: 8px 16px;
-            background: #f8fafc; padding: 12px 16px; border-radius: 12px; margin-bottom: 30px;
-        }}
-        .source-tag {{ font-size: 14px; background: #e2e8f0; padding: 2px 12px; border-radius: 20px; color: #1e293b; }}
-
-        .article-table {{
-            width: 100%; border-collapse: collapse; font-size: 14px; margin-top: 8px;
-        }}
-        .article-table th {{ text-align: left; padding: 10px 12px; background: #f1f5f9; font-weight: 600; border-bottom: 2px solid #cbd5e1; }}
-        .article-table td {{ padding: 10px 12px; border-bottom: 1px solid #e2e8f0; vertical-align: top; }}
-        .article-table tr:last-child td {{ border-bottom: none; }}
-        .article-table .source {{ font-weight: 500; color: #1e293b; white-space: nowrap; }}
-        .article-table .title a {{ color: #1e40af; text-decoration: none; font-weight: 500; }}
-        .article-table .title a:hover {{ text-decoration: underline; }}
-
-        /* TOC */
-        .toc {{
-            background: #f1f5f9;
-            border-radius: 16px;
-            padding: 20px 24px;
-            margin: 30px 0 20px 0;
-        }}
-        .toc h3 {{ font-size: 18px; font-weight: 600; margin-bottom: 12px; color: #0f172a; }}
-        .toc ul {{
-            list-style: none;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px 16px;
-            padding: 0;
-        }}
-        .toc li {{
-            font-size: 14px;
-        }}
-        .toc a {{
-            color: #1e40af;
-            text-decoration: none;
-            font-weight: 500;
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-        }}
-        .toc a:hover {{ text-decoration: underline; }}
-        .toc .toc-impact {{
-            font-size: 12px;
-            padding: 0 6px;
-            border-radius: 12px;
-            background: #94a3b8;
-            color: white;
-            font-weight: 600;
-        }}
-        .toc .toc-impact.critical {{ background: #dc2626; }}
-        .toc .toc-impact.important {{ background: #f59e0b; }}
-        .toc .toc-impact.watch {{ background: #eab308; color: #0f172a; }}
-        .toc .toc-impact.info {{ background: #3b82f6; }}
-
-        /* Analysis cards */
-        .analysis-card {{
+        /* Signal cards */
+        .signal-card {{
             border-left: 6px solid #94a3b8;
             background: #fafcff;
             border-radius: 12px;
-            padding: 24px 28px;
-            margin-bottom: 28px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+            padding: 20px 24px;
+            margin-bottom: 24px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.04);
             transition: box-shadow 0.2s;
         }}
-        .analysis-card:hover {{ box-shadow: 0 6px 16px rgba(0,0,0,0.08); }}
-        .analysis-card.impact-critical {{ border-left-color: #dc2626; }}
-        .analysis-card.impact-important {{ border-left-color: #f59e0b; }}
-        .analysis-card.impact-watch {{ border-left-color: #eab308; }}
-        .analysis-card.impact-info {{ border-left-color: #3b82f6; }}
+        .signal-card:hover {{ box-shadow: 0 6px 16px rgba(0,0,0,0.06); }}
+        .signal-card.impact-critical {{ border-left-color: #dc2626; }}
+        .signal-card.impact-important {{ border-left-color: #f59e0b; }}
+        .signal-card.impact-watch {{ border-left-color: #eab308; }}
+        .signal-card.impact-info {{ border-left-color: #3b82f6; }}
 
-        .card-header {{
-            display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 12px;
+        .signal-header {{
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-bottom: 8px;
         }}
-        .card-header .impact-badge {{
-            font-size: 14px; padding: 4px 16px; border-radius: 30px;
+        .signal-label {{
+            font-weight: 600;
+            font-size: 16px;
+            color: #0f172a;
         }}
-        .card-body p {{
-            margin-top: 0.8em;
-            margin-bottom: 0.8em;
+        .signal-reading {{
+            margin-top: 4px;
         }}
-        .card-body p:first-of-type {{ margin-top: 0; }}
-        .card-body strong {{
-            font-weight: 600; color: #1e293b;
+        .signal-reading p {{
+            margin: 0.4em 0;
         }}
-        .card-body ul, .card-body ol {{
-            margin: 0.6em 0 0.6em 1.5em;
+        .signal-reading strong {{
+            font-weight: 600;
         }}
-        .card-body li {{
-            margin-bottom: 0.3em;
+        .impact-detail {{
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px dashed #e2e8f0;
+        }}
+        .impact-detail p {{
+            margin: 0.3em 0;
+        }}
+        .impact-detail ul, .impact-detail ol {{
+            margin: 0.3em 0 0.3em 1.5em;
         }}
         .back-link {{
-            font-size: 14px;
+            font-size: 13px;
             color: #64748b;
             text-decoration: none;
             display: inline-block;
-            margin-top: 12px;
+            margin-top: 10px;
         }}
         .back-link:hover {{ color: #1e40af; }}
 
         .exec-summary {{
-            background: #dbeafe; border-left: 6px solid #2563eb; border-radius: 12px;
-            padding: 20px 24px; margin-bottom: 28px;
+            background: #dbeafe;
+            border-left: 6px solid #2563eb;
+            border-radius: 12px;
+            padding: 16px 24px;
+            margin-bottom: 28px;
         }}
-        .exec-summary h3 {{ font-size: 18px; font-weight: 600; margin-bottom: 6px; color: #1e3a8a; }}
+        .exec-summary h3 {{ font-size: 18px; font-weight: 600; margin-bottom: 4px; color: #1e3a8a; }}
         .key-indicators {{
-            background: #fef3c7; border-left: 6px solid #d97706; border-radius: 12px;
-            padding: 20px 24px; margin-bottom: 28px;
+            background: #fef3c7;
+            border-left: 6px solid #d97706;
+            border-radius: 12px;
+            padding: 16px 24px;
+            margin-bottom: 28px;
         }}
-        .key-indicators h3 {{ font-size: 18px; font-weight: 600; margin-bottom: 6px; color: #92400e; }}
+        .key-indicators h3 {{ font-size: 18px; font-weight: 600; margin-bottom: 4px; color: #92400e; }}
         .key-indicators ul {{ list-style: disc; margin-left: 20px; }}
         .main-risk {{
-            background: #fee2e2; border-left: 6px solid #dc2626; border-radius: 12px;
-            padding: 20px 24px; margin-bottom: 28px;
+            background: #fee2e2;
+            border-left: 6px solid #dc2626;
+            border-radius: 12px;
+            padding: 16px 24px;
+            margin-bottom: 28px;
         }}
-        .main-risk h3 {{ font-size: 18px; font-weight: 600; margin-bottom: 6px; color: #991b1b; }}
+        .main-risk h3 {{ font-size: 18px; font-weight: 600; margin-bottom: 4px; color: #991b1b; }}
 
         .footer {{
-            margin-top: 48px; font-size: 13px; color: #94a3b8; text-align: center;
-            border-top: 1px solid #e2e8f0; padding-top: 24px;
+            margin-top: 48px;
+            font-size: 13px;
+            color: #94a3b8;
+            text-align: center;
+            border-top: 1px solid #e2e8f0;
+            padding-top: 20px;
         }}
         @media (max-width: 640px) {{
             .container {{ padding: 20px 16px; }}
-            .stats {{ flex-direction: column; gap: 8px; }}
-            .article-table th, .article-table td {{ padding: 8px 6px; }}
-            .article-table .source {{ white-space: normal; }}
-            .toc ul {{ flex-direction: column; gap: 4px; }}
+            .memo-meta {{ flex-direction: column; gap: 8px; }}
         }}
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>🛫 GSE Strategic Watch</h1>
-        <div class="subhead">{now} · Asia-Pacific Focus</div>
+        <div class="memo-header">
+            <div class="memo-title">AVIATION INTELLIGENCE MEMORANDUM</div>
+            <div class="memo-meta">
+                <span>📅 {now}</span>
+                <span>🧑‍💼 Analyst: {analyst}</span>
+            </div>
+        </div>
 
         <div class="stats">
-            <span class="stat-item"><strong>{len(articles)}</strong> relevant article(s)</span>
-            <span class="stat-item"><strong>{len(SOURCES)}</strong> sources monitored</span>
-            <span class="stat-item">Impact levels: 
+            <span><strong>{len(articles)}</strong> relevant article(s)</span>
+            <span><strong>{len(SOURCES)}</strong> sources monitored</span>
+            <span>Impact levels: 
                 {''.join(f'<span class="impact-badge {k.lower()}">{v}</span> ' for k,v in impact_counts.items())}
             </span>
         </div>
 
-        <div class="sources-list">
-            {''.join(f'<span class="source-tag">{s["nom"]}</span>' for s in SOURCES)}
+        <!-- Table of Contents (quick links) -->
+        <div style="margin-bottom:24px; font-size:14px; background:#f8fafc; padding:12px 16px; border-radius:10px;">
+            <strong>📑 Jump to:</strong> 
+            <a href="#exec-summary" style="color:#1e40af; text-decoration:none; margin:0 8px;">Executive Summary</a>
+            <span style="color:#94a3b8;">|</span>
+            <a href="#signals" style="color:#1e40af; text-decoration:none; margin:0 8px;">Signals</a>
+            <span style="color:#94a3b8;">|</span>
+            <a href="#watch" style="color:#1e40af; text-decoration:none; margin:0 8px;">To Watch</a>
+            <span style="color:#94a3b8;">|</span>
+            <a href="#risk" style="color:#1e40af; text-decoration:none; margin:0 8px;">Main Risk</a>
         </div>
 
-        <!-- Table of Contents -->
-        <div class="toc">
-            <h3>📑 Table of Contents</h3>
-            <ul>
-    """
-    # Add TOC entries
-    toc_items = []
-    if exec_summary_html:
-        toc_items.append(('<a href="#exec-summary">📌 Executive Summary</a>', ''))
-    if key_indicators_html:
-        toc_items.append(('<a href="#key-indicators">📈 Key Indicators</a>', ''))
-    if main_risk_html:
-        toc_items.append(('<a href="#main-risk">⚠️ Main Risk</a>', ''))
-    for idx, b in enumerate(block_infos):
-        impact = b.get('impact', 'INFO')
-        label = f"Analysis #{idx+1}"
-        toc_items.append((
-            f'<a href="#analysis-{idx}">{label} <span class="toc-impact {impact.lower()}">{impact}</span></a>',
-            ''
-        ))
-    for item, _ in toc_items:
-        html += f"<li>{item}</li>"
-    html += """
-            </ul>
-        </div>
-
-        <h2 class="section-title">📰 Articles of the Day</h2>
-        <table class="article-table">
-            <thead><tr><th>#</th><th>Source</th><th>Title</th></tr></thead>
-            <tbody>
-    """
-    for i, a in enumerate(articles, 1):
-        titre_esc = a['titre'].replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;')
-        lien = a['lien'] or '#'
-        html += f"""
-                <tr>
-                    <td>{i}</td>
-                    <td class="source">{a['source']}</td>
-                    <td class="title"><a href="{lien}" target="_blank">{titre_esc}</a></td>
-                </tr>
-        """
-    html += """
-            </tbody>
-        </table>
-
-        <h2 class="section-title" id="analysis-section">📊 Analysis & Recommendations</h2>
-    """
-
-    # Executive Summary
-    if exec_summary_html:
-        html += f"""
-        <div class="exec-summary" id="exec-summary">
+        <!-- Executive Summary -->
+        <div id="exec-summary" class="exec-summary">
             <h3>📌 Executive Summary</h3>
-            {exec_summary_html}
+            {exec_summary_html if exec_summary_html else '<p>No executive summary provided.</p>'}
             <a href="#" class="back-link">↑ Back to top</a>
         </div>
-        """
 
-    # Analysis cards
-    for idx, block in enumerate(block_infos):
-        impact = block.get('impact', 'INFO')
-        summary = block.get('summary', '')
-        biz = block.get('business_impact', '')
-        action = block.get('recommended_action', '')
+        <!-- Signals -->
+        <h2 class="section-title" id="signals">📡 Signals</h2>
+    """
+    if not block_infos:
+        html += "<p>No signals identified today.</p>"
+    else:
+        for idx, block in enumerate(block_infos):
+            impact = block.get('impact', 'INFO')
+            summary = block.get('summary', '')
+            biz = block.get('business_impact', '')
+            action = block.get('recommended_action', '')
+            # Combine business impact and recommended action into CFO IMPACT
+            impact_text = ""
+            if biz:
+                impact_text += f"<p><strong>Business Impact:</strong> {biz}</p>"
+            if action:
+                impact_text += f"<p><strong>Recommended Action:</strong> {action}</p>"
+            if not impact_text and 'raw' in block:
+                impact_text = block['raw']
 
-        card_id = f"analysis-{idx}"
-        html += f"""
-        <div class="analysis-card impact-{impact.lower()}" id="{card_id}">
-            <div class="card-header">
+            html += f"""
+        <div class="signal-card impact-{impact.lower()}" id="signal-{idx}">
+            <div class="signal-header">
                 <span class="impact-badge {impact.lower()}">{impact_icons.get(impact, '')} {impact}</span>
-                <span style="font-size:14px; color:#64748b;">Analysis #{idx+1}</span>
+                <span class="signal-label">Signal #{idx+1}</span>
             </div>
-            <div class="card-body">
-        """
-        if summary:
-            html += f"<p><strong>📝 Summary:</strong> {summary}</p>"
-        if biz:
-            html += f"<p><strong>💼 Business Impact:</strong> {biz}</p>"
-        if action:
-            html += f"<p><strong>✅ Recommended Action:</strong> {action}</p>"
-        if not summary and not biz and not action:
-            raw = block.get('raw', '')
-            html += raw
-        html += f"""
+            <div class="signal-reading">
+                <strong>READING:</strong> {summary if summary else 'No summary provided.'}
             </div>
-            <a href="#analysis-section" class="back-link">↑ Back to top</a>
+            <div class="impact-detail">
+                <strong>CFO IMPACT:</strong>
+                {impact_text if impact_text else '<p>No specific impact details.</p>'}
+            </div>
+            <a href="#signals" class="back-link">↑ Back to top</a>
         </div>
         """
 
-    # Key Indicators
+    # Key Indicators (To Watch)
     if key_indicators_html:
         html += """
-        <div class="key-indicators" id="key-indicators">
-            <h3>📈 Key Indicators to Watch This Week</h3>
+        <div id="watch" class="key-indicators">
+            <h3>📈 TO WATCH</h3>
             <ul>
         """
         for ind in key_indicators_html:
@@ -806,8 +778,8 @@ def generer_rapport(articles, analyse):
     # Main Risk
     if main_risk_html:
         html += f"""
-        <div class="main-risk" id="main-risk">
-            <h3>⚠️ Main Risk</h3>
+        <div id="risk" class="main-risk">
+            <h3>⚠️ MAIN RISK</h3>
             {main_risk_html}
             <a href="#" class="back-link">↑ Back to top</a>
         </div>
