@@ -30,7 +30,6 @@ log = logging.getLogger(__name__)
 #  EXPANDED KEYWORDS : GSE + AIRPORTS + AIRLINES + COMPETITORS
 # =============================================================================
 KEYWORDS_GSE = [
-    # ---------- GSE & EQUIPMENT ----------
     "ground support", "gse", "tug", "tractor", "loader", "de-icer", "gpu",
     "towbar", "baggage", "passenger boarding bridge", "air start unit",
     "belt loader", "conveyor belt", "staircase", "dolly", "catering truck",
@@ -39,16 +38,12 @@ KEYWORDS_GSE = [
     "mro ground",
     "地勤设备", "地面支持设备", "行李拖车", "客梯车", "电源车", "气源车",
     "除冰车", "装载机", "传送带车", "飞机牵引车", "新能源地勤", "电动地勤",
-
-    # ---------- AIRPORTS & INFRASTRUCTURE ----------
     "airport opening", "new runway", "terminal expansion", "airport expansion",
     "passenger record", "traffic record", "cargo volume", "load factor",
     "inauguration", "infrastructure investment",
     "机场", "航空", "航站楼", "停机坪", "扩建", "招标", "采购", "项目", "投运",
     "吞吐量", "旅客", "货邮", "航班", "机位", "远机位", "新机场", "新航站楼",
     "旅客吞吐量创新高", "航班量",
-
-    # ---------- AIRLINES (CLIENTS) ----------
     "airline order", "fleet delivery", "fleet expansion", "airline profit",
     "airline loss", "bankruptcy", "revenue", "EBIT",
     "Air China", "China Eastern", "China Southern", "Hainan Airlines",
@@ -58,28 +53,19 @@ KEYWORDS_GSE = [
     "吉祥航空", "吉祥", "四川航空", "川航", "山东航空", "山航",
     "订购", "交付", "机队", "盈利", "亏损", "营收", "净利润",
     "复航", "停飞", "航线", "新开航线", "恢复", "破产", "重组",
-
-    # ---------- REGULATIONS & SUPPLY CHAIN ----------
     "emission regulation", "electric ramp", "diesel ban",
     "steel price", "aluminium", "lithium", "battery cost",
     "semiconductor", "chip shortage", "supply chain disruption",
     "碳中和机场", "电动化", "柴油车禁行", "carbon peak",
-
-    # ---------- GEOPOLITICS ----------
     "Belt and Road", "BRI", "tariff", "trade war", "EU tariffs",
     "一带一路", "关税",
-
-    # ---------- COMPETITORS (TOP 20 GLOBAL) ----------
-    "TLD Group", "TLD", "Alvest",
-    "JBT Corporation", "JBT", "Oshkosh AeroTech", "Oshkosh",
-    "Textron GSE", "Textron", "Tug Technologies", "Tronair", "ITW GSE",
-    "Fast Global Solutions", "Fast Global", "WASP GSE",
-    "Mallaghan", "Mallaghan Engineering", "Goldhofer", "MULAG",
-    "HYDRO", "Guinault", "Cavotec", "AERO Specialties", "Aero Specialties",
-    "Global Ground Support", "DOLL", "Nepean", "Gate GSE",
-    "Clyde Machines", "Douglas Equipment",
-
-    # ---------- COMPETITORS (EUROPEAN & AMERICAN) ----------
+    "TLD Group", "TLD", "Alvest", "JBT Corporation", "JBT",
+    "Oshkosh AeroTech", "Oshkosh", "Textron GSE", "Textron",
+    "Tug Technologies", "Tronair", "ITW GSE", "Fast Global Solutions",
+    "Fast Global", "WASP GSE", "Mallaghan", "Mallaghan Engineering",
+    "Goldhofer", "MULAG", "HYDRO", "Guinault", "Cavotec",
+    "AERO Specialties", "Aero Specialties", "Global Ground Support",
+    "DOLL", "Nepean", "Gate GSE", "Clyde Machines", "Douglas Equipment",
     "FgFlightline", "AMSS GSE", "Avia Equipment", "Teleflex Lionel-Dupont",
     "CargoTec", "Bharat Earth Movers", "Bliss-Fox GSE",
     "Imai Aero-Equipment", "Toyota Industries", "JCB", "Jungheinrich",
@@ -92,8 +78,6 @@ KEYWORDS_GSE = [
     "Red Box International", "Power Systems International", "PSI",
     "GB Barberi", "Jetall GPU", "Aeromax GSE", "Current Power",
     "MRCCS", "Bertoli Power Units",
-
-    # ---------- CHINESE COMPETITORS ----------
     "Weihai Guangtai", "Guangtai", "威海广泰",
     "CIMC Tianda", "中集天达",
     "Jiangsu Tianyi", "Tianyi", "江苏天一",
@@ -105,8 +89,6 @@ KEYWORDS_GSE = [
     "Shandong Tianhe", "山东天河",
     "Zhejiang Goodsense", "浙江中力",
     "Alha GSE", "Shanghai Ifly", "Ifly GSE",
-
-    # ---------- LOCATION & SERVICES ----------
     "TCR Group", "TCR", "Mercury GSE", "Lufthansa Technik",
     "GE Aviation", "AFI KLM E&M", "ST Aerospace", "MTU Maintenance"
 ]
@@ -589,7 +571,6 @@ def generer_rapport(articles, analyse):
         .impact-badge.watch {{ background: #eab308; color: #0f172a; }}
         .impact-badge.info {{ background: #3b82f6; }}
 
-        /* Signal cards */
         .signal-card {{
             border-left: 6px solid #94a3b8;
             background: #fafcff;
@@ -637,6 +618,17 @@ def generer_rapport(articles, analyse):
         .impact-detail ul, .impact-detail ol {{
             margin: 0.3em 0 0.3em 1.5em;
         }}
+        .source-link {{
+            margin-top: 8px;
+            font-size: 14px;
+            color: #475569;
+        }}
+        .source-link a {{
+            color: #1e40af;
+            text-decoration: none;
+            font-weight: 500;
+        }}
+        .source-link a:hover {{ text-decoration: underline; }}
         .back-link {{
             font-size: 13px;
             color: #64748b;
@@ -671,6 +663,36 @@ def generer_rapport(articles, analyse):
             margin-bottom: 28px;
         }}
         .main-risk h3 {{ font-size: 18px; font-weight: 600; margin-bottom: 4px; color: #991b1b; }}
+        .sources-footer {{
+            margin-top: 32px;
+            padding: 16px 20px;
+            background: #f8fafc;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+        }}
+        .sources-footer h3 {{
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 6px;
+            color: #0f172a;
+        }}
+        .sources-footer ul {{
+            list-style: none;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px 16px;
+            margin: 0;
+            padding: 0;
+        }}
+        .sources-footer li {{
+            font-size: 14px;
+            color: #475569;
+        }}
+        .sources-footer li::before {{
+            content: "•";
+            margin-right: 6px;
+            color: #94a3b8;
+        }}
 
         .footer {{
             margin-top: 48px;
@@ -696,6 +718,14 @@ def generer_rapport(articles, analyse):
             </div>
         </div>
 
+        <!-- Executive Summary (moved to the top) -->
+        <div id="exec-summary" class="exec-summary">
+            <h3>📌 Executive Summary</h3>
+            {exec_summary_html if exec_summary_html else '<p>No executive summary provided.</p>'}
+            <a href="#" class="back-link">↑ Back to top</a>
+        </div>
+
+        <!-- Stats & quick links -->
         <div class="stats">
             <span><strong>{len(articles)}</strong> relevant article(s)</span>
             <span><strong>{len(SOURCES)}</strong> sources monitored</span>
@@ -704,23 +734,13 @@ def generer_rapport(articles, analyse):
             </span>
         </div>
 
-        <!-- Table of Contents (quick links) -->
         <div style="margin-bottom:24px; font-size:14px; background:#f8fafc; padding:12px 16px; border-radius:10px;">
             <strong>📑 Jump to:</strong> 
-            <a href="#exec-summary" style="color:#1e40af; text-decoration:none; margin:0 8px;">Executive Summary</a>
-            <span style="color:#94a3b8;">|</span>
             <a href="#signals" style="color:#1e40af; text-decoration:none; margin:0 8px;">Signals</a>
             <span style="color:#94a3b8;">|</span>
             <a href="#watch" style="color:#1e40af; text-decoration:none; margin:0 8px;">To Watch</a>
             <span style="color:#94a3b8;">|</span>
             <a href="#risk" style="color:#1e40af; text-decoration:none; margin:0 8px;">Main Risk</a>
-        </div>
-
-        <!-- Executive Summary -->
-        <div id="exec-summary" class="exec-summary">
-            <h3>📌 Executive Summary</h3>
-            {exec_summary_html if exec_summary_html else '<p>No executive summary provided.</p>'}
-            <a href="#" class="back-link">↑ Back to top</a>
         </div>
 
         <!-- Signals -->
@@ -734,7 +754,6 @@ def generer_rapport(articles, analyse):
             summary = block.get('summary', '')
             biz = block.get('business_impact', '')
             action = block.get('recommended_action', '')
-            # Combine business impact and recommended action into CFO IMPACT
             impact_text = ""
             if biz:
                 impact_text += f"<p><strong>Business Impact:</strong> {biz}</p>"
@@ -742,6 +761,16 @@ def generer_rapport(articles, analyse):
                 impact_text += f"<p><strong>Recommended Action:</strong> {action}</p>"
             if not impact_text and 'raw' in block:
                 impact_text = block['raw']
+
+            article = articles[idx] if idx < len(articles) else None
+            source_html = ""
+            if article:
+                source_nom = article['source']
+                titre_esc = article['titre'].replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;')
+                lien = article.get('lien', '#')
+                source_html = f'<div class="source-link"><strong>Source:</strong> <a href="{lien}" target="_blank">{titre_esc}</a> ({source_nom})</div>'
+            else:
+                source_html = '<div class="source-link"><strong>Source:</strong> Not available</div>'
 
             html += f"""
         <div class="signal-card impact-{impact.lower()}" id="signal-{idx}">
@@ -756,11 +785,12 @@ def generer_rapport(articles, analyse):
                 <strong>CFO IMPACT:</strong>
                 {impact_text if impact_text else '<p>No specific impact details.</p>'}
             </div>
+            {source_html}
             <a href="#signals" class="back-link">↑ Back to top</a>
         </div>
         """
 
-    # Key Indicators (To Watch)
+    # Key Indicators
     if key_indicators_html:
         html += """
         <div id="watch" class="key-indicators">
@@ -784,6 +814,19 @@ def generer_rapport(articles, analyse):
             <a href="#" class="back-link">↑ Back to top</a>
         </div>
         """
+
+    # --- Monitored Sources (added at the bottom) ---
+    html += """
+        <div class="sources-footer">
+            <h3>📋 Monitored Sources</h3>
+            <ul>
+    """
+    for s in SOURCES:
+        html += f"<li>{s['nom']}</li>"
+    html += """
+            </ul>
+        </div>
+    """
 
     html += """
         <div class="footer">
