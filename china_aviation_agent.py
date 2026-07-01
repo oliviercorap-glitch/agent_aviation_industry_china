@@ -34,7 +34,7 @@ log = logging.getLogger(__name__)
 # Max articles to enrich with body excerpt (costs extra HTTP requests)
 ENRICH_MAX = 20
 # Max articles sent to DeepSeek in one call (keep prompt manageable)
-DEEPSEEK_MAX_ARTICLES = 30
+DEEPSEEK_MAX_ARTICLES = 50
 
 # =============================================================================
 #  KEYWORDS
@@ -1277,7 +1277,7 @@ body{{font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;
 </div>
 
 <div class="page-footer">
-  GSE Intelligence Agent v3.5 · Powered by DeepSeek · {now_full}
+  GSE Intelligence Agent v3.6 · Powered by DeepSeek + Tavily · {now_full}
 </div>
 
 </div>
@@ -1305,7 +1305,7 @@ def sauvegarder_rapport(rapport_html):
 
 def executer_agent():
     log.info("=" * 60)
-    log.info("Starting GSE Intelligence Agent v3.5")
+    log.info("Starting GSE Intelligence Agent v3.6")
     log.info("=" * 60)
     try:
         vus = charger_vus()
@@ -1334,45 +1334,63 @@ def executer_agent():
         # 4. Filter
         articles_pertinents = filtrer_pertinents(tous_articles, vus)
 
-        # 5. Enrich scraped articles with body excerpts
+        # 5. Prioritize Tavily articles — put them first so they are never
+        #    dropped by the DEEPSEEK_MAX_ARTICLES cap.
+        #    Competitor brief articles come second, scraped articles last.
+        def source_priority(a):
+            if a["source"] == "Tavily Search":
+                return 0
+            if a["source"] == "DeepSeek Competitor Intelligence":
+                return 1
+            return 2
+
+        articles_pertinents.sort(key=source_priority)
+        log.info(
+            f"After prioritization: "
+            f"{sum(1 for a in articles_pertinents if a['source'] == 'Tavily Search')} Tavily, "
+            f"{sum(1 for a in articles_pertinents if a['source'] == 'DeepSeek Competitor Intelligence')} competitor, "
+            f"{sum(1 for a in articles_pertinents if a['source'] not in ('Tavily Search', 'DeepSeek Competitor Intelligence'))} scraped"
+        )
+
+        # 6. Enrich scraped articles with body excerpts
         #    (Tavily and competitor brief articles already have content)
         if articles_pertinents:
             articles_pertinents = enrichir_articles(articles_pertinents)
 
-        # 6. Analyze with DeepSeek
+        # 7. Analyze with DeepSeek
         raw_analyse = (
             analyser_avec_deepseek(articles_pertinents)
             if articles_pertinents
             else ""
         )
 
-        # 7. Save raw output for debugging
+        # 8. Save raw output for debugging
         Path("rapports").mkdir(exist_ok=True, parents=True)
         Path("rapports/debug_raw.txt").write_text(
             raw_analyse or "", encoding="utf-8"
         )
         log.info("Raw DeepSeek output saved to rapports/debug_raw.txt")
 
-        # 8. Detect truncation
+        # 9. Detect truncation
         n_starts  = raw_analyse.count("===SIGNAL_START===")
         n_ends    = raw_analyse.count("===SIGNAL_END===")
         has_sum   = "===SUMMARY_START===" in raw_analyse
         truncated = (n_starts != n_ends) or (n_starts > 0 and not has_sum)
 
-        # 9. Parse
+        # 10. Parse
         signals, summary = parser_analyse(raw_analyse)
 
-        # 10. Generate report
+        # 11. Generate report
         rapport_html = generer_rapport(
             articles_pertinents, signals, summary,
             raw_text=raw_analyse, truncated=truncated
         )
 
-        # 11. Save
+        # 12. Save
         fichier = sauvegarder_rapport(rapport_html)
         print(f"✅ Report generated: {fichier}")
 
-        # 12. Mark articles as seen
+        # 13. Mark articles as seen
         for a in articles_pertinents:
             vus.add(a["id"])
         sauvegarder_vus(vus)
