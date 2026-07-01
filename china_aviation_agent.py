@@ -481,6 +481,100 @@ def enrichir_articles(articles):
 
 
 # =============================================================================
+#  TAVILY SEARCH — real-time web search for Chinese GSE competitor news
+#
+#  Tavily is a search API designed for AI agents. Unlike scraping, it:
+#  - Runs from Tavily's own servers (not GitHub Actions US IPs)
+#  - Indexes Chinese sites (CARNOC, Guangtai, trade press)
+#  - Returns article content, not just URLs
+#  - Free tier: 1000 searches/month
+#
+#  8 targeted queries per run, focused on competitors and GSE market.
+# =============================================================================
+
+TAVILY_QUERIES = [
+    # Guangtai — primary Chinese rival
+    "威海广泰 航空地面设备 新产品 2026",
+    "Weihai Guangtai GSE airport ground support equipment 2026",
+    # CIMC Tianda
+    "中集天达 地面支持设备 新闻 2026",
+    # Chinese GSE market broadly
+    "中国机场 地面保障设备 招标 采购 2026",
+    # Western competitors in APAC
+    "JBT Corporation GSE China Asia Pacific 2026",
+    # Electrification signal
+    "中国机场 电动地勤设备 新能源 2026",
+    # Airport tenders
+    "机场 地面设备 采购 招标 2026",
+    # Ground handler M&A
+    "Swissport Menzies ground handling China 2026",
+]
+
+
+def rechercher_tavily():
+    """Search for GSE competitor and market news using Tavily API.
+
+    Tavily searches from its own servers, bypassing the IP-blocking
+    that prevents GitHub Actions US runners from reaching Chinese sources.
+    Returns articles in the same format as the scraper pipeline.
+    """
+    api_key = os.environ.get("TAVILY_API_KEY")
+    if not api_key:
+        log.warning("TAVILY_API_KEY not set — skipping Tavily search.")
+        return []
+
+    found     = []
+    seen_urls = set()
+
+    for query in TAVILY_QUERIES:
+        try:
+            resp = requests.post(
+                "https://api.tavily.com/search",
+                json={
+                    "api_key":        api_key,
+                    "query":          query,
+                    "search_depth":   "basic",
+                    "max_results":    5,
+                    "include_answer": False,
+                },
+                timeout=20,
+            )
+            resp.raise_for_status()
+            data = resp.json()
+
+            results = data.get("results", [])
+            batch   = 0
+            for r in results:
+                url     = str(r.get("url", "")).strip()
+                title   = str(r.get("title", "")).strip()[:150]
+                content = str(r.get("content", "")).strip()[:300]
+
+                if not url or not title or url in seen_urls:
+                    continue
+                seen_urls.add(url)
+
+                found.append({
+                    "source": "Tavily Search",
+                    "titre":  title,
+                    "lien":   url,
+                    "desc":   content,
+                    "date":   datetime.now().strftime("%Y-%m-%d"),
+                    "id":     hashlib.md5((title + url).encode()).hexdigest(),
+                })
+                batch += 1
+
+            log.info(f"  Tavily '{query[:45]}...': {batch} results")
+
+        except Exception as e:
+            log.warning(f"Tavily search failed for '{query[:40]}': {e}")
+
+        time.sleep(0.5)
+
+    log.info(f"Tavily total: {len(found)} articles found")
+    return found
+
+
+# =============================================================================
 #  DEEPSEEK COMPETITOR BRIEF — no web search tool needed
 #
 #  DeepSeek's training data includes Chinese trade press, manufacturer press
@@ -1183,7 +1277,7 @@ body{{font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;
 </div>
 
 <div class="page-footer">
-  GSE Intelligence Agent v3.4 · Powered by DeepSeek · {now_full}
+  GSE Intelligence Agent v3.5 · Powered by DeepSeek · {now_full}
 </div>
 
 </div>
@@ -1211,67 +1305,74 @@ def sauvegarder_rapport(rapport_html):
 
 def executer_agent():
     log.info("=" * 60)
-    log.info("Starting GSE Intelligence Agent v3.4")
+    log.info("Starting GSE Intelligence Agent v3.5")
     log.info("=" * 60)
     try:
         vus = charger_vus()
 
-        # 1. Collect from scrapers
+        # 1. Collect from scrapers (English sources mostly work from GitHub US)
         tous_articles = collecter_tous_articles()
 
-        # 2. DeepSeek competitor brief (runs Mondays only)
-        #    Uses DeepSeek training knowledge on Chinese GSE manufacturers
-        #    (Guangtai, CIMC Tianda, etc.) — bypasses the IP-blocking
-        #    problem since no scraping is involved.
+        # 2. Tavily search — real-time web search for Chinese GSE news
+        #    Tavily's servers bypass the IP-blocking problem that prevents
+        #    GitHub Actions US runners from reaching Chinese sources.
+        tavily_articles = rechercher_tavily()
+        if tavily_articles:
+            tous_articles.extend(tavily_articles)
+            log.info(
+                f"Total after Tavily: {len(tous_articles)} articles"
+            )
+
+        # 3. DeepSeek competitor brief (runs Mondays only)
         competitor_articles = synthese_concurrents_deepseek()
         if competitor_articles:
             tous_articles.extend(competitor_articles)
             log.info(
-                f"Total articles after competitor brief: {len(tous_articles)}"
+                f"Total after competitor brief: {len(tous_articles)} articles"
             )
 
-        # 3. Filter
+        # 4. Filter
         articles_pertinents = filtrer_pertinents(tous_articles, vus)
 
-        # 4. Enrich scraped articles with body excerpts
-        #    (competitor brief articles already have rich desc fields)
+        # 5. Enrich scraped articles with body excerpts
+        #    (Tavily and competitor brief articles already have content)
         if articles_pertinents:
             articles_pertinents = enrichir_articles(articles_pertinents)
 
-        # 5. Analyze with DeepSeek
+        # 6. Analyze with DeepSeek
         raw_analyse = (
             analyser_avec_deepseek(articles_pertinents)
             if articles_pertinents
             else ""
         )
 
-        # 6. Save raw output for debugging
+        # 7. Save raw output for debugging
         Path("rapports").mkdir(exist_ok=True, parents=True)
         Path("rapports/debug_raw.txt").write_text(
             raw_analyse or "", encoding="utf-8"
         )
         log.info("Raw DeepSeek output saved to rapports/debug_raw.txt")
 
-        # 7. Detect truncation
+        # 8. Detect truncation
         n_starts  = raw_analyse.count("===SIGNAL_START===")
         n_ends    = raw_analyse.count("===SIGNAL_END===")
         has_sum   = "===SUMMARY_START===" in raw_analyse
         truncated = (n_starts != n_ends) or (n_starts > 0 and not has_sum)
 
-        # 8. Parse
+        # 9. Parse
         signals, summary = parser_analyse(raw_analyse)
 
-        # 9. Generate report
+        # 10. Generate report
         rapport_html = generer_rapport(
             articles_pertinents, signals, summary,
             raw_text=raw_analyse, truncated=truncated
         )
 
-        # 10. Save
+        # 11. Save
         fichier = sauvegarder_rapport(rapport_html)
         print(f"✅ Report generated: {fichier}")
 
-        # 11. Mark articles as seen
+        # 12. Mark articles as seen
         for a in articles_pertinents:
             vus.add(a["id"])
         sauvegarder_vus(vus)
