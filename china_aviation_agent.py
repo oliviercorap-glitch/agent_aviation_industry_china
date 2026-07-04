@@ -1290,12 +1290,19 @@ body{{font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;
 # =============================================================================
 
 def sauvegarder_rapport(rapport_html):
-    dossier = Path("rapports")
+    # CHANGED: "rapports" -> "reports" (the folder name the weekly digest
+    # consolidator scans across all agent repos), filename now includes an
+    # ISO date (YYYY-MM-DD) so the digest's "last 7 days" file selection
+    # picks it up, and we also keep a rolling reports/latest.html copy as a
+    # fallback for the digest when no dated file is found.
+    dossier = Path("reports")
     dossier.mkdir(exist_ok=True, parents=True)
-    fichier = dossier / f"gse_veille_{datetime.now().strftime('%Y%m%d_%H%M')}.html"
+    date_str = datetime.now().strftime("%Y-%m-%d")
+    fichier = dossier / f"gse_veille_report_{date_str}.html"
     with open(fichier, "w", encoding="utf-8") as f:
         f.write(rapport_html)
-    log.info(f"Report saved: {fichier.absolute()}")
+    (dossier / "latest.html").write_text(rapport_html, encoding="utf-8")
+    log.info(f"Report saved: {fichier.absolute()} (and reports/latest.html)")
     return fichier
 
 
@@ -1365,11 +1372,14 @@ def executer_agent():
         )
 
         # 8. Save raw output for debugging
-        Path("rapports").mkdir(exist_ok=True, parents=True)
-        Path("rapports/debug_raw.txt").write_text(
+        # CHANGED: "rapports" -> "reports" so the debug dump lives under the
+        # same folder the digest scans (it's a .txt file so the digest
+        # ignores it anyway, but this keeps everything in one place).
+        Path("reports").mkdir(exist_ok=True, parents=True)
+        Path("reports/debug_raw.txt").write_text(
             raw_analyse or "", encoding="utf-8"
         )
-        log.info("Raw DeepSeek output saved to rapports/debug_raw.txt")
+        log.info("Raw DeepSeek output saved to reports/debug_raw.txt")
 
         # 9. Detect truncation
         n_starts  = raw_analyse.count("===SIGNAL_START===")
