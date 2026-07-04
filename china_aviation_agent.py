@@ -445,6 +445,30 @@ def deduplicate_by_title(articles):
 # =============================================================================
 #  FILTERING — with verbose match logging
 # =============================================================================
+#
+#  Short, all-caps ASCII acronyms (BRI, ANA, WFS, TLD, GSE...) are prone to
+#  false-positive substring matches inside unrelated words (e.g. "BRI"
+#  matching inside "distribution", "hybrid", "fabric", "Bristol"). For those,
+#  require word boundaries. Longer terms, terms with spaces, and Chinese
+#  keywords keep simple substring matching (ported from the APAC agent,
+#  which already had this fix — this script had been missed).
+
+def _est_acronyme_ambigu(kw):
+    return kw.isascii() and kw.isalpha() and kw.isupper() and len(kw) <= 4
+
+
+def _compiler_motifs_keywords():
+    motifs = []
+    for kw in KEYWORDS_GSE:
+        if _est_acronyme_ambigu(kw):
+            motifs.append((kw, re.compile(rf"\b{re.escape(kw)}\b", re.IGNORECASE)))
+        else:
+            motifs.append((kw, None))
+    return motifs
+
+
+KEYWORD_PATTERNS = _compiler_motifs_keywords()
+
 
 def filtrer_pertinents(articles, vus):
     nouveaux = []
@@ -452,7 +476,10 @@ def filtrer_pertinents(articles, vus):
         if a["id"] in vus:
             continue
         texte = (a["titre"] + " " + a.get("desc", "")).lower()
-        matched = [kw for kw in KEYWORDS_GSE if kw.lower() in texte]
+        matched = [
+            kw for kw, motif in KEYWORD_PATTERNS
+            if (motif.search(texte) if motif else kw.lower() in texte)
+        ]
         if matched:
             log.info(
                 f"  KEPT [{a['source']}] {a['titre'][:70]} "
@@ -827,6 +854,40 @@ def construire_prompt_user(articles):
     return "\n".join(lines)
 
 
+# Minimum number of directly-scraped articles (CAAC/CARNOC/airport press etc.)
+# guaranteed a slot in the DeepSeek batch. Without this, a large Tavily haul
+# (which several queries deliberately bias toward Guangtai/CIMC Tianda) can
+# fill the entire DEEPSEEK_MAX_ARTICLES cap on its own, silently starving out
+# the airport-demand-driver news that the scrapers bring in — as observed in
+# production: 36 Tavily + only 14/25 scraped survived a 50-article cap.
+MIN_SCRAPED_QUOTA = 20
+
+
+def select_balanced_batch(articles, max_total=DEEPSEEK_MAX_ARTICLES, min_scraped=MIN_SCRAPED_QUOTA):
+    """Reserve a minimum quota of directly-scraped articles so Tavily/
+    competitor-brief content (which can be thematically concentrated, e.g.
+    Guangtai-heavy queries) never crowds them out entirely."""
+    scraped = [a for a in articles if a["source"] not in ("Tavily Search", "DeepSeek Competitor Intelligence")]
+    other = [a for a in articles if a["source"] in ("Tavily Search", "DeepSeek Competitor Intelligence")]
+
+    reserved_scraped = scraped[:min_scraped]
+    remaining_slots = max_total - len(reserved_scraped)
+    batch = reserved_scraped + other[:remaining_slots]
+
+    # If Tavily/competitor didn't fill the remaining slots, top up with more
+    # scraped articles rather than leaving room unused.
+    if len(batch) < max_total:
+        extra = scraped[len(reserved_scraped):len(reserved_scraped) + (max_total - len(batch))]
+        batch += extra
+
+    log.info(
+        f"Balanced batch: {sum(1 for a in batch if a['source'] not in ('Tavily Search','DeepSeek Competitor Intelligence'))} scraped, "
+        f"{sum(1 for a in batch if a['source'] in ('Tavily Search','DeepSeek Competitor Intelligence'))} Tavily/competitor "
+        f"(of {len(articles)} total relevant articles)"
+    )
+    return batch[:max_total]
+
+
 def analyser_avec_deepseek(articles):
     if not articles:
         log.info("No articles to analyze.")
@@ -836,8 +897,8 @@ def analyser_avec_deepseek(articles):
     if not api_key:
         raise ValueError("DEEPSEEK_API_KEY environment variable not set.")
 
-    # Cap at DEEPSEEK_MAX_ARTICLES to avoid prompt overflow
-    batch = articles[:DEEPSEEK_MAX_ARTICLES]
+    # Balanced selection instead of a plain slice — see select_balanced_batch()
+    batch = select_balanced_batch(articles, DEEPSEEK_MAX_ARTICLES, MIN_SCRAPED_QUOTA)
     if len(articles) > DEEPSEEK_MAX_ARTICLES:
         log.warning(
             f"Capped input at {DEEPSEEK_MAX_ARTICLES} articles "
