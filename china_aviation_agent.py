@@ -415,7 +415,31 @@ def collecter_tous_articles():
         tous.extend(articles)
         time.sleep(1.5)
     log.info(f"Total raw articles collected: {len(tous)}")
-    return tous
+    return deduplicate_by_title(tous)
+
+
+def _normaliser_titre(titre):
+    """Normalise a title for near-duplicate detection across mirror sites
+    (e.g. 'China Airport News (CAAC)' and 'CAAC News Portal' frequently
+    republish the exact same headline under different URLs, which doubles
+    the volume sent to DeepSeek for zero added information)."""
+    return re.sub(r"\s+", "", titre.strip().lower())
+
+
+def deduplicate_by_title(articles):
+    seen_titres = set()
+    deduped = []
+    n_dropped = 0
+    for a in articles:
+        key = _normaliser_titre(a["titre"])
+        if key in seen_titres:
+            n_dropped += 1
+            continue
+        seen_titres.add(key)
+        deduped.append(a)
+    if n_dropped:
+        log.info(f"Title-based dedup: dropped {n_dropped} near-duplicate article(s) from mirror sources")
+    return deduped
 
 
 # =============================================================================
@@ -806,7 +830,7 @@ def construire_prompt_user(articles):
 def analyser_avec_deepseek(articles):
     if not articles:
         log.info("No articles to analyze.")
-        return ""
+        return "", None
 
     api_key = os.environ.get("DEEPSEEK_API_KEY")
     if not api_key:
@@ -834,11 +858,17 @@ def analyser_avec_deepseek(articles):
             temperature=0.2,
         )
         raw = response.choices[0].message.content
-        log.info(f"DeepSeek response: {len(raw)} chars")
-        return raw
+        # finish_reason == "length" is the AUTHORITATIVE signal that the API
+        # cut the response short because max_tokens was reached. Everything
+        # else (e.g. a stray unmatched delimiter from a slightly malformed
+        # block) is a formatting quirk, not a real content loss, and should
+        # not trigger the same alarming banner.
+        finish_reason = response.choices[0].finish_reason
+        log.info(f"DeepSeek response: {len(raw)} chars, finish_reason={finish_reason}")
+        return raw, finish_reason
     except Exception as e:
         log.error(f"DeepSeek API error: {e}")
-        return ""
+        return "", None
 
 
 # =============================================================================
@@ -1107,14 +1137,17 @@ def generer_rapport(articles, signals, summary, raw_text="", truncated=False):
     risk_html  = md(summary.get("main_risk", ""))
 
     # --- Truncation warning banner ---
+    # Only shown for confirmed API-level truncation (finish_reason=="length"),
+    # not for benign delimiter-count mismatches — see executer_agent() step 9.
     trunc_banner = ""
     if truncated:
         trunc_banner = """
 <div style="background:#fef9c3;border:1px solid #fde047;border-radius:8px;
             padding:12px 16px;margin-bottom:24px;font-size:13px;color:#713f12;">
-  <strong>Warning:</strong> DeepSeek output was truncated — some signals or the
-  summary block may be missing. Raise <code>max_tokens</code> or reduce the
-  number of input articles.
+  <strong>Warning:</strong> DeepSeek confirmed its response was cut off
+  (finish_reason=length) — some signals or the summary block are likely
+  missing. Reduce DEEPSEEK_MAX_ARTICLES; deepseek-chat's output ceiling is a
+  hard limit, so raising max_tokens further will not help.
 </div>"""
 
     # --- Sources list ---
@@ -1365,10 +1398,10 @@ def executer_agent():
             articles_pertinents = enrichir_articles(articles_pertinents)
 
         # 7. Analyze with DeepSeek
-        raw_analyse = (
+        raw_analyse, finish_reason = (
             analyser_avec_deepseek(articles_pertinents)
             if articles_pertinents
-            else ""
+            else ("", None)
         )
 
         # 8. Save raw output for debugging
@@ -1382,10 +1415,42 @@ def executer_agent():
         log.info("Raw DeepSeek output saved to reports/debug_raw.txt")
 
         # 9. Detect truncation
+        # Two distinct signals, deliberately not conflated:
+        # - api_truncated: the API itself reports finish_reason == "length",
+        #   meaning max_tokens was genuinely hit and content was cut off.
+        #   This is the authoritative signal and the only one that drives
+        #   the alarming banner in the report.
+        # - format_mismatch: the delimiter counts don't line up (e.g. one
+        #   dangling SIGNAL_START with no matching SIGNAL_END). This can
+        #   happen even in short, well-within-budget responses due to an
+        #   isolated model formatting slip on a single low-priority item —
+        #   it usually just means that one item was silently dropped, not
+        #   that the whole report is unreliable, so it's logged but does
+        #   not trigger the same severity as a real API-level truncation.
         n_starts  = raw_analyse.count("===SIGNAL_START===")
         n_ends    = raw_analyse.count("===SIGNAL_END===")
         has_sum   = "===SUMMARY_START===" in raw_analyse
-        truncated = (n_starts != n_ends) or (n_starts > 0 and not has_sum)
+        api_truncated   = (finish_reason == "length")
+        format_mismatch = (n_starts != n_ends) or (n_starts > 0 and not has_sum)
+
+        if api_truncated:
+            log.warning(
+                "TRUNCATION CONFIRMED BY API: finish_reason=length. "
+                "Reduce DEEPSEEK_MAX_ARTICLES (currently %d) — deepseek-chat's "
+                "output ceiling is a hard limit, raising max_tokens further "
+                "will not help.", DEEPSEEK_MAX_ARTICLES,
+            )
+        elif format_mismatch:
+            log.warning(
+                f"Formatting mismatch (NOT a real truncation — response was "
+                f"only {len(raw_analyse)} chars, far under the token budget): "
+                f"{n_starts} SIGNAL_START vs {n_ends} SIGNAL_END, "
+                f"summary_present={has_sum}. Likely one malformed/dropped "
+                f"item near the end of generation — see reports/debug_raw.txt "
+                f"to find the exact spot."
+            )
+
+        truncated = api_truncated  # only the authoritative signal drives the report banner
 
         # 10. Parse
         signals, summary = parser_analyse(raw_analyse)
