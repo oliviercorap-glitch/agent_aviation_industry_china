@@ -1,160 +1,187 @@
 ===SIGNAL_START===
 SIGNAL_ID: 1
 IMPACT: WATCH
-HEADLINE: Qingdao Airport expands Korea cargo flights beyond 10 weekly rotations
-READING: Qingdao Jiaodong International Airport has increased scheduled China-Korea cargo frequencies to more than 10 per week, deepening the Shandong-Korea air freight corridor. Higher freighter rotation density at a single station compresses turnaround windows and raises simultaneous demand for cargo handling equipment. This is a leading indicator for cargo GSE rather than passenger GSE.
-BUSINESS_IMPACT: Incremental freighter rotations at Qingdao imply additional demand for cargo loaders, container/pallet transporters, tow tractors and de-icing capacity, likely in the low tens of units over the next 12-24 months. Korea-facing e-commerce and cross-border volumes are the driver, so the procurement cycle will be tied to handler contract renewals at the station rather than to airline fleet orders.
-ACTION: Have the North China sales lead confirm which ground handler holds the Qingdao Korea-cargo contract and whether any 2026-2027 equipment tender is scheduled; report back within two weeks.
+HEADLINE: Qingdao Airport Korea cargo frequency rises above 10 weekly rotations
+READING: Qingdao Airport has increased scheduled China-Korea cargo flights to more than 10 per week, signalling sustained air freight demand on the Shandong-Korea corridor. Higher freighter rotation density drives utilisation of cargo loaders, transporters, pallet dollies and ULD handling equipment at the ramp.
+BUSINESS_IMPACT: Incremental freighter frequency at a single mid-size hub typically translates into low double-digit annual demand growth for cargo GSE, a segment where TLD competes with Guangtai and CIMC Tianda. This is a contract-level opportunity with ground handlers and the airport cargo terminal rather than a fleet-wide shift.
+ACTION: Ask the North China sales lead to confirm which handler operates the Qingdao-Korea freighter ramp and whether any cargo GSE tender is scheduled in Q4 2026.
 ===SIGNAL_END===
 
 ===SIGNAL_START===
 SIGNAL_ID: 2
 IMPACT: WATCH
-HEADLINE: Shanghai Pudong wins ACI Asia-Pacific Best Airport over 40 million passengers
-READING: Pudong received the ACI Asia-Pacific award for airports above 40 million annual passengers, confirming its position as the region's benchmark hub for service quality. Award-driven airports typically accelerate terminal and apron modernization to defend the ranking, which pulls forward equipment refresh cycles. Pudong is also a flagship reference site for electric GSE deployment in China.
-BUSINESS_IMPACT: Pudong's continued investment posture supports premium-priced electric tractor, belt loader and pushback demand, and strengthens the case for TLD to position high-spec electric units rather than competing on price. The award also raises the visibility of incumbent suppliers already embedded at the station, so displacement will require a service and TCO argument rather than a product argument.
-ACTION: Use the ACI award as a relationship hook to request a Q4 2026 review meeting with Pudong's ground services and procurement leadership on fleet electrification roadmap.
+HEADLINE: Yutian Wanfang hits full-year 67-tonne cargo target early
+READING: Xinjiang Airport Group's Yutian Wanfang Airport completed its entire 2026 cargo and mail target of 67 tonnes ahead of schedule, with passenger and cargo volumes both improving over the summer peak. Small western airports hitting targets early indicates accelerating regional traffic and equipment needs.
+BUSINESS_IMPACT: Small but fast-growing western airports are a volume play for entry-level GSE such as baggage tractors, belt loaders and towbars, where price competition from domestic OEMs is intense. Early target completion strengthens the case for capacity expansion capex in the 2027 budget cycle.
+ACTION: Add Yutian Wanfang and the wider Xinjiang Airport Group expansion pipeline to the regional opportunity tracker for 2027 pre-tender engagement.
 ===SIGNAL_END===
 
 ===SIGNAL_START===
 SIGNAL_ID: 3
-IMPACT: WATCH
-HEADLINE: Beijing Daxing adds another smart security lane as passenger volumes climb
-READING: Daxing Airport has commissioned an additional "Easy Security" smart screening channel, part of a sustained drive to raise throughput per lane. Smart lane expansion is a proxy for terminal capacity pressure and rising passenger numbers at Beijing's second hub. It signals continued capital spending at Daxing despite a soft broader construction pipeline.
-BUSINESS_IMPACT: Rising Daxing throughput supports baggage handling, transfer and apron equipment demand, and reinforces Beijing as a two-hub market where GSE fleet sizes must grow in step with lane and gate count. For TLD, the relevant opportunity is in tow tractors, baggage tractors and electric belt loaders tied to gate expansion rather than in security equipment itself.
-ACTION: Track Daxing's terminal and gate expansion schedule for 2027 and map it against the station's current GSE fleet age profile; prepare a replacement-cycle proposal by end of Q4 2026.
+IMPACT: INFO
+HEADLINE: Pudong named ACI best Asia-Pacific airport above 40 million passengers
+READING: Shanghai Pudong received the ACI award for best Asia-Pacific airport in the over-40-million-passenger category, confirming its position as one of the region's highest-throughput hubs. Award recognition usually accompanies continued investment in terminal and ramp modernisation.
+BUSINESS_IMPACT: Pudong is a flagship reference site for electric and autonomous GSE; a strong operational reputation supports premium positioning for TLD equipment against lower-cost domestic rivals. No immediate procurement signal, but useful for tender qualification and marketing.
+ACTION: Ensure the Pudong account team uses this award in Q4 tender documentation as evidence of the airport's modernisation trajectory.
 ===SIGNAL_END===
 
 ===SIGNAL_START===
 SIGNAL_ID: 4
 IMPACT: INFO
-HEADLINE: Yutian Wanfang Airport hits full-year 67-tonne cargo target early
-READING: Xinjiang's Yutian Wanfang Airport completed its entire 2026 cargo and mail target of 67 tonnes ahead of schedule, with both passenger and cargo traffic described as improving. This is a small frontier airport, but it illustrates the breadth of air cargo growth across western China. Volumes at this scale do not justify dedicated GSE fleets.
-BUSINESS_IMPACT: No direct equipment opportunity at Yutian itself, but the pattern of early target completion across Xinjiang airports supports the case for regional fleet pooling and shared GSE services in western China. It also supports the medium-term case for cargo handling attachments and small tow tractors in the Xinjiang cluster.
-ACTION: Log Yutian as a data point in the Xinjiang regional demand model; no immediate commercial action required.
+HEADLINE: Daxing Airport adds another smart security lane
+READING: Beijing Daxing Airport expanded its smart security screening channels, part of a broader push on digital passenger flow. While security screening is outside core GSE scope, it confirms Daxing's ongoing automation investment cycle.
+BUSINESS_IMPACT: Airports investing in automation typically extend the logic to ramp operations, creating openings for electric and telematics-enabled GSE. Daxing remains a high-visibility reference account for TLD's electrification roadmap in China.
+ACTION: Monitor Daxing's 2027 equipment plan for any ramp automation or electric fleet tender linked to its smart-airport programme.
 ===SIGNAL_END===
 
 ===SIGNAL_START===
 SIGNAL_ID: 5
 IMPACT: INFO
-HEADLINE: Changbaishan Airport case selected for Air Silk Road cooperation showcase
-READING: Changbaishan Airport's branch company was recognized as an outstanding demonstration case at the 8th Air Silk Road International Cooperation Conference. The recognition reflects continued policy attention and potential funding flows toward smaller northeastern airports under the Air Silk Road framework. It is a policy signal rather than a procurement signal.
-BUSINESS_IMPACT: Air Silk Road recognition often precedes infrastructure and equipment upgrade budgets at secondary airports, which could open mid-term opportunities for regional ground support equipment supply in Jilin and neighbouring provinces. The scale per airport is small, so value would come from aggregated multi-airport framework agreements.
-ACTION: Monitor CAAC and provincial budget announcements for northeastern secondary airport upgrades in the 2027 plan cycle; no action this week.
+HEADLINE: Zhuhai Airport courts Hong Kong outbound tourism traffic
+READING: Zhuhai Airport held a dedicated Hong Kong tourism promotion event under its "fly via Zhuhai" campaign, aiming to capture cross-border leisure demand. Greater Bay Area airport competition for Hong Kong passengers is intensifying.
+BUSINESS_IMPACT: Traffic diversion to Zhuhai would support incremental narrow-body turnaround activity and modest GSE demand, but the volumes are small relative to Guangzhou, Shenzhen and Hong Kong. Watch for follow-on capacity announcements rather than acting now.
+ACTION: No immediate action; track Zhuhai passenger throughput in the next two monthly CAAC statistics releases.
 ===SIGNAL_END===
 
 ===SIGNAL_START===
 SIGNAL_ID: 6
 IMPACT: INFO
-HEADLINE: Zhuhai Airport courts Hong Kong outbound tourism with dedicated roadshow
-READING: Zhuhai Airport held a Hong Kong travel trade promotion under the "Fly via Zhuhai" theme, positioning itself as an alternative gateway for Hong Kong passengers. This reflects intensifying competition among Greater Bay Area airports for the same catchment. Cross-border passenger diversion has direct implications for narrow-body turnaround frequency at Zhuhai.
-BUSINESS_IMPACT: If Zhuhai succeeds in capturing Hong Kong-origin traffic, narrow-body movements and turnaround cycles rise, supporting demand for passenger steps, belt loaders and tow tractors at a station that currently operates a modest GSE fleet. The Greater Bay Area remains a contested market where Guangzhou, Shenzhen, Hong Kong and Zhuhai all compete for the same handler contracts.
-ACTION: Include Zhuhai in the Greater Bay Area station-level demand review and check whether the incumbent handler has an open equipment framework for 2027.
+HEADLINE: Changbaishan Airport case selected for Air Silk Road showcase
+READING: Changbaishan Airport's branch case was recognised among outstanding demonstrations at the 8th Air Silk Road international cooperation conference. The recognition highlights continued policy attention to regional and Belt-and-Road-linked airport development.
+BUSINESS_IMPACT: Air Silk Road visibility supports medium-term airport upgrade funding in northeast and western China, a pipeline where TLD can position standard GSE packages. No near-term procurement impact.
+ACTION: Keep Changbaishan and neighbouring northeast regional airports on the long-range pipeline list for 2027-2028.
 ===SIGNAL_END===
 
 ===SIGNAL_START===
 SIGNAL_ID: 7
 IMPACT: INFO
-HEADLINE: Tianjin Binhai completes 2026 thunderstorm season operations without disruption
-READING: Tianjin Binhai Airport reported coordinated operations through the 2026 thunderstorm season, emphasizing cross-departmental response. Severe weather readiness is a recurring driver of de-icing, towing and backup power equipment requirements. The report confirms operational stability rather than new investment.
-BUSINESS_IMPACT: No immediate procurement signal, but sustained emphasis on all-weather capability at northern Chinese airports supports the medium-term case for de-icing rigs, glycol recovery units and weather-resilient electric GSE. Northern stations remain the strongest candidates for winter equipment packages.
-ACTION: Keep Tianjin in the northern de-icing equipment target list for the 2027 pre-winter sales window; no action this week.
+HEADLINE: Tianjin Binhai reviews 2026 thunderstorm season operations
+READING: Tianjin Binhai Airport published its 2026 thunderstorm season operational support review, emphasising coordination and rapid response. Severe weather readiness is a recurring driver of equipment reliability requirements.
+BUSINESS_IMPACT: Storm-season operational reviews often precede investment in all-weather-capable GSE and improved fleet availability, including de-icing and covered boarding equipment. This is a soft signal for future replacement demand.
+ACTION: Have the Tianjin account manager request the airport's post-season equipment gap list as a lead indicator for 2027 orders.
 ===SIGNAL_END===
 
 ===SIGNAL_START===
 SIGNAL_ID: 8
 IMPACT: INFO
 HEADLINE: Capital Airport Group holds expanded party committee meeting
-READING: Beijing Capital Airport Group convened an expanded party committee meeting, a routine governance event that typically precedes strategic or personnel direction setting. Such meetings can signal upcoming investment priorities or organizational restructuring across the group's airport portfolio. No specific commercial content was disclosed.
-BUSINESS_IMPACT: Capital Airport Group controls Beijing Capital and Daxing-related assets and is a major GSE buyer; any restructuring or capex re-prioritization would affect tender timing across both hubs. For now the signal is organizational rather than commercial.
-ACTION: Monitor follow-up announcements from Capital Airport Group for capex or procurement restructuring within the next 30 days.
+READING: Capital Airport Group convened an expanded party committee meeting covering group-wide priorities. Such meetings frequently set the tone for capital investment and operational efficiency targets across Beijing's airports.
+BUSINESS_IMPACT: Any efficiency or cost-control emphasis from Capital Airport Group could slow discretionary GSE capex while favouring replacement and electrification with lower total cost of ownership. Watch for follow-on procurement guidance.
+ACTION: Monitor Capital Airport Group procurement notices over the next 30 days for changes in tender frequency or specification requirements.
 ===SIGNAL_END===
 
 ===SIGNAL_START===
 SIGNAL_ID: 9
 IMPACT: INFO
-HEADLINE: Capital Airport commercial unit pushes asset utilization and lean operations
-READING: Capital Airport Commercial Company is pursuing lean measures to extract new value from existing resources, part of a broader efficiency drive at Beijing's airports. Efficiency-focused management at airport groups often translates into extended equipment service life and slower replacement cycles. This is a mild negative signal for near-term GSE replacement volumes.
-BUSINESS_IMPACT: If Capital Airport Group extends asset life across its commercial and operational estate, GSE replacement tenders at Beijing Capital and Daxing could slip by 6-12 months, pressuring near-term order intake. TLD should counter with total-cost-of-ownership and retrofit arguments rather than new-unit pitches.
-ACTION: Prepare a retrofit, refurbishment and battery-replacement offering for Beijing stations to capture demand even if new-unit capex is deferred.
+HEADLINE: Capital Airport commercial arm pushes asset utilisation efficiency
+READING: Capital Airport Commercial Company is activating value from existing resources through lean measures, part of a group-wide efficiency drive. This mirrors a broader Chinese airport focus on sweating existing assets rather than expanding fleets.
+BUSINESS_IMPACT: An asset-utilisation narrative at Beijing airports can extend equipment replacement cycles and pressure new-unit sales, while opening opportunities in refurbishment, parts and service contracts. TLD should weight aftermarket revenue in its Beijing planning.
+ACTION: Instruct the Beijing service team to prepare a fleet refurbishment and parts proposal for Capital Airport Group accounts before year-end.
 ===SIGNAL_END===
 
 ===SIGNAL_START===
 SIGNAL_ID: 10
 IMPACT: INFO
-HEADLINE: Urumqi Airport security unit wins service innovation award
-READING: Urumqi International Airport's aviation security and fire rescue department was recognized with a service innovation award at the 2026 civil aviation service and air-travel integration conference. Recognition of this kind typically supports continued investment in airport service infrastructure. It is a reputational rather than commercial signal.
-BUSINESS_IMPACT: No direct GSE procurement implication, but continued recognition and investment at Urumqi supports the case for Xinjiang as a growing regional equipment market. Fire rescue and emergency response recognition can also precede investment in specialized airport emergency vehicles.
-ACTION: No action required; retain Urumqi in the Xinjiang regional opportunity map.
+HEADLINE: Capital Airport Security Company strengthens staff ideological training
+READING: Beijing Capital Airport Security Company launched a comprehensive employee ideological education programme. This is an internal organisational initiative with no direct equipment dimension.
+BUSINESS_IMPACT: No measurable GSE demand or competitive consequence; included only as background on the operating posture of a major Beijing airport subsidiary.
+ACTION: No action required.
 ===SIGNAL_END===
 
 ===SIGNAL_START===
 SIGNAL_ID: 11
 IMPACT: INFO
-HEADLINE: Daxing security staff mentoring program highlights workforce development focus
-READING: Daxing Airport's security department publicized a "master-apprentice" mentoring program for screeners, reflecting continued investment in human capital at the station. Workforce development at airports often accompanies equipment modernization to raise productivity per head. The signal is indirect.
-BUSINESS_IMPACT: Rising labor costs and training investment at Chinese hubs strengthen the economic case for labor-substituting GSE such as automated tow tractors and self-propelled boarding stairs. This supports TLD's electrification and automation narrative in Beijing.
-ACTION: Incorporate labor-cost substitution data into the Beijing Daxing electrification business case for the next customer review.
+HEADLINE: Urumqi Airport fire and rescue unit wins service innovation award
+READING: Urumqi International Airport's aviation safety and fire rescue department was recognised with a service innovation award at the 2026 civil aviation service and air travel integration conference. Recognition reflects continued investment in airport safety capabilities.
+BUSINESS_IMPACT: Safety and rescue investment is adjacent to, not directly within, core GSE categories, though it signals a modernising airport budget. Limited near-term commercial impact for TLD.
+ACTION: No immediate action; retain Urumqi in the Xinjiang regional account map for future ramp equipment tenders.
 ===SIGNAL_END===
 
 ===SIGNAL_START===
 SIGNAL_ID: 12
 IMPACT: INFO
-HEADLINE: Capital Airport security company intensifies staff ideological training
-READING: Beijing Capital Airport Security Company launched a comprehensive employee ideological education program, a routine state-owned enterprise governance activity. Such programs indicate organizational discipline priorities rather than commercial direction. No equipment or procurement content is implied.
-BUSINESS_IMPACT: No direct impact on GSE demand or competitive positioning. It does confirm that state-owned airport service subsidiaries remain subject to political and governance priorities that can slow procurement decision cycles.
+HEADLINE: JGS Airport runs voluntary blood donation activity
+READING: Ji'an Jinggangshan Airport organised a community blood donation event. This is a corporate social responsibility activity with no connection to ground operations or equipment procurement.
+BUSINESS_IMPACT: No relevance to GSE demand, pricing or competition.
 ACTION: No action required.
 ===SIGNAL_END===
 
 ===SIGNAL_START===
 SIGNAL_ID: 13
 IMPACT: INFO
-HEADLINE: Baoshan Airport emergency medical flight highlights regional connectivity role
-READING: Baoshan Airport in Yunnan coordinated an emergency flight carrying an ill infant to Kunming, illustrating the social service role of regional airports. Emergency and medical transport capability is a policy priority for China's regional aviation network. No commercial equipment signal.
-BUSINESS_IMPACT: No direct GSE implication, though continued policy support for regional airports underpins long-term demand for small tow tractors, ground power units and passenger steps at secondary Yunnan stations.
+HEADLINE: Daxing security staff mentorship programme continues
+READING: Beijing Daxing Airport's security department highlighted its apprentice-style mentorship programme for screeners. Workforce development at a major hub, but outside GSE scope.
+BUSINESS_IMPACT: No direct commercial consequence; relevant only as context on Daxing's operational maturity.
 ACTION: No action required.
 ===SIGNAL_END===
 
 ===SIGNAL_START===
 SIGNAL_ID: 14
 IMPACT: INFO
-HEADLINE: Capital Airport commercial unit completes 2026 summer travel peak support
-READING: Capital Airport Commercial Company reported completion of its 2026 summer travel peak support tasks, confirming a busy but well-managed peak season at Beijing Capital. Strong summer throughput supports the case for equipment utilization at high levels. It is a retrospective operational report.
-BUSINESS_IMPACT: Sustained high utilization at Beijing Capital during peak season supports the argument for fleet renewal on reliability grounds, even where capex is constrained. High utilization also drives faster wear on tractors and loaders, creating aftermarket and spare parts demand.
-ACTION: Push aftermarket, spare parts and service contract offerings to Beijing Capital handlers ahead of the winter season.
+HEADLINE: Capital Airport security firm receives commendation banner
+READING: Beijing Capital Airport Security Company received a customer commendation for returning lost documents. A routine service recognition item.
+BUSINESS_IMPACT: No GSE market relevance.
+ACTION: No action required.
 ===SIGNAL_END===
 
 ===SIGNAL_START===
 SIGNAL_ID: 15
 IMPACT: INFO
-HEADLINE: Beijing Capital Airport showcases service quality in adverse weather
-READING: Beijing Capital Airport publicized service performance during adverse weather operations, emphasizing passenger care. Adverse weather capability is a recurring driver of de-icing and ground support equipment readiness. The report is reputational rather than procurement-related.
-BUSINESS_IMPACT: Continued emphasis on adverse weather performance at northern hubs supports medium-term demand for de-icing rigs, glycol recovery and weather-hardened electric GSE. No near-term order signal.
-ACTION: No action required; retain Beijing Capital in the northern de-icing target list.
+HEADLINE: Baoshan Airport medical diversion flight to Kunming
+READING: Baoshan Airport coordinated an emergency diversion to assist an ill infant on a flight to Kunming. A single operational event with no equipment procurement dimension.
+BUSINESS_IMPACT: No relevance to GSE demand or competitive dynamics.
+ACTION: No action required.
 ===SIGNAL_END===
 
 ===SIGNAL_START===
 SIGNAL_ID: 16
 IMPACT: INFO
-HEADLINE: Bidcenter listings show no aviation or GSE tender activity
-READING: The five Bidcenter procurement notices cover medical mutual aid insurance, hospital escort services, hospital minor repairs, territorial spatial planning assessment and a pickleball tournament. None relate to aviation, airports or ground support equipment. These are noise items for the GSE market.
-BUSINESS_IMPACT: No commercial relevance to TLD. Their presence in the feed indicates the tender monitoring filter needs tightening to avoid diluting signal quality.
-ACTION: Adjust the tender-monitoring keyword filter to exclude healthcare, sports and land-planning categories.
+HEADLINE: Capital Airport commercial arm completes 2026 summer peak support
+READING: Capital Airport Commercial Company reported completion of its 2026 summer travel peak support tasks through multiple measures. Confirms a normal, well-managed peak season at Beijing's airports.
+BUSINESS_IMPACT: No incremental equipment signal; the summer peak has passed without reported operational strain that would trigger emergency GSE procurement.
+ACTION: No action required.
 ===SIGNAL_END===
 
 ===SIGNAL_START===
 SIGNAL_ID: 17
 IMPACT: INFO
-HEADLINE: Multiple CAAC airport news pages return 404 errors
-READING: Fifteen China Airport News items dated 9-11 September 2026 returned 404 errors, including reports on Daxing smart security, Capital Airport Group meetings, Tianjin Binhai weather operations, Qingdao-Korea cargo, Pudong's ACI award and Yutian Wanfang cargo. Content is only partially recoverable from headlines and URLs. This represents a data-quality failure in the monitoring pipeline.
-BUSINESS_IMPACT: Unrecoverable source content creates blind spots in the daily signal set and risks missed competitor or tender announcements. The Qingdao cargo and Pudong ACI items in particular carried genuine commercial relevance that could only be partially assessed.
-ACTION: Fix the CAAC feed scraper or switch to an alternate CAAC mirror within 48 hours, and backfill the 9-11 September items from cached or syndicated sources.
+HEADLINE: Sany Group tenders for motor stator and rotor core tooling
+READING: Sany Group's transmission division issued a tender for stamping dies used in stator and rotor cores, a component category tied to electric motor production. Sany is a major Chinese industrial group with growing electric drive activities.
+BUSINESS_IMPACT: This is an upstream electric motor component tender, not a GSE procurement, but it reflects continued domestic capacity build-out in electric drivetrains that underpins Chinese electric GSE cost competitiveness. Relevant as a medium-term margin pressure indicator for TLD's electric product line.
+ACTION: No immediate action; track Sany's electric drive capacity expansion as a proxy for domestic electric GSE cost curves.
+===SIGNAL_END===
+
+===SIGNAL_START===
+SIGNAL_ID: 18
+IMPACT: INFO
+HEADLINE: Coal preparation plant safety upgrade tender in Guizhou
+READING: A tender was published for safety technology upgrade and construction work at a pulverised coal preparation workshop. This is a mining and energy sector project unrelated to aviation or ground handling.
+BUSINESS_IMPACT: No connection to the GSE market or its demand drivers.
+ACTION: No action required.
+===SIGNAL_END===
+
+===SIGNAL_START===
+SIGNAL_ID: 19
+IMPACT: INFO
+HEADLINE: Guizhou Panjiang coal mine training materials procurement
+READING: Guizhou Panjiang Clean Coal Company's Yueliangtian mine issued an inquiry for training materials on coal mine hazard standards and gas prevention. A mining sector procurement with no aviation link.
+BUSINESS_IMPACT: No relevance to TLD's GSE business.
+ACTION: No action required.
+===SIGNAL_END===
+
+===SIGNAL_START===
+SIGNAL_ID: 20
+IMPACT: INFO
+HEADLINE: CAAC airport news portal returns 404 errors across multiple articles
+READING: Numerous China Airport News items dated 9-11 September 2026 returned page-not-found errors, indicating a portal migration or content access issue. This degrades the reliability of a key open-source monitoring channel.
+BUSINESS_IMPACT: Loss of a primary Chinese-language airport news feed reduces early visibility on airport tenders, capacity announcements and competitor mentions in the China market. This is a market-intelligence risk rather than a commercial one.
+ACTION: Task the market intelligence team to establish an alternative feed, such as direct CAAC procurement portals and provincial airport group websites, within one week.
 ===SIGNAL_END===
 
 ===SUMMARY_START===
-EXECUTIVE_SUMMARY: Today's feed is dominated by operational, governance and service-quality news from Chinese airports rather than hard commercial signals, with the most substantive items being Qingdao's expansion of Korea cargo frequencies beyond 10 weekly rotations, Pudong's ACI Asia-Pacific best airport award for the 40-million-plus category, and Daxing's continued smart security lane build-out. No GSE manufacturer or competitor was named in any article, so there is no competitive threat to respond to today. The efficiency and asset-utilization messaging coming out of Capital Airport Group is a mild negative for near-term replacement volumes in Beijing and argues for leading with retrofit, battery-replacement and aftermarket offers rather than new-unit capex pitches. Separately, fifteen CAAC articles returned 404 errors, degrading feed quality and creating a monitoring blind spot that must be fixed. Priority actions are the Qingdao handler and tender check, a Pudong electrification review meeting request, and repair of the CAAC data pipeline.
-WATCH_1: Qingdao Jiaodong Korea-cargo handler contract status and any 2026-2027 cargo GSE tender release.
-WATCH_2: Capital Airport Group follow-up announcements on capex or procurement restructuring affecting Beijing Capital and Daxing tender timing.
-WATCH_3: CAAC feed reliability and backfill of the 9-11 September items, particularly Qingdao cargo and Pudong ACI coverage.
-MAIN_RISK: Efficiency-driven asset-life extension at Beijing airport group assets could defer GSE replacement tenders by 6-12 months, softening near-term order intake in TLD's largest Chinese hub market.
+EXECUTIVE_SUMMARY: This week's China and Asia-Pacific feed produced no competitor product launches, contract wins or pricing moves, and no major fleet or tender announcements; the strongest genuine signals are incremental cargo frequency growth at Qingdao, early cargo target completion at Yutian Wanfang, and continued efficiency-driven asset utilisation messaging from Capital Airport Group. The practical read-through is modest, steady demand growth in cargo and regional airport segments, with Beijing hubs leaning toward sweating existing assets rather than expanding fleets, which favours aftermarket, refurbishment and electrification-with-lower-TCO propositions over new-unit volume. A notable operational issue is that the CAAC China Airport News portal returned 404 errors across most items, degrading our open-source visibility in the single most important market. No competitor was named in any article this week, so no competitor signal is warranted. Recommended posture is to convert the cargo and regional growth signals into targeted account engagement while fixing the intelligence pipeline gap.
+WATCH_1: Qingdao Airport China-Korea freighter frequency and any associated cargo GSE tender from ground handlers or the cargo terminal operator.
+WATCH_2: Capital Airport Group procurement notices for signs of capex restraint or a shift toward replacement, refurbishment and electrification tenders.
+WATCH_3: Restoration of the CAAC China Airport News portal and identification of alternative Chinese-language airport and tender feeds.
+MAIN_RISK: The biggest risk this week is blind-spot exposure from the CAAC news portal outage, which could cause TLD to miss a competitor move or tender in China without warning.
 ===SUMMARY_END===
