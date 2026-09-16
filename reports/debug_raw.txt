@@ -1,151 +1,187 @@
 ===SIGNAL_START===
 SIGNAL_ID: 1
-IMPACT: WATCH
-HEADLINE: Qingdao Airport hits 20 million passengers 10 days earlier than 2025
-READING: Qingdao Jiaodong International Airport surpassed 20 million passengers ten days ahead of last year's pace, implying full-year traffic growth in the high single digits. Sustained double-digit growth at a major North China hub typically precedes apron capacity pressure and fleet expansion by base carriers.
-BUSINESS_IMPACT: A 5% traffic increase at a hub of this size historically correlates with roughly 10 additional aircraft tractors plus matching baggage and belt-loader demand. TLD should treat Qingdao as a priority account for 2027 fleet replacement and rental contract renewal, particularly for electric towbarless tractors.
-ACTION: Instruct the North China sales team to request Qingdao Airport Group's 2027 GSE procurement and electrification plan within two weeks and position TLD's electric tractor range early.
+IMPACT: IMPORTANT
+HEADLINE: Fuzhou Airport T2 opens, doubling terminal and runway capacity
+READING: Fuzhou Changle International Airport has officially commissioned its Terminal 2, moving to dual-terminal, dual-runway coordinated operations. This is a structural capacity step-change at a major Fujian province hub serving Taiwan Strait and Southeast Asia traffic. New terminal footprints typically trigger a full GSE fleet refresh rather than incremental top-ups.
+BUSINESS_IMPACT: A dual-terminal operation requires duplicated ground support fleets — tractors, belt loaders, tugs, GPUs, and passenger stairs — across both terminals, with ramp equipment demand potentially rising 40-60% versus single-terminal baseline. TLD should position for the associated handler tender cycle, likely to be issued by the airport group or incumbent handlers within 6-12 months.
+ACTION: Immediately task the China sales team to identify Fuzhou's ground handling incumbents and airport group procurement contacts, and register TLD as a qualified supplier before tender specifications are locked.
 ===SIGNAL_END===
 
 ===SIGNAL_START===
 SIGNAL_ID: 2
-IMPACT: WATCH
-HEADLINE: Shijiazhuang Zhengding adds smart boarding-bridge display guidance
-READING: Shijiazhuang Zhengding International Airport is installing intelligent display and guidance systems on its passenger boarding bridges, part of a broader Chinese airport push toward digital apron and gate infrastructure. Bridge upgrades are frequently bundled with adjacent GSE and ground-handling equipment tenders.
-BUSINESS_IMPACT: Smart bridge retrofits signal an airport in active capital-investment mode, which historically opens follow-on tenders for boarding-bridge-mounted equipment, PCAir, and ground power units where TLD competes. Early engagement could secure specification influence before tender documents are finalized.
-ACTION: Have the regional team verify whether the bridge upgrade package includes GSE scope and register TLD as a qualified supplier with Hebei Airport Group this month.
+IMPACT: IMPORTANT
+HEADLINE: Qingdao Airport hits 20 million passengers 10 days ahead of 2025
+READING: Qingdao Jiaodong International Airport surpassed 20 million annual passengers earlier than last year, confirming sustained double-digit traffic growth at a major Northeast Asia gateway. Accelerated throughput means existing GSE fleets are running at higher utilization and approaching replacement thresholds sooner than planned.
+BUSINESS_IMPACT: Faster-than-expected traffic growth compresses equipment replacement cycles and increases spare parts and refurbishment demand in the near term, with new unit purchases following within 12-18 months. TLD's aftermarket and leasing revenue in Shandong should be revised upward for FY2027 planning.
+ACTION: Request updated fleet utilization data from Qingdao handlers and prepare a lease-versus-buy proposal for electric tractor replacement ahead of their FY2027 budget cycle.
 ===SIGNAL_END===
 
 ===SIGNAL_START===
 SIGNAL_ID: 3
 IMPACT: WATCH
-HEADLINE: Dunhuang Airport runs first 2026 aircraft de-icing drill
-READING: Dunhuang Airport in Gansu conducted its first aircraft de-icing and anti-icing exercise of the 2026 season, indicating winter operational readiness cycles are starting across Northwest China. De-icing rigs and supporting ground support equipment are typically procured or leased ahead of the November-to-March season.
-BUSINESS_IMPACT: Seasonal de-icing demand represents a recurring, high-margin GSE rental and service opportunity in Northwest China, a region where TLD's installed base is thinner than in coastal hubs. Early-season drills are a reliable leading indicator of de-icing equipment shortfalls.
-ACTION: Ask the Northwest China rental desk to map de-icing rig availability against Dunhuang and peer airports' winter requirements by mid-October.
+HEADLINE: Yichang Sanxia Airport adds three international routes, expanding Hubei gateway
+READING: Yichang Sanxia Airport is expanding its international network with three new routes, upgrading from a predominantly domestic regional airport. International operations require customs, border control, and international-standard GSE including de-icing, catering loaders, and wide-body-capable equipment.
+BUSINESS_IMPACT: Small but strategically useful entry point — regional Chinese airports upgrading to international status represent a recurring, lower-competition GSE segment where TLD can build reference accounts. Volumes are modest (likely 10-25 units) but margins on specialized international-standard equipment are typically higher.
+ACTION: Add Yichang to the regional opportunity pipeline and monitor for the airport's international terminal equipment tender, expected within 2-3 quarters.
 ===SIGNAL_END===
 
 ===SIGNAL_START===
 SIGNAL_ID: 4
-IMPACT: INFO
-HEADLINE: Urumqi Tianshan Airport completes terminal floodlighting project
-READING: Urumqi Tianshan International Airport finished and commissioned a terminal facade floodlighting project, confirming continued capital works at one of China's largest western hubs. Terminal completion phases usually precede apron equipment and ground-handling capacity tenders.
-BUSINESS_IMPACT: Urumqi's expansion program is a medium-term pipeline opportunity for tow tractors, passenger stairs, and electric ground support equipment as new gates and stands become operational. No immediate procurement signal, but supplier pre-qualification timing matters.
-ACTION: Add Urumqi Tianshan to the 2027 opportunity pipeline and monitor for apron equipment tenders tied to the terminal commissioning schedule.
+IMPACT: WATCH
+HEADLINE: Dunhuang Airport runs first 2026 aircraft de-icing drill
+READING: Dunhuang Airport conducted its first de-icing and anti-icing exercise of the 2026 season, signaling preparation for winter operations in Northwest China. Early drills often precede equipment procurement or refurbishment decisions for the coming winter.
+BUSINESS_IMPACT: De-icing equipment and fluid delivery systems are a niche but high-margin GSE category; Northwest China airports are under-served by premium suppliers. TLD can leverage this as an entry point for de-icing rigs and associated winter GSE packages across Gansu and neighboring provinces.
+ACTION: Have the regional team contact Dunhuang Airport operations to assess de-icing equipment age and replacement plans before the winter procurement window closes.
 ===SIGNAL_END===
 
 ===SIGNAL_START===
 SIGNAL_ID: 5
 IMPACT: INFO
-HEADLINE: Urumqi Tianshan builds modern ecological bird-strike prevention system
-READING: Urumqi Tianshan International Airport is restructuring its bird-strike prevention framework, an operational safety investment typical of airports expanding runway and apron capacity. Bird-control programs often accompany airside expansion and new stand commissioning.
-BUSINESS_IMPACT: No direct GSE procurement link, but continued airside investment at Urumqi reinforces the airport's growth trajectory and its relevance as a future equipment account. Treat as background context for the western China pipeline.
-ACTION: No immediate action; retain as context for the Urumqi account file.
+HEADLINE: Urumqi Tianshan Airport completes floodlighting and bird-strike prevention upgrades
+READING: Urumqi Tianshan International Airport completed apron floodlighting and modernized its ecological bird-strike prevention system. These are infrastructure upgrades rather than GSE purchases, but they indicate active capital investment at a major Xinjiang hub.
+BUSINESS_IMPACT: Airport capital investment cycles often bundle GSE procurement in subsequent phases; Urumqi's ongoing modernization suggests future ramp equipment tenders. No immediate revenue impact, but the airport should remain on the medium-term opportunity map.
+ACTION: Log Urumqi as a medium-term opportunity and monitor for follow-on ramp equipment or terminal expansion tenders in the next 12 months.
 ===SIGNAL_END===
 
 ===SIGNAL_START===
 SIGNAL_ID: 6
 IMPACT: INFO
-HEADLINE: Beijing Capital Airport security firm runs service-quality training
-READING: Capital Airport Security Company launched a dedicated service-quality improvement training program to strengthen its security screening brand. This is a soft-service initiative with no equipment procurement component.
-BUSINESS_IMPACT: No direct impact on GSE demand or TLD's commercial position. Relevant only as an indicator of continued operational investment at Beijing Capital, a mature and largely saturated equipment market.
-ACTION: No action required.
+HEADLINE: Shijiazhuang Zhengding Airport adds smart boarding bridge display guidance
+READING: Shijiazhuang Zhengding Airport installed intelligent display guidance systems on its boarding bridges, part of a broader Chinese airport digitalization trend. While not core GSE, it signals airports are investing in smart, connected apron infrastructure.
+BUSINESS_IMPACT: The digitalization trend creates opportunities for TLD to differentiate with telematics-enabled and IoT-connected GSE, particularly electric tractors and loaders with fleet management integration. Airports upgrading bridge systems are likely receptive to smart GSE pitches.
+ACTION: Prepare a smart-GSE value proposition brief for Shijiazhuang and similar digitalizing airports, emphasizing fleet telematics and predictive maintenance capabilities.
 ===SIGNAL_END===
 
 ===SIGNAL_START===
 SIGNAL_ID: 7
 IMPACT: INFO
-HEADLINE: Bayannur Airport holds 2026 food safety awareness week
-READING: Bayannur Airport in Inner Mongolia ran a food safety publicity campaign, a non-operational, non-capital activity. It carries no GSE or ground-handling equipment implications.
-BUSINESS_IMPACT: None for TLD. Bayannur remains a small regional airport with minimal equipment demand.
-ACTION: No action required.
+HEADLINE: Guangzhou Baiyun Airport retail outlets exceed 400, signaling terminal maturity
+READING: Guangzhou Baiyun International Airport now hosts over 400 commercial outlets, reflecting mature terminal operations and strong passenger throughput. High retail density correlates with sustained high passenger volumes and stable ground handling demand.
+BUSINESS_IMPACT: Baiyun is one of TLD's key China accounts; continued commercial expansion reinforces long-term GSE demand stability and potential fleet expansion. No immediate action, but supports positive medium-term revenue outlook for the Pearl River Delta region.
+ACTION: No immediate action; maintain existing Baiyun account relationships and monitor for terminal expansion or handler contract renewals.
 ===SIGNAL_END===
 
 ===SIGNAL_START===
 SIGNAL_ID: 8
 IMPACT: INFO
-HEADLINE: Dunhuang Airport SVG reactive power compensation delivers safety and savings
-READING: Dunhuang Airport reported safety and efficiency gains from its SVG reactive power compensation installation, an electrical infrastructure upgrade. Such power-quality investments can precede apron electrification and charging infrastructure build-out.
-BUSINESS_IMPACT: Airport electrical upgrades are a prerequisite for electric GSE charging infrastructure, which supports TLD's electrification sales narrative in Northwest China. Indirect but directionally positive for future electric equipment adoption.
-ACTION: Note Dunhuang as an electrification-ready site and include it in the Northwest electric GSE opportunity mapping.
+HEADLINE: Harbin Airport completes support operations for Harbin Marathon event
+READING: Harbin Taiping International Airport completed special operational support for the Harbin Marathon, demonstrating surge-capacity handling capability. Event-driven traffic spikes test GSE fleet flexibility but do not drive procurement.
+BUSINESS_IMPACT: No direct GSE procurement impact; however, demonstrated surge capability may indicate under-utilized fleet capacity or rental demand during peak events. Marginal relevance to TLD's leasing business.
+ACTION: No action required; note Harbin as a potential leasing customer for peak-event equipment rental if the pattern repeats.
 ===SIGNAL_END===
 
 ===SIGNAL_START===
 SIGNAL_ID: 9
 IMPACT: INFO
-HEADLINE: Qinghai air logistics expands highland specialty cargo
-READING: Qinghai's air logistics sector is developing plateau specialty product supply chains, expanding cargo volumes through regional airports. Growing air cargo activity drives demand for cargo-handling GSE such as pallet dollies, loaders, and container transporters.
-BUSINESS_IMPACT: Incremental cargo growth in Qinghai is a small but real opportunity for cargo GSE leasing, a segment where TLD has less penetration than in passenger handling. Monitor whether volumes justify dedicated equipment placement.
-ACTION: Ask the cargo GSE product line to size the Qinghai opportunity and assess whether a rental placement is viable in 2027.
+HEADLINE: Capital Airport Security conducts service quality and mentoring training programs
+READING: Beijing Capital Airport Security Company ran service quality improvement and staff mentoring programs. These are human capital initiatives with no direct GSE procurement implications.
+BUSINESS_IMPACT: No commercial impact on TLD; purely operational HR activity at a security subsidiary. Included only for completeness of the daily scan.
+ACTION: No action required.
 ===SIGNAL_END===
 
 ===SIGNAL_START===
 SIGNAL_ID: 10
 IMPACT: INFO
-HEADLINE: Beijing Capital Airport wins Air Silk Road service excellence award
-READING: Beijing Capital Airport Group was recognized at the 2026 CIFTIS for an outstanding Air Silk Road service case, reflecting continued policy emphasis on Belt and Road aviation connectivity. BRI aviation corridors are a structural driver of airport investment across Central and Southeast Asia.
-BUSINESS_IMPACT: BRI-linked airport development in partner countries is a medium-term export channel for Chinese-manufactured GSE, where TLD's China production base is competitively positioned. Supports the strategic case for maintaining China manufacturing capacity for export.
-ACTION: Have strategy compile a BRI airport pipeline list for 2027-2028 to align TLD China export capacity planning.
+HEADLINE: Wuhan Tianhe Airport launches third season of hero-city cultural campaign
+READING: Wuhan Tianhe International Airport launched a cultural publicity campaign celebrating the city's heroic identity. This is a branding and passenger experience initiative with no GSE relevance.
+BUSINESS_IMPACT: No impact on TLD's GSE business. Wuhan remains a significant central China hub worth monitoring for separate operational developments.
+ACTION: No action required.
 ===SIGNAL_END===
 
 ===SIGNAL_START===
 SIGNAL_ID: 11
 IMPACT: INFO
-HEADLINE: Ji'an Jinggangshan Airport holds voluntary blood donation drive
-READING: Ji'an Jinggangshan Airport organized a staff volunteer blood donation activity, a purely social responsibility event. There is no operational, capital, or equipment dimension.
-BUSINESS_IMPACT: None for TLD's GSE business.
+HEADLINE: Bayannur Airport runs 2026 food safety awareness week activities
+READING: Bayannur Airport in Inner Mongolia conducted food safety promotion activities. This is a regulatory compliance and passenger welfare exercise with no connection to ground support equipment.
+BUSINESS_IMPACT: No commercial relevance to TLD. Bayannur is a small regional airport with minimal GSE demand.
 ACTION: No action required.
 ===SIGNAL_END===
 
 ===SIGNAL_START===
 SIGNAL_ID: 12
-IMPACT: WATCH
-HEADLINE: Daxing Airport adds another smart security channel
-READING: Beijing Daxing International Airport expanded its smart security screening channels, continuing its digital passenger-flow investment program. Smart security expansion increases terminal throughput capacity, which indirectly raises peak apron and baggage handling loads.
-BUSINESS_IMPACT: Higher terminal throughput at Daxing translates into incremental baggage handling and apron equipment demand over time, though the direct GSE link is indirect. Daxing remains a strategically important reference account for TLD's electric equipment.
-ACTION: Monitor Daxing's next apron equipment tender cycle and maintain active account coverage with Beijing Capital Airport Group.
+IMPACT: INFO
+HEADLINE: Dunhuang Airport SVG reactive power compensation delivers safety and efficiency gains
+READING: Dunhuang Airport reported safety and efficiency improvements from its SVG reactive power compensation installation, an electrical infrastructure upgrade. This relates to airport power quality rather than GSE, though reliable apron power supports electric GSE charging infrastructure.
+BUSINESS_IMPACT: Indirect relevance — improved airport electrical infrastructure removes a barrier to electric GSE adoption. Dunhuang's power upgrades could support future electric tractor and loader deployment.
+ACTION: Note Dunhuang as increasingly electric-GSE-ready; include in the electrification opportunity assessment for Northwest China.
 ===SIGNAL_END===
 
 ===SIGNAL_START===
 SIGNAL_ID: 13
 IMPACT: INFO
-HEADLINE: Capital Airport Group holds expanded Party committee meeting
-READING: Beijing Capital Airport Group convened an expanded Party committee meeting, a routine governance event. No procurement, capital, or operational content is indicated.
-BUSINESS_IMPACT: None directly, though Capital Airport Group remains a major TLD account and its strategic direction is worth tracking through official channels.
+HEADLINE: Shaanxi Airport Police run standardized mentoring and training programs
+READING: Shaanxi Airport Public Security conducted ongoing mentoring and training to build operational capability. This is a law enforcement HR initiative with no GSE market relevance.
+BUSINESS_IMPACT: No impact on TLD's commercial or industrial position.
 ACTION: No action required.
 ===SIGNAL_END===
 
 ===SIGNAL_START===
 SIGNAL_ID: 14
 IMPACT: INFO
-HEADLINE: Capital Airport commerce unit activates idle resource value
-READING: Beijing Capital Airport's commercial subsidiary is pursuing lean measures to monetize existing assets, a retail and commercial real estate initiative. It has no bearing on airside equipment or ground handling.
-BUSINESS_IMPACT: None for TLD. Reflects mature-airport focus on non-aeronautical revenue rather than capacity expansion.
+HEADLINE: Northwest Civil Aviation staff center and sports facility officially opens
+READING: The Northwest Civil Aviation Workers' Home and Western Airport Group staff sports activity center officially opened. This is an employee welfare facility with no connection to GSE procurement or operations.
+BUSINESS_IMPACT: No commercial relevance to TLD.
 ACTION: No action required.
 ===SIGNAL_END===
 
 ===SIGNAL_START===
 SIGNAL_ID: 15
 IMPACT: INFO
-HEADLINE: Tianjin Binhai Airport reviews 2026 thunderstorm season operations
-READING: Tianjin Binhai International Airport summarized its 2026 thunderstorm season operational safeguards, highlighting cross-unit coordination. Severe weather readiness drives demand for resilient ground support equipment and backup power.
-BUSINESS_IMPACT: Weather-resilience planning at major North China hubs supports demand for reliable electric GSE with strong uptime performance, a TLD selling point. No immediate procurement signal.
-ACTION: No immediate action; use Tianjin's weather-readiness focus as a positioning angle in the next account review.
+HEADLINE: Capital Airport Security seizes prohibited corrosive liquid in screening operation
+READING: Beijing Capital Airport security successfully intercepted a prohibited corrosive liquid, a routine security screening outcome. No GSE or procurement implications.
+BUSINESS_IMPACT: No impact on TLD's business.
+ACTION: No action required.
 ===SIGNAL_END===
 
 ===SIGNAL_START===
 SIGNAL_ID: 16
 IMPACT: INFO
-HEADLINE: Changbaishan Airport case selected for Air Silk Road cooperation conference
-READING: Changbaishan Airport's branch company had a case selected as an outstanding Air Silk Road demonstration and was invited to the 8th Air Silk Road International Cooperation Conference. This reflects continued policy support for regional airport development and international aviation cooperation.
-BUSINESS_IMPACT: Regional airport recognition under the Air Silk Road framework supports continued investment in smaller Northeast China airports, a segment with modest but steady GSE replacement demand. Reinforces the BRI export and domestic regional pipeline thesis.
-ACTION: Include Changbaishan and peer Northeast regional airports in the 2027 small-hub opportunity scan.
+HEADLINE: Urumqi Tianshan Airport apron floodlighting project completed and operational
+READING: The Urumqi Tianshan International Airport terminal apron floodlighting project was completed and put into use, improving night operations visibility. This supports safe apron operations but is not a GSE purchase.
+BUSINESS_IMPACT: Improved apron lighting supports 24-hour operations, indirectly increasing GSE utilization and wear, which may accelerate replacement cycles over time. No immediate revenue impact.
+ACTION: No immediate action; monitor Urumqi for follow-on ramp equipment tenders tied to its modernization program.
+===SIGNAL_END===
+
+===SIGNAL_START===
+SIGNAL_ID: 17
+IMPACT: INFO
+HEADLINE: Urumqi Tianshan Airport builds modern ecological bird-strike prevention framework
+READING: Urumqi Tianshan International Airport is developing a modernized ecological bird-strike prevention system. This is an environmental safety initiative with no direct GSE procurement link.
+BUSINESS_IMPACT: No commercial impact on TLD. Bird-strike prevention is a specialized non-GSE domain.
+ACTION: No action required.
+===SIGNAL_END===
+
+===SIGNAL_START===
+SIGNAL_ID: 18
+IMPACT: INFO
+HEADLINE: China Railway Urumqi Bureau tenders freight car flaw detection equipment
+READING: China Railway Urumqi Bureau Group issued a tender for freight car flaw detection equipment. This is rail-sector inspection equipment, not airport GSE, and falls outside TLD's addressable market.
+BUSINESS_IMPACT: No relevance to TLD's airport ground support equipment business. Rail inspection is a distinct industrial segment.
+ACTION: No action required.
+===SIGNAL_END===
+
+===SIGNAL_START===
+SIGNAL_ID: 19
+IMPACT: INFO
+HEADLINE: Guangxi rural road hardening project tendered via competitive consultation
+READING: A Guangxi county issued a competitive consultation notice for a rural road hardening project connecting a mulberry silkworm planting base. This is agricultural rural infrastructure, entirely unrelated to aviation or GSE.
+BUSINESS_IMPACT: No relevance to TLD's business.
+ACTION: No action required.
+===SIGNAL_END===
+
+===SIGNAL_START===
+SIGNAL_ID: 20
+IMPACT: INFO
+HEADLINE: Yueyang traction substation and DC panel renewal tender issued
+READING: A tender was issued for renewal of traction substation and AC/DC panel equipment between Yueyang and Taoshugang AT station. This is railway electrification infrastructure, not airport GSE.
+BUSINESS_IMPACT: No relevance to TLD's airport ground support equipment business.
+ACTION: No action required.
 ===SIGNAL_END===
 
 ===SUMMARY_START===
-EXECUTIVE_SUMMARY: Today's feed is dominated by low-value operational and soft-service news from Chinese airports, with no competitor mentions and no direct GSE procurement tenders. The most commercially relevant signal is Qingdao Airport crossing 20 million passengers ten days ahead of last year, a strong leading indicator of apron capacity pressure and 2027 equipment demand in North China. Secondary signals include Shijiazhuang's smart boarding-bridge upgrade, Dunhuang's early de-icing drill, and continued capital works at Urumqi Tianshan, all pointing to a steady regional investment pipeline rather than any urgent tender. No competitor pricing, product launch, or M&A activity appeared in this batch, so there is no 48-hour action requirement. TLD should use this quiet period to advance account pre-qualification and 2027 pipeline mapping across North and Northwest China.
-WATCH_1: Qingdao Airport Group's 2027 GSE procurement and electrification plan, following its accelerated 20 million passenger milestone.
-WATCH_2: Shijiazhuang Zhengding boarding-bridge upgrade scope, to determine whether GSE equipment is bundled into the tender.
-WATCH_3: Northwest China winter de-icing equipment availability ahead of the November season, starting with Dunhuang.
-MAIN_RISK: The absence of any competitor or tender signal this week means TLD risks losing early-mover positioning on upcoming North China hub tenders if account engagement is not proactive.
+EXECUTIVE_SUMMARY: Today's scan is dominated by low-value airport operational and HR news, with the two genuinely material signals being Fuzhou Airport's Terminal 2 commissioning into dual-terminal, dual-runway operations and Qingdao Airport crossing 20 million passengers ten days ahead of last year. Both point to accelerating Chinese airport capacity expansion and traffic growth, which are leading indicators for GSE fleet expansion and replacement demand in Fujian and Shandong respectively. Yichang's new international routes and Dunhuang's early de-icing drill offer smaller but actionable niche opportunities in international-standard and winter GSE. No competitor moves were detected in this batch, and no raw material, trade policy, or handler M&A signals appeared. The priority this week is to convert the Fuzhou and Qingdao capacity signals into qualified pipeline before incumbent suppliers lock in tender specifications.
+WATCH_1: Fuzhou Airport T2 ground handling contract awards and associated GSE tender announcements from the airport group or incumbent handlers.
+WATCH_2: Qingdao Jiaodong Airport fleet utilization and replacement signals from handlers as traffic exceeds 2025 pace.
+WATCH_3: Any competitor activity from Guangtai, CIMC Tianda, JBT, or Textron in East China and Fujian following the Fuzhou T2 opening.
+MAIN_RISK: Domestic competitors such as Guangtai and CIMC Tianda may move first on the Fuzhou T2 and Qingdao expansion GSE tenders, locking TLD out of two high-value East China fleet refresh cycles.
 ===SUMMARY_END===
