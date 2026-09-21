@@ -1,151 +1,178 @@
 ===SIGNAL_START===
 SIGNAL_ID: 1
-IMPACT: WATCH
-HEADLINE: Wenzhou opens Bangkok–Haikou–Wenzhou–Shenzhen cargo corridor for perishables and exports
-READING: Wenzhou Airport has launched a multi-leg cargo route linking Bangkok, Haikou, Wenzhou and Shenzhen, positioning itself as a two-way perishable-import and export-gateway. New freighter rotations typically require additional cargo handling equipment, ULD movers and ground support capacity at each stop. The article source page returned a 404, so route frequency, aircraft type and handler are unconfirmed.
-BUSINESS_IMPACT: Incremental freighter activity at Wenzhou, Haikou and Shenzhen implies modest demand for cargo loaders, pallet/container dollies and tow tractors, likely procured through the local ground handler rather than the airline. Revenue potential is small per station but relevant to TLD's China leasing fleet utilisation in the East China and Pearl River Delta regions.
-ACTION: Verify route frequency and the appointed ground handler at Wenzhou within two weeks, then assess whether existing TLD leased units in the region can be redeployed before any new-build quotation.
+IMPACT: CRITICAL
+HEADLINE: Guangtai full-line GSE assault directly threatens TLD tractor, GPU and bridge core
+READING: Competitor intelligence confirms Weihai Guangtai fields a full-line GSE portfolio — passenger boarding bridges, deicing equipment, tow tractors, ground power units, air start units, catering trucks and baggage handling equipment — competing head-on with TLD's tractor, GPU and bridge families. Guangtai is flagged as a HIGH threat, with recent activity noted but truncated in the source. As the dominant domestic Chinese GSE OEM, Guangtai benefits from local cost structure, CAAC relationships and state-linked procurement preference, making it the single most dangerous competitor in TLD's primary China market.
+BUSINESS_IMPACT: Direct price and share pressure on TLD's highest-volume China product lines, particularly tow tractors and GPUs where Guangtai can undercut on unit price while bundling bridges and deicers. Risk of losing tenders at Chinese airports where domestic-content preference and after-sales proximity favour Guangtai, compressing TLD's China revenue and forcing margin concessions to defend installed base.
+ACTION: Commission an immediate 48-hour competitive teardown of Guangtai's tractor, GPU and bridge pricing, spec sheets and recent tender wins, and prepare a differentiated value defence (TCO, electrification, global service network) for the sales team before the next China tender cycle.
 ===SIGNAL_END===
 
 ===SIGNAL_START===
 SIGNAL_ID: 2
-IMPACT: WATCH
-HEADLINE: Shenzhen–Surabaya passenger route opens, deepening Indonesia connectivity
-READING: A new scheduled passenger link between Shenzhen and Surabaya expands China–Indonesia capacity, a corridor already growing on both business and diaspora traffic. Route launches of this type are leading indicators of narrowbody turnaround growth at Shenzhen and of Indonesian station ramp-up. The source page returned a 404, so frequency and operator are unconfirmed.
-BUSINESS_IMPACT: Additional international turnarounds at Shenzhen raise demand for passenger stairs, belt loaders, pushback tractors and ground power units, while Surabaya represents a potential new Asia-Pacific leasing outlet where TLD has limited installed base. Competitive exposure is mainly to Chinese GSE manufacturers already active in Indonesian tenders.
-ACTION: Confirm the operating carrier and Surabaya ground handler within two weeks and flag Indonesia as a leasing expansion candidate in the Q4 pipeline review.
+IMPACT: IMPORTANT
+HEADLINE: CIMC Tianda targets TLD bridge franchise in China and export markets
+READING: CIMC Tianda is identified as a MEDIUM threat, with passenger boarding bridges as its core globally competitive product plus airport terminal equipment and some ground handling equipment. It competes with TLD primarily in boarding bridges and passenger handling infrastructure rather than TLD's core tractor and GPU lines. Tianda's global bridge ambitions mean it will contest TLD in both Chinese and third-country airport projects.
+BUSINESS_IMPACT: Bridge tenders in China and Asia-Pacific will face aggressive Tianda pricing, and Tianda's terminal-equipment bundling could lock TLD out of integrated passenger-handling packages. This narrows TLD's bridge margin and raises the risk of losing anchor contracts that historically pulled through tractor and GPU sales.
+ACTION: Map Tianda's active bridge tenders across China and APAC this week and instruct regional sales to lead with TLD's bridge-plus-GSE integrated offering and lifecycle service contracts to blunt a price-only contest.
 ===SIGNAL_END===
 
 ===SIGNAL_START===
 SIGNAL_ID: 3
 IMPACT: WATCH
-HEADLINE: Tengchong Airport commissions three core facilities, adding regional capacity
-READING: Tengchong Airport in Yunnan has put three core facilities into operation, signalling completion of a capacity expansion phase at a secondary Chinese airport. Newly commissioned terminals, aprons or runways normally trigger a GSE procurement and replacement cycle over the following 6–18 months. The source page returned a 404, so the specific facilities and scale are unconfirmed.
-BUSINESS_IMPACT: Regional airport commissioning in Yunnan creates tender opportunities for tow tractors, belt loaders, stairs and ground power units, typically in small batches of 5–20 units. TLD's exposure depends on whether procurement runs through the airport group or a ground handler, and Chinese competitors such as Guangtai are usually strongly positioned in provincial tenders.
-ACTION: Identify the procuring entity and tender timetable for Tengchong within two weeks and register with the Yunnan airport group procurement portal if not already done.
+HEADLINE: Western Airport Group and Huawei launch global smart airport reference site
+READING: Western Airport Group partnered with Huawei to release a global smart airport model site, signalling accelerating digitalisation of Chinese airport operations. While the article page returned a 404, the headline confirms a strategic smart-airport initiative at one of China's largest regional airport groups. Smart-airport programmes increasingly specify connected, telemetry-enabled GSE and electric fleets with data integration requirements.
+BUSINESS_IMPACT: Rising digital and connectivity specifications in Chinese airport tenders could become a qualification barrier for GSE suppliers lacking telematics and fleet-management integration. TLD faces both an opportunity to differentiate with smart, connected electric GSE and a risk of exclusion if its digital layer lags Huawei-ecosystem standards.
+ACTION: Have product management assess TLD's telematics and fleet-management interoperability against Huawei smart-airport standards and flag any tender specification gaps within two weeks.
 ===SIGNAL_END===
 
 ===SIGNAL_START===
 SIGNAL_ID: 4
 IMPACT: WATCH
-HEADLINE: Fuzhou Changle T2 opens with smart airport technology from Reiyee
-READING: Fuzhou Changle International Airport's Terminal 2 has entered operation with smart-airport systems supplied by Reiyee Technology, indicating a completed terminal expansion. New terminal capacity at a provincial capital airport typically precedes apron equipment renewal and expansion as traffic redistributes. The source page returned a 404, so the GSE scope is not visible.
-BUSINESS_IMPACT: T2 opening at Fuzhou implies additional stands requiring passenger stairs, belt loaders, tractors and GPUs, with procurement likely split between the airport authority and resident handlers. Smart-terminal investment can also signal a preference for telematics-enabled and electric GSE, which favours TLD's higher-spec product lines over low-cost domestic alternatives.
-ACTION: Map Fuzhou Changle's stand count increase and equipment tender pipeline within two weeks, and position TLD's electric product range with the airport authority.
+HEADLINE: Xi'an Xianyang completes first air export of complete new-energy vehicles
+READING: Xi'an Xianyang Airport handled its first air shipment of fully assembled new-energy vehicles, opening a new air-cargo export lane. This signals growing cargo complexity and heavier, higher-value air freight moving through Chinese airports. New cargo flows of this type require specialised ground handling equipment including heavy loaders, tractors and cargo-handling fleets.
+BUSINESS_IMPACT: Expanding NEV and high-value cargo exports at Chinese airports will drive incremental demand for heavy-duty cargo tractors, loaders and ground handling fleets, a segment where TLD can capture volume if positioned with cargo-specific product. It also reinforces cargo-terminal expansion capex that typically precedes GSE procurement by two to four quarters.
+ACTION: Add Xi'an Xianyang and comparable NEV-export airports to the cargo-GSE opportunity pipeline and task regional sales to qualify cargo-terminal equipment requirements this quarter.
 ===SIGNAL_END===
 
 ===SIGNAL_START===
 SIGNAL_ID: 5
 IMPACT: WATCH
-HEADLINE: Qingdao hosts fourth 1+N airport cargo development roundtable
-READING: The fourth "1+N" airport cargo development roundtable convened in Qingdao, a policy and industry forum shaping China's air cargo hub strategy. Such forums often precede coordinated cargo capacity investment and airport cargo-terminal upgrades across participating airports. The source page returned a 404, so participants and outcomes are unconfirmed.
-BUSINESS_IMPACT: If the roundtable translates into cargo hub investment, demand follows for cargo loaders, high-lift transporters, pallet dollies and towing equipment at multiple Chinese airports. TLD's cargo GSE line is a smaller share of revenue than passenger equipment, so the opportunity is real but secondary to passenger-side volumes.
-ACTION: Obtain the roundtable agenda and participant list within one week to identify which airports have committed cargo expansion budgets for 2027.
+HEADLINE: Haikou Meilan opens Haikou–Wenzhou scheduled cargo route
+READING: Haikou Meilan Airport launched a scheduled Haikou–Wenzhou cargo service, expanding domestic air-cargo connectivity. New scheduled cargo routes typically require additional ground handling capacity and equipment at both endpoints. This adds to a pattern of Chinese airports building out cargo networks.
+BUSINESS_IMPACT: Incremental cargo frequency at Meilan and Wenzhou creates modest but real demand for cargo tractors, dollies and handling equipment, and signals handler capacity expansion that could trigger GSE tenders. Small individually, but part of a cumulative cargo-driven demand trend across secondary Chinese airports.
+ACTION: Monitor Meilan and Wenzhou cargo-terminal capex and handler contract awards for GSE tender signals over the next two quarters.
 ===SIGNAL_END===
 
 ===SIGNAL_START===
 SIGNAL_ID: 6
 IMPACT: WATCH
-HEADLINE: Shanghai Airport Authority and TravelSky form joint innovation lab
-READING: Shanghai Airport Authority signed an agreement with China TravelSky to build a joint innovation laboratory, deepening digital integration across Shanghai's airports. Airport IT and data integration programmes increasingly specify telematics, fleet management and autonomous-ready GSE interfaces. The source page returned a 404, so the lab's scope is unconfirmed.
-BUSINESS_IMPACT: Digitalisation at Shanghai Pudong and Hongqiao may shift GSE tenders toward connected, data-reporting equipment, raising specification requirements and favouring suppliers able to integrate with airport IT systems. This is a medium-term margin opportunity for TLD if its telematics stack is compatible, and a risk if Chinese competitors bundle connectivity at lower cost.
-ACTION: Have the China product team assess TravelSky interface compatibility for TLD telematics within one month and prepare a Shanghai-specific connected-GSE pitch.
+HEADLINE: Wenzhou opens Bangkok–Haikou–Wenzhou–Shenzhen multi-leg cargo corridor
+READING: Wenzhou Airport launched a multi-leg cargo route linking Bangkok, Haikou, Wenzhou and Shenzhen, creating a two-way fresh-import and export channel. Multi-leg international cargo corridors increase aircraft turn complexity and ground handling intensity at each stop. This strengthens the case for cargo-handling equipment investment at Wenzhou and partner airports.
+BUSINESS_IMPACT: Higher cargo throughput and turn frequency at Wenzhou and Shenzhen raise demand for cargo tractors, loaders and ground support equipment, and may prompt handler-led fleet renewals. TLD can position cargo-specific GSE into these expanding corridors.
+ACTION: Include Wenzhou and Shenzhen cargo corridors in the APAC cargo-GSE demand tracker and approach ground handlers at both airports within the month.
 ===SIGNAL_END===
 
 ===SIGNAL_START===
 SIGNAL_ID: 7
 IMPACT: WATCH
-HEADLINE: Northeast China's first full-aircraft bonded MRO lands at Shenyang with Himalaya A320
-READING: A Nepal-based Himalaya Airlines Airbus A320 arrived in Shenyang for heavy maintenance, marking Northeast China's first full-aircraft bonded MRO project, backed by China Southern. Bonded MRO expansion creates recurring GSE demand for towing, jacking, access and ground power equipment at the MRO site. The source page returned a 404, so facility scale is unconfirmed.
-BUSINESS_IMPACT: MRO hangars require specialised GSE including aircraft tow tractors, maintenance stands, GPUs and hydraulic test equipment, often procured separately from airport ramp fleets. This is a niche but higher-margin segment where TLD competes with JBT and domestic specialists, and Northeast China is currently a thin market for TLD.
-ACTION: Contact the Shenyang MRO operator within one month to scope equipment requirements and assess whether a leasing rather than sale model fits their capital profile.
+HEADLINE: Fuzhou Changle T2 opens with smart passenger-handling technology
+READING: Fuzhou Changle International Airport's Terminal 2 entered operation supported by smart passenger-handling technology from Ruiwei. A new terminal opening is a leading indicator of expanded ground handling capacity and equipment procurement. New terminals typically trigger GSE fleet expansion and renewal across passenger handling, boarding and baggage functions.
+BUSINESS_IMPACT: T2 commissioning at Fuzhou creates a near-term window for GSE tenders covering boarding bridges, tractors, GPUs and baggage handling equipment. TLD should be positioned before procurement specifications are locked, especially given domestic competitor presence.
+ACTION: Immediately qualify Fuzhou Changle T2 GSE procurement plans and terminal equipment tenders, and register TLD interest with the airport authority and incumbent handlers this week.
 ===SIGNAL_END===
 
 ===SIGNAL_START===
 SIGNAL_ID: 8
-IMPACT: INFO
-HEADLINE: Urumqi Tianshan Airport pilots airline-butler service mechanism
-READING: Urumqi Tianshan International Airport has introduced an "airline butler" service model intended to improve coordination between the airport and resident carriers. Service-model innovation of this kind can precede changes in ground handling allocation and equipment responsibility. The source page returned a 404, so details are unconfirmed.
-BUSINESS_IMPACT: If the model shifts equipment provision toward the airport authority and away from individual airlines, procurement could consolidate into larger, less frequent tenders, changing TLD's sales channel in Xinjiang. No immediate volume impact is quantifiable.
-ACTION: Monitor Urumqi's handling and equipment procurement structure quarterly; no action required this week.
+IMPACT: WATCH
+HEADLINE: Tengchong Airport commissions three core facilities
+READING: Tengchong Airport put three core facilities into operation, indicating capacity expansion at a regional Chinese airport. New facility commissioning at regional airports typically precedes ground handling equipment procurement and handler capacity build-out. Regional airport expansion is a recurring demand driver across China's secondary network.
+BUSINESS_IMPACT: Tengchong's expansion adds incremental GSE demand for tractors, GPUs and passenger-handling equipment, though at modest volume given the airport's size. It reinforces the cumulative regional-airport capex trend that underpins TLD's China volume base.
+ACTION: Add Tengchong to the regional airport opportunity list and verify whether new facilities include GSE procurement budgets in the current cycle.
 ===SIGNAL_END===
 
 ===SIGNAL_START===
 SIGNAL_ID: 9
-IMPACT: INFO
-HEADLINE: Daxing Airport apron lighting upgraded through 180-day non-disruptive works
-READING: Beijing Daxing Airport completed a 180-day "non-perceptible" construction programme to improve apron-area lighting, executed without disrupting operations. Continuous infrastructure investment at Daxing confirms the airport remains in an active upgrade cycle. The source page returned a 404, so the equipment scope is unconfirmed.
-BUSINESS_IMPACT: Apron lighting and infrastructure works do not directly drive GSE purchases, but sustained capital programmes at Daxing indicate budget availability for follow-on ramp equipment renewals. Indirect and non-quantifiable at this stage.
-ACTION: No action required; retain Daxing in the quarterly key-account review.
+IMPACT: WATCH
+HEADLINE: Yutian Wanfang Airport passenger throughput hits 170,000 this year
+READING: Yutian Wanfang Airport reached 170,000 passengers within the year, a notable milestone for a small regional Chinese airport. Rising throughput at regional airports drives incremental ground handling and equipment demand. Small airports collectively represent a growing volume segment for standard GSE.
+BUSINESS_IMPACT: Throughput growth at Yutian and similar regional airports supports steady demand for standard tractors, GPUs and baggage equipment, though individual order sizes are small. Aggregated across China's regional network, this segment is meaningful for TLD's volume products.
+ACTION: Track regional airport throughput milestones as a demand proxy and ensure TLD's distribution and leasing channels cover secondary Chinese airports.
 ===SIGNAL_END===
 
 ===SIGNAL_START===
 SIGNAL_ID: 10
 IMPACT: INFO
-HEADLINE: Beijing construction HQ emphasises cost control and project management discipline
-READING: The Beijing construction project management headquarters published a message stressing accounting discipline, asset stewardship and capability building. This is an internal management communication rather than a market event. The source page returned a 404, so context is limited.
-BUSINESS_IMPACT: No direct GSE demand or competitive implication; relevant only as background on Chinese airport construction cost discipline, which could slow discretionary equipment spending.
-ACTION: No action required.
+HEADLINE: Shanghai airports mobilise full support for 48th WorldSkills Competition
+READING: Shanghai airports are providing comprehensive support for the 48th WorldSkills Competition, a major international event drawing significant inbound traffic and operational focus. Large events temporarily elevate ground handling intensity and equipment readiness requirements. No direct GSE procurement signal, but it highlights Shanghai's operational scale.
+BUSINESS_IMPACT: Minimal direct commercial impact, though event-driven traffic surges can accelerate equipment wear and short-term rental or leasing demand. Provides context on Shanghai's role as a high-intensity hub for TLD's leasing business.
+ACTION: No immediate action; note Shanghai event-driven equipment utilisation as background for leasing demand modelling.
 ===SIGNAL_END===
 
 ===SIGNAL_START===
 SIGNAL_ID: 11
 IMPACT: INFO
-HEADLINE: Pudong Airport Apple duty-free store hosts global product launch
-READING: The Apple duty-free outlet at Pudong Airport hosted a synchronised global product launch, highlighting the commercial retail performance of Shanghai's airports. Strong non-aeronautical revenue supports airport capital budgets but does not itself drive GSE procurement. The source page returned a 404.
-BUSINESS_IMPACT: Indirect only; healthy airport retail economics improve the funding capacity of Shanghai Airport Authority for future ramp equipment investment.
-ACTION: No action required.
+HEADLINE: Shenzhen–Surabaya passenger route opens, expanding APAC connectivity
+READING: A new Shenzhen–Surabaya passenger route was launched, expanding China–Indonesia connectivity. New international routes increase aircraft movements and ground handling demand at Shenzhen. This is a modest but positive demand signal for ground support operations.
+BUSINESS_IMPACT: Incremental international traffic at Shenzhen supports steady GSE utilisation and potential fleet top-up demand, though the route alone is too small to trigger major procurement. Contributes to the broader APAC traffic growth backdrop.
+ACTION: No immediate action; retain as background for APAC traffic growth tracking.
 ===SIGNAL_END===
 
 ===SIGNAL_START===
 SIGNAL_ID: 12
 IMPACT: INFO
-HEADLINE: Wuhan Tianhe Airport promotes transit product "via Wuhan, transit is scenery"
-READING: Wuhan Tianhe Airport is marketing its transit experience to grow connecting passenger volumes. Transit growth raises turnaround complexity and equipment utilisation but the article contains no procurement signal. The source page returned a 404.
-BUSINESS_IMPACT: Higher transit ratios can increase demand for passenger stairs, buses and baggage handling equipment over time, but no quantifiable near-term impact for TLD.
-ACTION: No action required; note Wuhan as a secondary account to track.
+HEADLINE: Daxing Airport exceeds 600,000 users of next-day flight processing
+READING: More than 600,000 passengers have used Daxing Airport's next-day flight check-in service, reflecting high passenger volumes and operational sophistication. High-throughput hubs like Daxing drive continuous GSE demand and fleet renewal. No direct procurement signal in this item.
+BUSINESS_IMPACT: Confirms Daxing's scale as a major GSE consumption and renewal site, relevant to TLD's installed base and leasing opportunities. Background context rather than an actionable trigger.
+ACTION: No immediate action; maintain Daxing as a priority account in the China key-account plan.
 ===SIGNAL_END===
 
 ===SIGNAL_START===
 SIGNAL_ID: 13
 IMPACT: INFO
-HEADLINE: Capital Airport Security and Daxing branch publish training, fire-safety and cyber-security notices
-READING: Three separate notices cover security training, fire control measures and national cyber-security week activities at Beijing Capital and Daxing airports. These are operational and compliance communications with no equipment procurement content. Source pages returned 404 errors.
-BUSINESS_IMPACT: No GSE demand or competitive implication; relevant only as evidence of continued compliance-driven operating expenditure at Beijing's airports.
+HEADLINE: Jinan Airport opens Shandong's first pet-dedicated air travel space
+READING: Jinan Airport launched Shandong's first dedicated pet air travel service space, reflecting diversification of passenger services. This is a passenger-experience initiative with no direct GSE procurement implication. Marginal relevance to ground handling operations.
+BUSINESS_IMPACT: No material commercial impact on TLD's GSE business. Background context only.
 ACTION: No action required.
 ===SIGNAL_END===
 
 ===SIGNAL_START===
 SIGNAL_ID: 14
 IMPACT: INFO
-HEADLINE: Shaanxi airport police recover lost cash and passport for passenger
-READING: A passenger service story about Shaanxi airport police recovering lost belongings. No commercial, fleet or equipment content. Source page returned a 404.
-BUSINESS_IMPACT: None for TLD's GSE business.
+HEADLINE: Hulunbuir Airport runs language promotion campaign
+READING: Hulunbuir Airport conducted a national language promotion activity, an administrative and cultural initiative. No connection to GSE procurement or demand drivers. Included only for completeness of the news sweep.
+BUSINESS_IMPACT: No commercial impact on TLD's GSE business.
 ACTION: No action required.
 ===SIGNAL_END===
 
 ===SIGNAL_START===
 SIGNAL_ID: 15
 IMPACT: INFO
-HEADLINE: China Southern Heilongjiang and Capital Airport service-quality features
-READING: Two articles cover China Southern Heilongjiang's training competition and Capital Airport's passenger service handling. Both are soft service and human-resources stories without equipment or procurement content. Source pages returned 404 errors.
-BUSINESS_IMPACT: None directly; no bearing on GSE volumes, pricing or competition.
+HEADLINE: Capital Airport Security and Nanhang Heilongjiang run training and safety drills
+READING: Capital Airport Security Company and China Southern Heilongjiang ran skills and safety training activities. These are workforce and safety programmes with no direct GSE procurement signal. Relevant only as background on Chinese airport operational priorities.
+BUSINESS_IMPACT: No material commercial impact on TLD's GSE business.
 ACTION: No action required.
 ===SIGNAL_END===
 
 ===SIGNAL_START===
 SIGNAL_ID: 16
 IMPACT: INFO
-HEADLINE: Bidcenter tender listings cover medical equipment, railway outsourcing, warehousing and geological risk
-READING: Four Bidcenter listings cover hospital ECG equipment in Huizhou, railway heating operations outsourcing for Taiyuan/Datong, warehouse leasing in Liuzhou for China Railway Express, and geological disaster risk assessment on the Guangda line. None relate to aviation or ground support equipment. All pages returned human-verification blocks.
-BUSINESS_IMPACT: No relevance to TLD's GSE manufacturing or leasing business; these are rail, healthcare and logistics tenders outside the addressable market.
-ACTION: No action required; recommend excluding Bidcenter rail and healthcare feeds from the daily GSE screening list to reduce noise.
+HEADLINE: Capital Airport Security Daxing branch strengthens fire control measures
+READING: The Daxing branch of Capital Airport Security Company implemented fire control measures across three fronts. This is an operational safety initiative with no GSE procurement implication. Background context only.
+BUSINESS_IMPACT: No commercial impact on TLD's GSE business.
+ACTION: No action required.
+===SIGNAL_END===
+
+===SIGNAL_START===
+SIGNAL_ID: 17
+IMPACT: INFO
+HEADLINE: Shanghai Airport Police support WorldSkills arrivals
+READING: Shanghai Airport Police supported the arrival of WorldSkills competitors, an event-security activity. No connection to GSE procurement or demand drivers. Background context only.
+BUSINESS_IMPACT: No commercial impact on TLD's GSE business.
+ACTION: No action required.
+===SIGNAL_END===
+
+===SIGNAL_START===
+SIGNAL_ID: 18
+IMPACT: INFO
+HEADLINE: Shaanxi Airport Police recover lost cash and passport
+READING: Shaanxi Airport Police recovered lost cash and a passport for a passenger, a public-service story. No relevance to GSE market or demand drivers. Included only for completeness.
+BUSINESS_IMPACT: No commercial impact on TLD's GSE business.
+ACTION: No action required.
+===SIGNAL_END===
+
+===SIGNAL_START===
+SIGNAL_ID: 19
+IMPACT: INFO
+HEADLINE: Gaize County housing bureau issues project service tender notices
+READING: Gaize County Housing and Urban-Rural Development Bureau issued tender notices for project-related service units, with pages blocked by human-verification. This is a local construction and services procurement unrelated to airport GSE. No relevance to TLD's business.
+BUSINESS_IMPACT: No commercial impact on TLD's GSE business.
+ACTION: No action required.
 ===SIGNAL_END===
 
 ===SUMMARY_START===
-EXECUTIVE_SUMMARY: Today's 22-article sweep produced no competitor mentions and no confirmed GSE procurement events, with the majority of CAAC source pages returning 404 errors that prevented verification of detail. The usable signals are all demand-side and early-stage: new cargo and passenger routes at Wenzhou and Shenzhen–Surabaya, facility commissioning at Tengchong, Fuzhou Changle T2 opening with smart-airport technology, a Qingdao cargo roundtable, a Shanghai Airport–TravelSky innovation lab, and Northeast China's first bonded full-aircraft MRO at Shenyang. Individually these are small, but collectively they point to continued Chinese airport capacity and digitalisation investment that will convert into equipment tenders over the next 6–18 months, with a growing specification bias toward connected and electric GSE. No pricing, tariff, raw-material or competitor intelligence arrived today, so there is no basis for a margin or competitive response this week. Priority is to convert the Fuzhou, Tengchong and Shenyang leads into named procurement contacts before Chinese competitors such as Guangtai lock up the provincial tenders.
-WATCH_1: Fuzhou Changle T2 and Tengchong Airport equipment tender notices, including procuring entity and unit volumes.
-WATCH_2: Any competitor mention or contract award involving Guangtai, JBT, CIMC Tianda or Textron in China or Asia-Pacific.
-WATCH_3: Shanghai Airport Authority–TravelSky lab scope, specifically whether connected-GSE interface standards are published.
-MAIN_RISK: The dominant risk this week is information blindness rather than a market event — widespread 404 failures on CAAC sources mean a competitor move or tender could pass undetected, so source redundancy must be fixed before the next cycle.
+EXECUTIVE_SUMMARY: This week's sweep is dominated by two competitor signals: Weihai Guangtai is confirmed as a HIGH-threat full-line GSE competitor directly overlapping TLD's tractor, GPU and bridge families in China, while CIMC Tianda presses its globally competitive boarding-bridge franchise. Alongside this, Chinese airport expansion continues to generate demand signals — Fuzhou Changle T2 opening, Tengchong facility commissioning, Xi'an Xianyang's first NEV air export, and new cargo corridors at Haikou Meilan and Wenzhou — all pointing to incremental cargo and passenger GSE procurement over the coming quarters. Western Airport Group's Huawei smart-airport reference site flags rising digital and connectivity specifications that could become tender qualification barriers. The bulk of the remaining items are administrative, safety or passenger-service news with no GSE relevance. Priority this week is defending TLD's China core against Guangtai on price and specification while positioning early on Fuzhou T2 and cargo-corridor tenders.
+WATCH_1: Guangtai's recent tender wins and pricing moves on tractors, GPUs and bridges in China — the single most important competitive indicator.
+WATCH_2: Fuzhou Changle T2 and Tengchong GSE procurement specifications and tender timing as new-terminal demand converts to orders.
+WATCH_3: Huawei-linked smart-airport specification requirements at Western Airport Group airports for telematics and connectivity compliance.
+MAIN_RISK: Guangtai's full-line, locally cost-advantaged GSE portfolio undercutting TLD on price and domestic-content preference in Chinese airport tenders, eroding both volume and margin in TLD's core China market.
 ===SUMMARY_END===
