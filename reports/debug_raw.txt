@@ -1,88 +1,160 @@
 ===SIGNAL_START===
 SIGNAL_ID: 1
 IMPACT: CRITICAL
-HEADLINE: Guangtai wins RMB 115m airport equipment contract across Asia-Pacific
-READING: Weihai Guangtai announced a RMB 115 million (approx. EUR 14.5m) airport equipment contract with stated "full Asia-Pacific market rollout," dated 10 September 2026. This is a direct competitive win in TLD's core home region and signals Guangtai is converting its Lisbon GSE exhibition presence into firm order intake.
-BUSINESS_IMPACT: A contract of this size likely covers hundreds of units (tractors, loaders, stairs, or a mixed fleet) and represents lost tender opportunities for TLD in one or more APAC airports or handlers. Guangtai's aggressive pricing and domestic cost base will pressure TLD's margins on any competing bids in the same tenders.
-ACTION: Immediately identify which airports/handlers are covered by this RMB 115m contract via tender records and customer intelligence, and prepare a counter-proposal or relationship-defense plan for the affected accounts within 48 hours.
+HEADLINE: Guangtai signs RMB 115M airport equipment contract, expands across Asia-Pacific
+READING: Weihai Guangtai announced a RMB 115 million (approx. EUR 14.5M) airport equipment contract with stated "full-domain advancement" across Asia-Pacific markets, following its appearance at the Lisbon GSE exhibition in September 2026. This is a direct competitive threat in TLD's core Asia-Pacific territory, signaling Guangtai's aggressive regional expansion backed by significant order volume.
+BUSINESS_IMPACT: A RMB 115M contract represents roughly 150-250 units of mixed GSE depending on product mix, likely eroding TLD's addressable pipeline in Asia-Pacific. Guangtai's European trade show presence signals intent to compete beyond China, potentially undercutting TLD on price in third-country markets where both compete.
+ACTION: Immediately identify which Asia-Pacific tenders Guangtai may have won this contract from and assess whether TLD was displaced; brief regional sales teams within 48 hours on competitive pricing response.
 ===SIGNAL_END===
 
 ===SIGNAL_START===
 SIGNAL_ID: 2
 IMPACT: IMPORTANT
-HEADLINE: Guangtai showcases at Lisbon GSE show, targets European and French partnerships
-READING: Guangtai exhibited at the European Lisbon GSE exhibition and its chairman publicly stated intent to cooperate with French aviation firms on electric GSE. Combined with its INTERSCHUTZ 2026 and GHI Conference exhibitor presence, Guangtai is systematically building a European commercial bridgehead.
-BUSINESS_IMPACT: TLD's European and French home markets are now directly targeted by a lower-cost Chinese competitor with an established electric product line. This threatens TLD's pricing power in Europe and could erode share in electric tractor, stair, and loader segments where Guangtai competes directly.
-ACTION: Task the European commercial team to map Guangtai's EU distributor/partner discussions and accelerate TLD's electric product differentiation messaging (TCO, service network, certification) before Guangtai secures a European anchor client.
+HEADLINE: CIMC Tianda launches new de-icing vehicle, advances smart unmanned docking systems
+READING: CIMC Tianda held a new de-icing vehicle launch and airport equipment technology seminar in August 2026, and CCTV reported its "world's first batch of intelligent unmanned aircraft docking systems" now in operation. Tianda's continued product innovation in de-icing and automated docking directly targets high-value GSE segments where TLD competes.
+BUSINESS_IMPACT: De-icing vehicles carry high margins (EUR 300-500K per unit) and Tianda's new product could capture winter-season orders in northern China airports. The unmanned docking system positions Tianda as a technology leader, potentially influencing tender specifications in smart airport projects to favor their ecosystem.
+ACTION: Request technical intelligence on Tianda's new de-icing model specifications and pricing within one week; assess whether TLD's de-icing portfolio needs a competitive refresh for the 2026-27 winter season.
 ===SIGNAL_END===
 
 ===SIGNAL_START===
 SIGNAL_ID: 3
 IMPACT: IMPORTANT
-HEADLINE: CIMC Tianda launches new de-icing vehicle and smart apron systems
-READING: CIMC Tianda held a technical seminar in Shenyang on 12 August 2026 launching new de-icing vehicles through subsidiaries Jietong, Tianda Jirong and Tianda Aike, and separately reported the world's first intelligent unmanned aircraft docking system at Lanzhou Airport covering 86 boarding bridges with 65% efficiency gain.
-BUSINESS_IMPACT: Tianda is expanding from boarding bridges into powered GSE (de-icing) and apron automation, encroaching on TLD's de-icing and tractor-adjacent product lines. The Lanzhou unmanned docking system sets a domestic automation benchmark that could become a CAAC-endorsed standard, disadvantaging non-integrated GSE suppliers.
-ACTION: Assess Tianda's de-icing product specifications and pricing against TLD's offering, and evaluate whether TLD needs an apron-automation partnership or interface capability to remain tender-competitive at Chinese airports within the next quarter.
+HEADLINE: JBT AeroTech wins USD 6.4M China Southern GSE contract
+READING: JBT AeroTech secured contracts totaling USD 6.4 million from China Southern Airlines for airport ground support equipment. This represents a direct loss of potential TLD revenue from one of China's largest carriers and signals JBT's continued penetration into the Chinese market despite geopolitical tensions.
+BUSINESS_IMPACT: China Southern operates one of the world's largest fleets (900+ aircraft) and is a bellwether customer; losing this contract could set a precedent for other Chinese carriers to evaluate JBT. The USD 6.4M order likely covers specialized equipment (possibly cargo loaders or pushback tractors) where JBT holds technical advantages.
+ACTION: Analyze which specific equipment categories China Southern procured from JBT and prepare a competitive counter-proposal for China Southern's next procurement cycle; escalate to key account team immediately.
 ===SIGNAL_END===
 
 ===SIGNAL_START===
 SIGNAL_ID: 4
-IMPACT: WATCH
-HEADLINE: Electric passenger boarding stair market reaches RMB 2.92bn globally in 2025
-READING: YH Research data cited by Eastmoney shows global electric aircraft passenger boarding stair revenue hit RMB 2.92 billion (approx. EUR 370m) in 2025, driven by green airport retrofits, diesel phase-out policy, and small/regional airport expansion. Electric models are becoming the industry standard for airports without jet bridges.
-BUSINESS_IMPACT: This is a fast-growing, policy-backed segment where TLD competes directly with Guangtai and Tianda. Rising penetration means diesel stair residual values will fall faster than planned, and TLD's electric stair lineup must be priced and positioned for volume tenders at small and regional Chinese airports.
-ACTION: Commission a segment-level demand forecast for electric boarding stairs in China and APAC for 2027-2029 and confirm TLD's production capacity and certification readiness to capture at least a proportional share.
+IMPACT: IMPORTANT
+HEADLINE: Hangzhou Airport adds Kathmandu route, achieves full Asia coverage
+READING: Hangzhou Xiaoshan International Airport launched a new Kathmandu round-trip route, completing its coverage of all Asian regions, and simultaneously resumed the Hangzhou-Qingdao-Vancouver route. These route additions increase aircraft movements and turnaround frequency at one of China's busiest airports.
+BUSINESS_IMPACT: Each new long-haul route typically adds 2-4 daily aircraft movements, requiring additional pushback tractors, baggage handling equipment, and passenger stairs. Hangzhou's expansion signals sustained GSE demand growth in the Yangtze River Delta region, a key TLD market.
+ACTION: Contact Hangzhou Airport ground services division to identify upcoming GSE procurement timelines linked to the expanded route network; target Q4 2026 budget cycle.
 ===SIGNAL_END===
 
 ===SIGNAL_START===
 SIGNAL_ID: 5
 IMPACT: WATCH
-HEADLINE: China airport electrification accelerates; Capital Airport fleet at 44.58% electric
-READING: Beijing Capital Airport reports 1,508 new-energy vehicles on apron with a 44.58% electrification rate, while CATL documents electric GSE deployments at Quanzhou, Lijiang, Urumqi, Hangzhou, Shenzhen, Jinan, Kunming and China Southern Daxing. CAAC's "oil-to-electric" pilot program continues to expand across major hubs.
-BUSINESS_IMPACT: Accelerating electrification shortens the replacement cycle for diesel GSE and creates a large, policy-driven procurement wave for electric tractors, loaders, stairs and belt loaders. TLD must ensure its electric portfolio is qualified for CAAC subsidy-linked tenders, or risk ceding volume to domestic battery-integrated suppliers like CATL-partnered OEMs.
-ACTION: Verify TLD's electric GSE models are listed in CAAC's recommended equipment catalogue and quantify the addressable replacement volume at the top 10 Chinese hubs for the next 24 months.
+HEADLINE: China airport electrification accelerates; electric GSE market share hits 45%
+READING: A 2026 research report indicates pure electric and hybrid bridge-mounted equipment market share has reached 45%, with electric ground power units growing at 28% annually in busy hub airports. The Yangtze River Delta, Pearl River Delta, and Beijing-Tianjin-Hebei regions account for 62% of total demand.
+BUSINESS_IMPACT: This confirms the accelerating diesel-to-electric transition in TLD's core markets; failure to lead in electric product lines risks ceding market share to Guangtai and Tianda who are actively launching electric models. The 28% growth rate in electric GPU demand represents a significant revenue opportunity if TLD has competitive offerings.
+ACTION: Review TLD's electric GSE product roadmap against the 45% market penetration figure and accelerate any electric model certifications for Chinese airport deployment.
 ===SIGNAL_END===
 
 ===SIGNAL_START===
 SIGNAL_ID: 6
 IMPACT: WATCH
-HEADLINE: Xi'an Xianyang Airport handles 1.05m passengers over National Day holiday
-READING: Xi'an Xianyang, the core northwest China hub, expects 1.05 million passengers during the National Day period, while Jieyang Chaoshan expects over 230,000 and Nantong expects 100,000. Shijiazhuang Zhengding crossed 10 million passengers 29 days earlier than last year, signaling strong hub-level traffic growth.
-BUSINESS_IMPACT: Sustained double-digit traffic growth at secondary and regional hubs drives incremental GSE demand for tractors, belt loaders, stairs and tugs, typically 5-10 units per hub per year of growth. Shijiazhuang's early 10-million milestone indicates capacity expansion tenders are likely in the coming quarters.
-ACTION: Add Shijiazhuang, Xi'an, Jieyang and Nantong to the active tender-watch list and confirm local sales coverage or distributor presence for each within one week.
+HEADLINE: Swissport launches full-service ground handling for China Eastern in Melbourne
+READING: Swissport commenced full-service ground handling operations for China Eastern Airlines in Melbourne as of May 2026. This expands Swissport's Asia-Pacific footprint and consolidates ground handling contracts under a major global handler.
+BUSINESS_IMPACT: Swissport's expansion means GSE procurement decisions for China Eastern's Melbourne operations may shift to Swissport's centralized purchasing, potentially favoring their existing global supplier agreements over TLD. Ground handler consolidation typically reduces the number of GSE purchasing decision-makers, concentrating volume with fewer buyers who demand deeper discounts.
+ACTION: Engage Swissport's Asia-Pacific procurement team to ensure TLD remains on their approved supplier list for the Melbourne station and future China Eastern stations.
 ===SIGNAL_END===
 
 ===SIGNAL_START===
 SIGNAL_ID: 7
 IMPACT: WATCH
-HEADLINE: Pudong Airport welcomes Zhongzhou Air all-cargo freighter inaugural flight
-READING: Shanghai Pudong Airport introduced Zhongzhou Air's first all-cargo freighter service, and Tianjin Binhai is actively restoring belly-hold cargo operations for Okay Airways while building its air cargo charter base. Cargo activity is expanding at major Chinese hubs.
-BUSINESS_IMPACT: Growing freighter and cargo operations require dedicated cargo GSE — high-loaders, pallet transporters, container dollies and cargo tractors — a segment where TLD can capture volume if positioned with cargo-specific product lines. Cargo expansion at Pudong and Tianjin signals near-term procurement.
-ACTION: Engage Pudong and Tianjin Binhai cargo terminal operators to map their 2027 GSE procurement plans and position TLD's cargo handling equipment portfolio.
+HEADLINE: Zhangjiajie Airport tenders bridge-mounted ground power unit procurement
+READING: Zhangjiajie Airport issued a competitive negotiation announcement for bridge-mounted ground power supply procurement on 24 September 2026. This is a direct GSE tender opportunity in Hunan province.
+BUSINESS_IMPACT: Bridge-mounted GPUs are a core TLD product category; this tender represents an immediate revenue opportunity. Zhangjiajie is a growing tourist airport with expansion plans, and winning this tender could position TLD for larger Hunan Airport Group procurement across Changsha, Changde, and Yongzhou airports.
+ACTION: Obtain tender documents immediately and assess bid competitiveness; coordinate with TLD China sales team to submit proposal before deadline.
 ===SIGNAL_END===
 
 ===SIGNAL_START===
 SIGNAL_ID: 8
-IMPACT: INFO
-HEADLINE: Global GSE market to reach USD 13.41bn by 2034 at 4.45% CAGR
-READING: Market Data Forecast values the global GSE market at USD 9.46 billion in 2026, growing to USD 13.41 billion by 2034, with Asia-Pacific contributing 29% share and exhibiting the fastest growth. TLD is cited among top companies expanding electric GSE portfolios.
-BUSINESS_IMPACT: Confirms APAC as the highest-growth region, validating TLD's strategic focus on China and Asia-Pacific. The 4.45% CAGR implies steady but not explosive growth, meaning market share gains must come from competitor displacement rather than pure market expansion.
-ACTION: Use this data point in internal planning to justify continued APAC investment and set a share-gain target against Guangtai and Tianda for FY2027.
+IMPACT: WATCH
+HEADLINE: Shanghai Pudong Airport introduces Zhongzhou Airlines freighter inaugural flight
+READING: Shanghai Pudong Airport welcomed Zhongzhou Airlines' all-cargo aircraft inaugural flight, expanding cargo operations at China's busiest cargo hub. This adds freighter movements requiring cargo-specific GSE.
+BUSINESS_IMPACT: New freighter operations at Pudong require cargo loaders, container pallet transporters, and specialized cargo handling equipment. Pudong already handles over 4 million tonnes of cargo annually, and incremental freighter routes drive steady replacement and expansion demand for cargo GSE.
+ACTION: Monitor Zhongzhou Airlines' Pudong freighter frequency ramp-up and engage Pudong cargo ground services for associated GSE requirements in Q4 2026.
 ===SIGNAL_END===
 
 ===SIGNAL_START===
 SIGNAL_ID: 9
 IMPACT: INFO
-HEADLINE: CAAC tender regulations govern civil aviation equipment procurement
-READING: CAAC's regulation on civil aviation materials and equipment tendering governs how airport GSE is procured, and China Aviation Supplies (CASC) operates a one-stop platform covering airport special equipment support and ground comprehensive support services. This shapes how TLD must bid for Chinese airport contracts.
-BUSINESS_IMPACT: Understanding CASC's role as an aggregator and the CAAC tender rules is essential for TLD to qualify for and win Chinese public airport tenders. Non-compliance or lack of CASC relationship could exclude TLD from significant procurement channels.
-ACTION: Confirm TLD's registration and qualification status with CASC's technical equipment platform and review the latest CAAC tender regulation for any changes affecting foreign suppliers.
+HEADLINE: Tianjin Binhai Airport pushes Okay Airways belly-hold cargo resumption
+READING: Tianjin Binhai Airport is actively supporting Okay Airways in resuming belly-hold cargo operations, part of broader efforts to develop the airport's air cargo charter base. This signals incremental cargo volume growth at a secondary Chinese hub.
+BUSINESS_IMPACT: Belly-hold cargo resumption increases demand for container dollies, belt loaders, and cargo tractors at Tianjin. While individually modest, this reflects a broader trend of Chinese secondary airports investing in cargo infrastructure, creating distributed GSE demand across TLD's China market.
+ACTION: Add Tianjin Binhai to the Q4 2026 opportunity pipeline review; no immediate action required.
+===SIGNAL_END===
+
+===SIGNAL_START===
+SIGNAL_ID: 10
+IMPACT: INFO
+HEADLINE: Jieyang Chaoshan Airport expects 230,000 passengers during National Day holiday
+READING: Jieyang Chaoshan Airport projected over 230,000 passengers during the October National Day holiday period, reflecting strong regional travel demand in eastern Guangdong. This is a seasonal peak indicator for airport ground operations.
+BUSINESS_IMPACT: Holiday traffic surges accelerate equipment wear and tear, often triggering emergency procurement or rental demand for ground handling equipment. Sustained traffic growth at Chaoshan (a fast-growing regional airport) supports medium-term GSE demand.
+ACTION: No immediate action; note Chaoshan as a secondary market for GSE fleet expansion monitoring in 2027 budget planning.
+===SIGNAL_END===
+
+===SIGNAL_START===
+SIGNAL_ID: 11
+IMPACT: INFO
+HEADLINE: Ali Pulan Airport hit by heavy blizzard, emergency snow clearance operations
+READING: Ali Pulan Airport in Tibet experienced severe blizzard conditions requiring round-the-clock snow clearance by civil aviation authorities. This highlights the critical need for reliable snow removal and de-icing equipment at high-altitude airports.
+BUSINESS_IMPACT: Extreme weather events at remote airports drive demand for robust de-icing and snow removal GSE, a segment where TLD competes with Tianda's newly launched de-icing vehicles. High-altitude airports in western China represent a niche but growing market as regional connectivity expands.
+ACTION: No immediate action; monitor whether Ali Pulan or other Tibetan airports issue emergency GSE procurement tenders following this event.
+===SIGNAL_END===
+
+===SIGNAL_START===
+SIGNAL_ID: 12
+IMPACT: INFO
+HEADLINE: Urumqi Tianshan Airport launches advance check-in and baggage drop service
+READING: Urumqi Tianshan International Airport introduced next-day check-in and baggage drop services, requiring enhanced baggage handling system capacity and extended operating hours for ground equipment.
+BUSINESS_IMPACT: Extended baggage handling hours increase utilization rates on belt loaders, baggage tractors, and container handling equipment, potentially accelerating replacement cycles. Urumqi's innovation signals investment capacity at western China airports.
+ACTION: No immediate action; note Urumqi as a potential GSE fleet expansion opportunity in 2027.
+===SIGNAL_END===
+
+===SIGNAL_START===
+SIGNAL_ID: 13
+IMPACT: WATCH
+HEADLINE: Electric aircraft passenger stairs market reaches RMB 2.92B globally in 2025
+READING: Global electric aircraft passenger boarding stairs market generated RMB 2.92 billion (approx. EUR 370M) in revenue in 2025, with traditional fuel-powered stairs being phased out as electric models become industry standard. Growth is driven by green airport policies and small airport infrastructure expansion.
+BUSINESS_IMPACT: Passenger stairs are a high-volume GSE category; the rapid electrification of this segment means TLD must have certified electric models ready for Chinese tenders or risk exclusion. The RMB 2.92B global market with China as a major growth driver represents a significant addressable opportunity.
+ACTION: Verify TLD's electric passenger stair product certification status for China and prioritize any gaps in the product line within Q4 2026.
+===SIGNAL_END===
+
+===SIGNAL_START===
+SIGNAL_ID: 14
+IMPACT: WATCH
+HEADLINE: China mandates quality upgrade for energy storage; 21.81GW added in H1 2026
+READING: China's MIIT convened a symposium on energy storage quality, shifting regulatory focus from scale expansion to quality, safety, and mandatory standards. New energy storage installations fell 18% year-on-year in H1 2026, the first decline.
+BUSINESS_IMPACT: Stricter energy storage standards could impact the cost and availability of battery systems used in electric GSE, potentially raising input costs for TLD's electric product line. However, higher quality standards may also favor established manufacturers like TLD over low-cost competitors using substandard batteries.
+ACTION: Assess TLD's battery supply chain for compliance with upcoming mandatory standards; engage battery suppliers on certification timelines.
+===SIGNAL_END===
+
+===SIGNAL_START===
+SIGNAL_ID: 15
+IMPACT: INFO
+HEADLINE: China Airport Bridge Equipment report: 80% of new equipment to have digital interfaces by 2026
+READING: A research report indicates 80% of new bridge-mounted equipment will feature digital management interfaces by 2026, with IoT, big data, and AI integration enabling remote monitoring and predictive maintenance. The Yangtze River Delta, Pearl River Delta, and Beijing-Tianjin-Hebei regions account for 62% of demand.
+BUSINESS_IMPACT: Digital interface requirements are becoming tender prerequisites, meaning GSE manufacturers without IoT-enabled products will be disqualified from major Chinese airport tenders. TLD must ensure its product line meets these digitalization requirements to remain competitive.
+ACTION: Confirm TLD's digital interface capabilities meet the 2026 standard and identify any product gaps requiring development investment.
+===SIGNAL_END===
+
+===SIGNAL_START===
+SIGNAL_ID: 16
+IMPACT: INFO
+HEADLINE: Guangtai exhibits at Lisbon GSE show and INTERSCHUTZ 2026, targets European expansion
+READING: Weihai Guangtai exhibited at the European GSE exhibition in Lisbon and is listed as an exhibitor at INTERSCHUTZ 2026 in Germany, signaling a sustained push into European markets. The company positions itself as a "global leading high-tech enterprise" in airport ground support equipment.
+BUSINESS_IMPACT: Guangtai's European exhibition presence indicates ambitions beyond Asia-Pacific, which could eventually threaten TLD's home markets in Europe. Their cost advantage from Chinese manufacturing could enable aggressive pricing in European tenders.
+ACTION: Monitor Guangtai's European order wins and pricing at trade shows; prepare a competitive defense brief for TLD's European sales team.
+===SIGNAL_END===
+
+===SIGNAL_START===
+SIGNAL_ID: 17
+IMPACT: INFO
+HEADLINE: Xiamen Airlines vehicle maintenance station equipment tender fails to attract bids
+READING: Xiamen Airlines' Xiang'an Airport logistics department vehicle maintenance station equipment procurement project was declared unsuccessful (流标) due to lack of qualifying bidders. This indicates potential specification issues or insufficient supplier interest.
+BUSINESS_IMPACT: A failed tender may be re-issued with revised specifications, creating a second-chance opportunity for TLD if the equipment scope includes GSE-related maintenance tools or vehicles. It also signals potential gaps in the supplier ecosystem at Xiang'an Airport.
+ACTION: Contact Xiamen Airlines procurement to understand the scope and reasons for failure; assess whether TLD can bid on a re-issued tender.
 ===SIGNAL_END===
 
 ===SUMMARY_START===
-EXECUTIVE_SUMMARY: This week's dominant signal is Guangtai's RMB 115 million Asia-Pacific airport equipment contract win and its aggressive European expansion via the Lisbon GSE show and French partnership ambitions, directly threatening TLD in both its home and growth markets. CIMC Tianda simultaneously launched new de-icing vehicles and deployed the world's first unmanned aircraft docking system at Lanzhou, signaling domestic competitors are moving up the technology curve. Chinese airport traffic remains robust with Xi'an at 1.05m holiday passengers and Shijiazhuang crossing 10 million 29 days early, underpinning steady GSE demand. Electrification continues to accelerate with Capital Airport at 44.58% electric and the global electric boarding stair market reaching RMB 2.92bn. TLD must defend APAC accounts against Guangtai, accelerate electric product qualification for CAAC-linked tenders, and counter Tianda's automation push.
-WATCH_1: Guangtai's contract fulfillment details and any further APAC tender awards or European distributor announcements.
-WATCH_2: CAAC electric GSE catalogue updates and subsidy-linked tender releases at top 10 Chinese hubs.
-WATCH_3: CIMC Tianda de-icing vehicle specifications and whether Lanzhou's unmanned docking system becomes a CAAC standard.
-MAIN_RISK: Guangtai's RMB 115m APAC contract win signals a price-aggressive domestic competitor converting exhibition presence into firm orders, threatening TLD's market share and margins across China and Asia-Pacific.
+EXECUTIVE_SUMMARY: This week's signals reveal intensifying competitive pressure in China's GSE market: Guangtai signed a RMB 115M Asia-Pacific contract and is expanding into Europe, CIMC Tianda launched new de-icing and unmanned docking products, and JBT won a USD 6.4M China Southern order. Simultaneously, airport electrification is accelerating with 45% market penetration for electric bridge equipment and 28% annual growth in electric GPU demand, while digital interfaces become mandatory in 80% of new tenders. TLD faces a narrowing window to defend its China market position against well-funded domestic competitors who are matching or exceeding product innovation. The immediate priority is to counter Guangtai's Asia-Pacific contract win, respond to the JBT China Southern loss, and ensure TLD's electric and digital product lines meet 2026 Chinese tender requirements.
+WATCH_1: Guangtai's Asia-Pacific contract details — identify which airports and equipment categories to assess displacement risk to TLD's pipeline.
+WATCH_2: Zhangjiajie Airport bridge-mounted GPU tender deadline and competitive bid landscape — direct revenue opportunity this week.
+WATCH_3: China Southern Airlines' next GSE procurement cycle timing and equipment categories following JBT's USD 6.4M win.
+MAIN_RISK: Guangtai's RMB 115M Asia-Pacific contract combined with its European expansion signals a well-capitalized competitor systematically eroding TLD's market share across both home and export markets.
 ===SUMMARY_END===
