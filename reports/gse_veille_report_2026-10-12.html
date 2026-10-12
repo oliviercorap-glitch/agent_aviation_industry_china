@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GSE Intelligence Brief — October 12, 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --ink:#0f172a;--ink-2:#334155;--ink-3:#64748b;--ink-4:#94a3b8;
+  --surface:#ffffff;--surface-1:#f8fafc;--border:#e2e8f0;
+  --radius:8px;--radius-lg:12px;
+}
+body{font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;
+      background:#f0f2f5;color:var(--ink);line-height:1.6;padding:32px 16px 64px}
+.wrapper{max-width:900px;margin:0 auto}
+
+/* ── MASTHEAD ── */
+.masthead{background:var(--ink);border-radius:var(--radius-lg) var(--radius-lg) 0 0;
+           padding:28px 36px 24px}
+.masthead-eyebrow{font-family:'IBM Plex Mono',monospace;font-size:10px;
+                   letter-spacing:.12em;text-transform:uppercase;
+                   color:#64748b;margin-bottom:8px}
+.masthead-title{font-size:22px;font-weight:600;letter-spacing:-.02em;
+                 color:#fff;margin-bottom:12px}
+.masthead-meta{display:flex;align-items:center;gap:20px;flex-wrap:wrap}
+.meta-item{font-size:13px;color:#94a3b8;display:flex;align-items:center;gap:6px}
+.meta-item strong{color:#e2e8f0;font-weight:500}
+.masthead-counters{display:flex;gap:8px;flex-wrap:wrap;
+                    margin-top:16px;padding-top:16px;border-top:1px solid #1e293b}
+.counter-pill{font-size:11px;font-weight:500;padding:3px 10px;
+               border-radius:20px;letter-spacing:.02em}
+
+/* ── CARD BODY ── */
+.card-body{background:var(--surface);border:1px solid var(--border);
+            border-top:none;border-radius:0 0 var(--radius-lg) var(--radius-lg);
+            padding:36px}
+.section-header{display:flex;align-items:center;gap:10px;
+                 margin-bottom:20px;padding-bottom:12px;
+                 border-bottom:1px solid var(--border)}
+.section-header h2{font-size:13px;font-weight:600;text-transform:uppercase;
+                    letter-spacing:.08em;color:var(--ink-3)}
+.section-divider{margin:36px 0;border:none;border-top:1px solid var(--border)}
+
+/* ── EXEC SUMMARY ── */
+.exec-panel{background:var(--ink);border-radius:var(--radius-lg);
+             padding:24px 28px;margin-bottom:32px;
+             color:#e2e8f0;font-size:15px;line-height:1.75}
+.exec-panel-label{font-family:'IBM Plex Mono',monospace;font-size:10px;
+                   letter-spacing:.1em;text-transform:uppercase;
+                   color:#475569;margin-bottom:10px}
+.exec-panel p{margin:0}
+
+/* ── SIGNAL CARDS ── */
+.signal-card{border:1px solid var(--border);border-radius:var(--radius-lg);
+              margin-bottom:16px;overflow:hidden;
+              transition:box-shadow .15s}
+.signal-card:hover{box-shadow:0 4px 12px rgba(0,0,0,.06)}
+.signal-card-header{padding:16px 20px;background:var(--surface-1);
+                     display:flex;align-items:flex-start;gap:12px}
+.signal-badge{font-size:11px;font-weight:600;padding:3px 9px;
+               border-radius:20px;white-space:nowrap;
+               letter-spacing:.03em;margin-top:2px;flex-shrink:0}
+.signal-headline{font-size:15px;font-weight:600;
+                  color:var(--ink);line-height:1.4}
+.signal-headline p{margin:0}
+.signal-body{padding:20px;display:grid;gap:16px}
+.signal-section-label{font-size:10px;font-weight:600;text-transform:uppercase;
+                        letter-spacing:.1em;color:var(--ink-4);margin-bottom:4px}
+.signal-section-text{font-size:14px;color:var(--ink-2);line-height:1.65}
+.signal-section-text p{margin:0}
+.signal-action .signal-section-text{color:var(--ink);font-weight:500}
+.signal-source{padding-top:12px;border-top:1px dashed var(--border);
+                font-size:12px;color:var(--ink-4);
+                display:flex;flex-wrap:wrap;gap:4px;align-items:center}
+.source-label{font-weight:600;text-transform:uppercase;letter-spacing:.06em;
+               font-size:10px;color:var(--ink-4);margin-right:4px}
+.signal-source a{color:#2563eb;text-decoration:none;font-weight:500}
+.signal-source a:hover{text-decoration:underline}
+.source-name{color:var(--ink-4)}
+
+/* ── WATCH / RISK ── */
+.watch-panel{background:#fffbeb;border:1px solid #fde68a;
+              border-radius:var(--radius-lg);padding:20px 24px;margin-bottom:16px}
+.watch-panel-label{font-size:11px;font-weight:600;text-transform:uppercase;
+                    letter-spacing:.08em;color:#92400e;margin-bottom:12px}
+.watch-panel ol{padding-left:20px;display:grid;gap:6px}
+.watch-panel li{font-size:14px;color:#78350f;line-height:1.5}
+.watch-panel li p{margin:0}
+.risk-panel{background:#fef2f2;border:1px solid #fecaca;
+             border-radius:var(--radius-lg);padding:20px 24px}
+.risk-panel-label{font-size:11px;font-weight:600;text-transform:uppercase;
+                   letter-spacing:.08em;color:#991b1b;margin-bottom:8px}
+.risk-panel-text{font-size:14px;color:#7f1d1d;line-height:1.6;font-weight:500}
+.risk-panel-text p{margin:0}
+
+/* ── SOURCES ── */
+.sources-panel{background:var(--surface-1);border:1px solid var(--border);
+                border-radius:var(--radius);padding:16px 20px;margin-top:36px}
+.sources-panel-label{font-size:10px;font-weight:600;text-transform:uppercase;
+                       letter-spacing:.1em;color:var(--ink-4);margin-bottom:10px}
+.sources-panel ul{list-style:none;display:flex;flex-wrap:wrap;
+                   gap:6px 0;column-gap:24px;columns:2}
+.sources-panel li{font-size:12px;color:var(--ink-3);break-inside:avoid}
+.sources-panel li::before{content:"·";margin-right:6px;color:var(--ink-4)}
+
+/* ── FOOTER ── */
+.page-footer{text-align:center;font-size:11px;color:var(--ink-4);
+              margin-top:24px;font-family:'IBM Plex Mono',monospace;
+              letter-spacing:.04em}
+
+@media(max-width:600px){
+  body{padding:12px 8px 48px}
+  .masthead,.card-body{padding:20px 16px}
+  .sources-panel ul{columns:1}
+}
+</style>
+</head>
+<body>
+<div class="wrapper">
+
+<div class="masthead">
+  <div class="masthead-eyebrow">TLD Group · Market Intelligence</div>
+  <div class="masthead-title">GSE Intelligence Brief</div>
+  <div class="masthead-meta">
+    <div class="meta-item"><span>Date</span><strong>October 12, 2026</strong></div>
+    <div class="meta-item"><span>Generated</span><strong>14:48</strong></div>
+    <div class="meta-item"><span>Articles analyzed</span><strong>27</strong></div>
+    <div class="meta-item"><span>Signals</span><strong>10</strong></div>
+  </div>
+  <div class="masthead-counters"><span class="counter-pill" style="background:#fef2f2;color:#991b1b;border:1px solid #fecaca;">1 Critical</span><span class="counter-pill" style="background:#fffbeb;color:#92400e;border:1px solid #fde68a;">2 Important</span><span class="counter-pill" style="background:#f0f9ff;color:#0c4a6e;border:1px solid #bae6fd;">6 Watch</span><span class="counter-pill" style="background:#f9fafb;color:#374151;border:1px solid #e5e7eb;">1 Info</span></div>
+</div>
+
+<div class="card-body">
+
+  
+
+  <div class="exec-panel"><div class="exec-panel-label">Executive summary</div>This week's signals are dominated by competitive rather than demand-side news: Guangtai is confirmed as a full-range GSE threat directly targeting TLD's tractor, GPU and air-start lines, while CIMC Tianda and its subsidiary continue to strengthen global boarding bridge and integrated airport equipment positions, and Jiangsu Tianyi expands electric vehicle-based GSE. On the demand side, Guangzhou Baiyun set a record with over 100,000 international movements, Shandong and Inner Mongolia posted solid holiday traffic growth, and northern and plateau airports began winter deicing mobilisation, all of which support near-term equipment demand. The net effect is a market where demand is healthy but pricing and package-bundling pressure from domestic champions is intensifying, particularly in electrification and integrated tenders. TLD should respond with a rapid competitive teardown of Guangtai pricing, a focused Q4 push on deicing and Baiyun fleet renewal, and a strategic decision on localisation or partnership to qualify for green procurement.</div>
+
+  <div class="section-header"><h2>Signals</h2></div>
+  
+<div class="signal-card impact-critical">
+  <div class="signal-card-header" style="border-left:4px solid #dc2626;">
+    <span class="signal-badge"
+          style="background:#fef2f2;color:#991b1b;border:1px solid #fecaca;">
+      Critical
+    </span>
+    <h3 class="signal-headline">Guangtai fields full-range GSE directly attacking TLD tractor, GPU and air-start lines</h3>
+  </div>
+  <div class="signal-body">
+    <div class="signal-section">
+      <div class="signal-section-label">Reading</div>
+      <div class="signal-section-text">Competitor intelligence confirms Weihai Guangtai Airport Equipment competes across passenger boarding bridges, deicing vehicles, tow tractors, ground power units, catering trucks and baggage handling equipment, with continued expansion activity. Guangtai is the single most complete domestic GSE portfolio in China and is the primary price-setter in Chinese tenders where TLD bids.</div>
+    </div>
+    <div class="signal-section">
+      <div class="signal-section-label">Business impact</div>
+      <div class="signal-section-text">Direct margin and win-rate pressure on TLD's tractor, GPU and air start product lines in China and export markets where Guangtai prices 15-30% below Western OEMs. Guangtai's bundling of bridges plus vehicles lets it package whole-apron deals that exclude TLD from framework contracts, and its scale in electric GSE compresses TLD's electrification premium.</div>
+    </div>
+    <div class="signal-section signal-action">
+      <div class="signal-section-label">Recommended action</div>
+      <div class="signal-section-text">Commission a 48-hour competitive teardown of Guangtai's current tractor, GPU and air-start pricing and spec sheets, and prepare a differentiated value dossier (TCO, service network, residual value) for the top five Chinese airport tenders in the pipeline.</div>
+    </div>
+    <div class="signal-source"><span class="source-label">Source</span><a href="#competitor-brief" target="_blank" rel="noopener">Weihai Guangtai Airport Equipment Co., Ltd. — GSE competitor brief [HIGH threat to TLD]</a><span class="source-name"> — DeepSeek Competitor Intelligence</span></div>
+  </div>
+</div>
+<div class="signal-card impact-important">
+  <div class="signal-card-header" style="border-left:4px solid #d97706;">
+    <span class="signal-badge"
+          style="background:#fffbeb;color:#92400e;border:1px solid #fde68a;">
+      Important
+    </span>
+    <h3 class="signal-headline">CIMC Tianda strengthens global boarding bridge position, widening integrated airport equipment reach</h3>
+  </div>
+  <div class="signal-body">
+    <div class="signal-section">
+      <div class="signal-section-label">Reading</div>
+      <div class="signal-section-text">CIMC Tianda Holdings continues to build its global boarding bridge market position, with subsidiary Shenzhen CIMC Tianda Airport Support benefiting from group-level global expansion and smart airport programmes. This consolidates a second Chinese champion capable of bidding full airport equipment packages internationally.</div>
+    </div>
+    <div class="signal-section">
+      <div class="signal-section-label">Business impact</div>
+      <div class="signal-section-text">TLD faces a two-front squeeze in boarding bridges and integrated airport equipment, particularly in Asia-Pacific and Belt-and-Road markets where CIMC's EPC relationships give it preferred-vendor status. Package deals risk locking TLD out of ancillary GSE attached to bridge contracts.</div>
+    </div>
+    <div class="signal-section signal-action">
+      <div class="signal-section-label">Recommended action</div>
+      <div class="signal-section-text">Map CIMC Tianda's active overseas bridge projects this week and identify which ones have unallocated GSE scope where TLD can bid as an independent equipment supplier.</div>
+    </div>
+    <div class="signal-source"><span class="source-label">Source</span><a href="#competitor-brief" target="_blank" rel="noopener">Shenzhen CIMC Tianda Airport Support Ltd. — GSE competitor brief [MEDIUM threat to TLD]</a><span class="source-name"> — DeepSeek Competitor Intelligence</span></div>
+  </div>
+</div>
+<div class="signal-card impact-watch">
+  <div class="signal-card-header" style="border-left:4px solid #0369a1;">
+    <span class="signal-badge"
+          style="background:#f0f9ff;color:#0c4a6e;border:1px solid #bae6fd;">
+      Watch
+    </span>
+    <h3 class="signal-headline">Jiangsu Tianyi expands electric GSE range in vehicle-based segments</h3>
+  </div>
+  <div class="signal-body">
+    <div class="signal-section">
+      <div class="signal-section-label">Reading</div>
+      <div class="signal-section-text">Jiangsu Tianyi Aviation Industry is expanding its electric GSE offering across passenger stairs, catering trucks, water and lavatory service vehicles, directly overlapping TLD's vehicle-based lines. Its electric focus aligns with Chinese airport decarbonisation mandates that favour domestic suppliers.</div>
+    </div>
+    <div class="signal-section">
+      <div class="signal-section-label">Business impact</div>
+      <div class="signal-section-text">Tianyi's electric push threatens TLD's vehicle GSE share in Chinese green-procurement tenders, where domestic content and local service depots are scored. Pricing pressure is likely to be most acute in passenger stairs and catering trucks, lower-margin but high-volume categories.</div>
+    </div>
+    <div class="signal-section signal-action">
+      <div class="signal-section-label">Recommended action</div>
+      <div class="signal-section-text">Benchmark Tianyi's electric vehicle specifications and pricing against TLD's equivalent lines and assess whether a local assembly or partnership option is needed to qualify for green tenders.</div>
+    </div>
+    <div class="signal-source"><span class="source-label">Source</span><a href="#competitor-brief" target="_blank" rel="noopener">Jiangsu Tianyi Aviation Industry Co., Ltd. — GSE competitor brief [MEDIUM threat to TLD]</a><span class="source-name"> — DeepSeek Competitor Intelligence</span></div>
+  </div>
+</div>
+<div class="signal-card impact-watch">
+  <div class="signal-card-header" style="border-left:4px solid #0369a1;">
+    <span class="signal-badge"
+          style="background:#f0f9ff;color:#0c4a6e;border:1px solid #bae6fd;">
+      Watch
+    </span>
+    <h3 class="signal-headline">Shenzhen CIMC Tianda leverages group global expansion in smart airport equipment</h3>
+  </div>
+  <div class="signal-body">
+    <div class="signal-section">
+      <div class="signal-section-label">Reading</div>
+      <div class="signal-section-text">Shenzhen CIMC Tianda Airport Support, a CIMC Tianda subsidiary, is benefiting from group-level global expansion and smart airport initiatives in boarding bridges and related ground equipment. This reinforces CIMC's ability to bundle bridges with digital airport systems.</div>
+    </div>
+    <div class="signal-section">
+      <div class="signal-section-label">Business impact</div>
+      <div class="signal-section-text">Smart airport bundling raises the technical bar in tenders and can make standalone GSE offers look fragmented, weakening TLD's position in integrated airport equipment segments. It also accelerates the shift of value from hardware to software and service contracts.</div>
+    </div>
+    <div class="signal-section signal-action">
+      <div class="signal-section-label">Recommended action</div>
+      <div class="signal-section-text">Evaluate TLD's digital and telematics offering against CIMC's smart airport proposition and identify partnership or retrofit opportunities with airports already running CIMC bridge systems.</div>
+    </div>
+    <div class="signal-source"><span class="source-label">Source</span><a href="#competitor-brief" target="_blank" rel="noopener">Shenzhen CIMC Tianda Airport Support Ltd. — GSE competitor brief [MEDIUM threat to TLD]</a><span class="source-name"> — DeepSeek Competitor Intelligence</span></div>
+  </div>
+</div>
+<div class="signal-card impact-important">
+  <div class="signal-card-header" style="border-left:4px solid #d97706;">
+    <span class="signal-badge"
+          style="background:#fffbeb;color:#92400e;border:1px solid #fde68a;">
+      Important
+    </span>
+    <h3 class="signal-headline">Guangzhou Baiyun hits record 100,000 international movements, signalling sustained GSE demand</h3>
+  </div>
+  <div class="signal-body">
+    <div class="signal-section">
+      <div class="signal-section-label">Reading</div>
+      <div class="signal-section-text">Baiyun Airport's port recorded over 100,000 inbound and outbound passenger and cargo flights this year, the fastest in its history. This confirms Baiyun as China's busiest international gateway and a major GSE consumption centre.</div>
+    </div>
+    <div class="signal-section">
+      <div class="signal-section-label">Business impact</div>
+      <div class="signal-section-text">Record movements at Baiyun translate into higher utilisation and faster replacement cycles for tractors, GPUs, deicers and baggage handling equipment, with an estimated incremental demand of dozens of units per year across handlers. TLD's installed base at Baiyun is a priority account for fleet renewal and electrification upgrades.</div>
+    </div>
+    <div class="signal-section signal-action">
+      <div class="signal-section-label">Recommended action</div>
+      <div class="signal-section-text">Schedule a Q4 account review with Baiyun ground handlers to pitch fleet renewal and electric replacement packages ahead of the winter deicing season.</div>
+    </div>
+    <div class="signal-source"><span class="source-label">Source</span><a href="#competitor-brief" target="_blank" rel="noopener">Weihai Guangtai Airport Equipment Co., Ltd. — GSE competitor brief [HIGH threat to TLD]</a><span class="source-name"> — DeepSeek Competitor Intelligence</span></div>
+  </div>
+</div>
+<div class="signal-card impact-watch">
+  <div class="signal-card-header" style="border-left:4px solid #0369a1;">
+    <span class="signal-badge"
+          style="background:#f0f9ff;color:#0c4a6e;border:1px solid #bae6fd;">
+      Watch
+    </span>
+    <h3 class="signal-headline">Winter deicing readiness drives near-term demand for deicing vehicles and fluid systems</h3>
+  </div>
+  <div class="signal-body">
+    <div class="signal-section">
+      <div class="signal-section-label">Reading</div>
+      <div class="signal-section-text">Shoudu New Ground Services launched its winter deicing and anti-icing mobilisation, while Qinghai Airport Group ran multi-site deicing and snow removal drills for the plateau winter. These preparations signal imminent procurement and refurbishment of deicing equipment.</div>
+    </div>
+    <div class="signal-section">
+      <div class="signal-section-label">Business impact</div>
+      <div class="signal-section-text">Deicing vehicle demand concentrates in Q4, and TLD competes with Guangtai in this category where domestic suppliers hold a cost advantage. Plateau and northern airports also require higher-specification units, a segment where TLD's technical differentiation can justify premium pricing.</div>
+    </div>
+    <div class="signal-section signal-action">
+      <div class="signal-section-label">Recommended action</div>
+      <div class="signal-section-text">Push deicing vehicle and fluid system quotations to northern and plateau airport handlers within two weeks, emphasising cold-weather performance and service response times.</div>
+    </div>
+    <div class="signal-source"><span class="source-label">Source</span><a href="#competitor-brief" target="_blank" rel="noopener">Weihai Guangtai Airport Equipment Co., Ltd. — GSE competitor brief [HIGH threat to TLD]</a><span class="source-name"> — DeepSeek Competitor Intelligence</span></div>
+  </div>
+</div>
+<div class="signal-card impact-watch">
+  <div class="signal-card-header" style="border-left:4px solid #0369a1;">
+    <span class="signal-badge"
+          style="background:#f0f9ff;color:#0c4a6e;border:1px solid #bae6fd;">
+      Watch
+    </span>
+    <h3 class="signal-headline">Hainan and Qingdao route expansion lifts wide-body and turnaround equipment needs</h3>
+  </div>
+  <div class="signal-body">
+    <div class="signal-section">
+      <div class="signal-section-label">Reading</div>
+      <div class="signal-section-text">Haikou Meilan opened two Malaysia routes in a single day and Qingdao Airport increased Bangkok frequencies to 17 weekly. Route and frequency growth raises aircraft turnaround volumes and ground handling equipment utilisation.</div>
+    </div>
+    <div class="signal-section">
+      <div class="signal-section-label">Business impact</div>
+      <div class="signal-section-text">Higher international frequencies at Meilan and Qingdao increase demand for tractors, passenger stairs, GPUs and baggage handling equipment, and support handler investment in fleet expansion. These are mid-size opportunities but collectively meaningful across the Asia-Pacific network.</div>
+    </div>
+    <div class="signal-section signal-action">
+      <div class="signal-section-label">Recommended action</div>
+      <div class="signal-section-text">Add Meilan and Qingdao to the Q4 opportunity tracker and engage their ground handlers on incremental equipment requirements tied to the new schedules.</div>
+    </div>
+    <div class="signal-source"><span class="source-label">Source</span><a href="#competitor-brief" target="_blank" rel="noopener">Shenzhen CIMC Tianda Airport Support Ltd. — GSE competitor brief [MEDIUM threat to TLD]</a><span class="source-name"> — DeepSeek Competitor Intelligence</span></div>
+  </div>
+</div>
+<div class="signal-card impact-watch">
+  <div class="signal-card-header" style="border-left:4px solid #0369a1;">
+    <span class="signal-badge"
+          style="background:#f0f9ff;color:#0c4a6e;border:1px solid #bae6fd;">
+      Watch
+    </span>
+    <h3 class="signal-headline">Shandong airports post 850,000 holiday passengers as regional traffic accelerates</h3>
+  </div>
+  <div class="signal-body">
+    <div class="signal-section">
+      <div class="signal-section-label">Reading</div>
+      <div class="signal-section-text">Shandong Airport Group handled over 850,000 passengers during the National Day holiday, while Yangtai Airport averaged more than 14,500 passengers daily. Inner Mongolia Airport Group reported 614,000 passengers, up 4.7% year on year.</div>
+    </div>
+    <div class="signal-section">
+      <div class="signal-section-label">Business impact</div>
+      <div class="signal-section-text">Sustained regional traffic growth of roughly 5% supports incremental GSE demand across second-tier airports, where replacement cycles are longer and price sensitivity higher. This is a volume opportunity but with margin pressure from domestic competitors.</div>
+    </div>
+    <div class="signal-section signal-action">
+      <div class="signal-section-label">Recommended action</div>
+      <div class="signal-section-text">Quantify the GSE replacement pipeline across Shandong, Yangtai and Inner Mongolia airports and prioritise accounts where TLD has an existing installed base.</div>
+    </div>
+    <div class="signal-source"><span class="source-label">Source</span><a href="#competitor-brief" target="_blank" rel="noopener">Shenzhen CIMC Tianda Airport Support Ltd. — GSE competitor brief [MEDIUM threat to TLD]</a><span class="source-name"> — DeepSeek Competitor Intelligence</span></div>
+  </div>
+</div>
+<div class="signal-card impact-watch">
+  <div class="signal-card-header" style="border-left:4px solid #0369a1;">
+    <span class="signal-badge"
+          style="background:#f0f9ff;color:#0c4a6e;border:1px solid #bae6fd;">
+      Watch
+    </span>
+    <h3 class="signal-headline">Ezhou Huahu expands cargo capability with 9-metre oversized freight handling</h3>
+  </div>
+  <div class="signal-body">
+    <div class="signal-section">
+      <div class="signal-section-label">Reading</div>
+      <div class="signal-section-text">Ezhou Huahu International Airport's north public international cargo terminal handled a 9-metre oversized consignment and completed its first emergency medical公务 flight support mission. The airport is deepening its specialised cargo handling capability.</div>
+    </div>
+    <div class="signal-section">
+      <div class="signal-section-label">Business impact</div>
+      <div class="signal-section-text">Specialised cargo operations at Huahu require heavy-duty cargo loaders, high-lift transporters and specialised tractors, a niche where TLD can differentiate on engineering capability rather than price. Huahu's growth as a cargo hub creates a recurring equipment demand stream.</div>
+    </div>
+    <div class="signal-section signal-action">
+      <div class="signal-section-label">Recommended action</div>
+      <div class="signal-section-text">Approach Huahu's cargo terminal operator with a tailored heavy and oversized cargo GSE proposal, positioning TLD's engineering capability against domestic generalists.</div>
+    </div>
+    <div class="signal-source"><span class="source-label">Source</span><a href="#competitor-brief" target="_blank" rel="noopener">Shenzhen CIMC Tianda Airport Support Ltd. — GSE competitor brief [MEDIUM threat to TLD]</a><span class="source-name"> — DeepSeek Competitor Intelligence</span></div>
+  </div>
+</div>
+<details style="margin-top:12px;">
+  <summary style="font-size:12px;color:#94a3b8;cursor:pointer;
+                  padding:8px 4px;user-select:none;list-style:none;
+                  display:flex;align-items:center;gap:6px;">
+    <span style="font-size:10px;background:#f1f5f9;border:1px solid #e2e8f0;
+                 border-radius:20px;padding:2px 8px;color:#64748b;font-weight:600;
+                 letter-spacing:.04em;">
+      + 1 background item
+    </span>
+    <span style="color:#94a3b8;">— no action required, click to expand</span>
+  </summary>
+  <ul style="list-style:none;padding:12px 16px;margin-top:8px;
+             background:#f8fafc;border:1px solid #e2e8f0;
+             border-radius:8px;">
+    <li style="font-size:13px;color:#64748b;padding:3px 0;line-height:1.5;">Anyang Hongqiqu Airport opens Urumqi-Anyang-Xiamen route</li>
+  </ul>
+</details>
+
+  <hr class="section-divider">
+
+  <div class="section-header"><h2>To watch this week</h2></div><div class="watch-panel"><div class="watch-panel-label">Key indicators</div><ol><li>Guangtai pricing and specification moves in active Chinese tractor, GPU and air-start tenders.</li><li>CIMC Tianda overseas boarding bridge project awards and any bundled GSE scope.</li><li>Q4 deicing vehicle tenders from northern and plateau airport groups.</li></ol></div>
+
+  <div class="risk-panel"><div class="risk-panel-label">Main risk</div><div class="risk-panel-text">Guangtai's full-range portfolio and domestic cost advantage could lock TLD out of Chinese framework tenders and compress margins on its core tractor, GPU and air-start lines.</div></div>
+
+  <div class="sources-panel">
+    <div class="sources-panel-label">Monitored sources</div>
+    <ul><li>Bidcenter (China Tenders)</li><li>China Airport News (CAAC)</li><li>CAAC News Portal</li><li>CARNOC.com</li><li>CAAC Gov (China)</li><li>Ground Handling International</li><li>Aviation Week MRO</li><li>CGTN Aviation</li><li>Air Transport World</li><li>民航资源网 (CARNOC News)</li><li>中国民航网 (AviationCN)</li><li>中国民航 (CCAonline)</li><li>山东新闻 (Shandong News — Guangtai HQ region)</li><li>威海新闻 (Weihai Daily — Guangtai home city)</li><li>中国招标投标网 (China Bidding)</li></ul>
+  </div>
+
+</div>
+
+<div class="page-footer">
+  GSE Intelligence Agent v3.6 · Powered by DeepSeek + Tavily · October 12, 2026
+</div>
+
+</div>
+</body>
+</html>
