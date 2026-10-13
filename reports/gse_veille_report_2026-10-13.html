@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GSE Intelligence Brief — October 13, 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --ink:#0f172a;--ink-2:#334155;--ink-3:#64748b;--ink-4:#94a3b8;
+  --surface:#ffffff;--surface-1:#f8fafc;--border:#e2e8f0;
+  --radius:8px;--radius-lg:12px;
+}
+body{font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;
+      background:#f0f2f5;color:var(--ink);line-height:1.6;padding:32px 16px 64px}
+.wrapper{max-width:900px;margin:0 auto}
+
+/* ── MASTHEAD ── */
+.masthead{background:var(--ink);border-radius:var(--radius-lg) var(--radius-lg) 0 0;
+           padding:28px 36px 24px}
+.masthead-eyebrow{font-family:'IBM Plex Mono',monospace;font-size:10px;
+                   letter-spacing:.12em;text-transform:uppercase;
+                   color:#64748b;margin-bottom:8px}
+.masthead-title{font-size:22px;font-weight:600;letter-spacing:-.02em;
+                 color:#fff;margin-bottom:12px}
+.masthead-meta{display:flex;align-items:center;gap:20px;flex-wrap:wrap}
+.meta-item{font-size:13px;color:#94a3b8;display:flex;align-items:center;gap:6px}
+.meta-item strong{color:#e2e8f0;font-weight:500}
+.masthead-counters{display:flex;gap:8px;flex-wrap:wrap;
+                    margin-top:16px;padding-top:16px;border-top:1px solid #1e293b}
+.counter-pill{font-size:11px;font-weight:500;padding:3px 10px;
+               border-radius:20px;letter-spacing:.02em}
+
+/* ── CARD BODY ── */
+.card-body{background:var(--surface);border:1px solid var(--border);
+            border-top:none;border-radius:0 0 var(--radius-lg) var(--radius-lg);
+            padding:36px}
+.section-header{display:flex;align-items:center;gap:10px;
+                 margin-bottom:20px;padding-bottom:12px;
+                 border-bottom:1px solid var(--border)}
+.section-header h2{font-size:13px;font-weight:600;text-transform:uppercase;
+                    letter-spacing:.08em;color:var(--ink-3)}
+.section-divider{margin:36px 0;border:none;border-top:1px solid var(--border)}
+
+/* ── EXEC SUMMARY ── */
+.exec-panel{background:var(--ink);border-radius:var(--radius-lg);
+             padding:24px 28px;margin-bottom:32px;
+             color:#e2e8f0;font-size:15px;line-height:1.75}
+.exec-panel-label{font-family:'IBM Plex Mono',monospace;font-size:10px;
+                   letter-spacing:.1em;text-transform:uppercase;
+                   color:#475569;margin-bottom:10px}
+.exec-panel p{margin:0}
+
+/* ── SIGNAL CARDS ── */
+.signal-card{border:1px solid var(--border);border-radius:var(--radius-lg);
+              margin-bottom:16px;overflow:hidden;
+              transition:box-shadow .15s}
+.signal-card:hover{box-shadow:0 4px 12px rgba(0,0,0,.06)}
+.signal-card-header{padding:16px 20px;background:var(--surface-1);
+                     display:flex;align-items:flex-start;gap:12px}
+.signal-badge{font-size:11px;font-weight:600;padding:3px 9px;
+               border-radius:20px;white-space:nowrap;
+               letter-spacing:.03em;margin-top:2px;flex-shrink:0}
+.signal-headline{font-size:15px;font-weight:600;
+                  color:var(--ink);line-height:1.4}
+.signal-headline p{margin:0}
+.signal-body{padding:20px;display:grid;gap:16px}
+.signal-section-label{font-size:10px;font-weight:600;text-transform:uppercase;
+                        letter-spacing:.1em;color:var(--ink-4);margin-bottom:4px}
+.signal-section-text{font-size:14px;color:var(--ink-2);line-height:1.65}
+.signal-section-text p{margin:0}
+.signal-action .signal-section-text{color:var(--ink);font-weight:500}
+.signal-source{padding-top:12px;border-top:1px dashed var(--border);
+                font-size:12px;color:var(--ink-4);
+                display:flex;flex-wrap:wrap;gap:4px;align-items:center}
+.source-label{font-weight:600;text-transform:uppercase;letter-spacing:.06em;
+               font-size:10px;color:var(--ink-4);margin-right:4px}
+.signal-source a{color:#2563eb;text-decoration:none;font-weight:500}
+.signal-source a:hover{text-decoration:underline}
+.source-name{color:var(--ink-4)}
+
+/* ── WATCH / RISK ── */
+.watch-panel{background:#fffbeb;border:1px solid #fde68a;
+              border-radius:var(--radius-lg);padding:20px 24px;margin-bottom:16px}
+.watch-panel-label{font-size:11px;font-weight:600;text-transform:uppercase;
+                    letter-spacing:.08em;color:#92400e;margin-bottom:12px}
+.watch-panel ol{padding-left:20px;display:grid;gap:6px}
+.watch-panel li{font-size:14px;color:#78350f;line-height:1.5}
+.watch-panel li p{margin:0}
+.risk-panel{background:#fef2f2;border:1px solid #fecaca;
+             border-radius:var(--radius-lg);padding:20px 24px}
+.risk-panel-label{font-size:11px;font-weight:600;text-transform:uppercase;
+                   letter-spacing:.08em;color:#991b1b;margin-bottom:8px}
+.risk-panel-text{font-size:14px;color:#7f1d1d;line-height:1.6;font-weight:500}
+.risk-panel-text p{margin:0}
+
+/* ── SOURCES ── */
+.sources-panel{background:var(--surface-1);border:1px solid var(--border);
+                border-radius:var(--radius);padding:16px 20px;margin-top:36px}
+.sources-panel-label{font-size:10px;font-weight:600;text-transform:uppercase;
+                       letter-spacing:.1em;color:var(--ink-4);margin-bottom:10px}
+.sources-panel ul{list-style:none;display:flex;flex-wrap:wrap;
+                   gap:6px 0;column-gap:24px;columns:2}
+.sources-panel li{font-size:12px;color:var(--ink-3);break-inside:avoid}
+.sources-panel li::before{content:"·";margin-right:6px;color:var(--ink-4)}
+
+/* ── FOOTER ── */
+.page-footer{text-align:center;font-size:11px;color:var(--ink-4);
+              margin-top:24px;font-family:'IBM Plex Mono',monospace;
+              letter-spacing:.04em}
+
+@media(max-width:600px){
+  body{padding:12px 8px 48px}
+  .masthead,.card-body{padding:20px 16px}
+  .sources-panel ul{columns:1}
+}
+</style>
+</head>
+<body>
+<div class="wrapper">
+
+<div class="masthead">
+  <div class="masthead-eyebrow">TLD Group · Market Intelligence</div>
+  <div class="masthead-title">GSE Intelligence Brief</div>
+  <div class="masthead-meta">
+    <div class="meta-item"><span>Date</span><strong>October 13, 2026</strong></div>
+    <div class="meta-item"><span>Generated</span><strong>13:50</strong></div>
+    <div class="meta-item"><span>Articles analyzed</span><strong>23</strong></div>
+    <div class="meta-item"><span>Signals</span><strong>19</strong></div>
+  </div>
+  <div class="masthead-counters"><span class="counter-pill" style="background:#fffbeb;color:#92400e;border:1px solid #fde68a;">3 Important</span><span class="counter-pill" style="background:#f0f9ff;color:#0c4a6e;border:1px solid #bae6fd;">7 Watch</span><span class="counter-pill" style="background:#f9fafb;color:#374151;border:1px solid #e5e7eb;">9 Info</span></div>
+</div>
+
+<div class="card-body">
+
+  
+
+  <div class="exec-panel"><div class="exec-panel-label">Executive summary</div>This week's China aviation signals are dominated by infrastructure and seasonal-readiness themes rather than competitor moves: Shanghai Pudong T3's international main hall is nearing structural completion, Guangzhou Baiyun set a record with over 100,000 international flights year-to-date, and northern and plateau airports have begun winter de-icing mobilisation. For TLD, the two most commercially actionable threads are the Pudong T3 build-out — a multi-year, high-value GSE procurement wave at China's premier international hub — and the Q4 winter de-icing equipment window across northern and high-altitude airports. Secondary signals point to rising buyer preference for digital, telematics-enabled and electric GSE, and to concentrated cargo-GSE opportunities at Ezhou Huahu/SF Express. No competitor (Guangtai, JBT, CIMC Tianda or others) was named in any article this week, so there is no immediate competitive threat to respond to. Priority actions: position early on Pudong T3, secure de-icer inventory for immediate winter delivery, and advance the telematics/electric value proposition.</div>
+
+  <div class="section-header"><h2>Signals</h2></div>
+  
+<div class="signal-card impact-important">
+  <div class="signal-card-header" style="border-left:4px solid #d97706;">
+    <span class="signal-badge"
+          style="background:#fffbeb;color:#92400e;border:1px solid #fde68a;">
+      Important
+    </span>
+    <h3 class="signal-headline">Shanghai Pudong T3 international main hall steel roof about to top out</h3>
+  </div>
+  <div class="signal-body">
+    <div class="signal-section">
+      <div class="signal-section-label">Reading</div>
+      <div class="signal-section-text">The 6,000-tonne steel roof of Pudong Airport T3's international main terminal is nearing structural completion, marking a major milestone in one of Asia's largest airport expansion projects. T3 is designed to add roughly 50 million annual passenger capacity to Pudong, with commissioning targeted in the late 2020s. This is a leading indicator for a multi-year GSE procurement wave at China's largest international hub.</div>
+    </div>
+    <div class="signal-section">
+      <div class="signal-section-label">Business impact</div>
+      <div class="signal-section-text">A new international main terminal at Pudong implies hundreds of new GSE units over the fit-out and ramp-up phase — tractors, belt loaders, pushback tugs, deicers, catering and lavatory trucks — plus replacement of legacy diesel fleets to meet Shanghai electrification targets. TLD should position early with Shanghai Airport Authority and incumbent handlers (ground handling at PVG is dominated by a few large operators) to be specified into the initial equipment package rather than competing on spot tenders later.</div>
+    </div>
+    <div class="signal-section signal-action">
+      <div class="signal-section-label">Recommended action</div>
+      <div class="signal-section-text">Within two weeks, task the China sales team to map the T3 GSE procurement timeline and decision-makers, and prepare a full electric product package proposal for the T3 opening fleet.</div>
+    </div>
+    
+  </div>
+</div>
+<div class="signal-card impact-important">
+  <div class="signal-card-header" style="border-left:4px solid #d97706;">
+    <span class="signal-badge"
+          style="background:#fffbeb;color:#92400e;border:1px solid #fde68a;">
+      Important
+    </span>
+    <h3 class="signal-headline">Guangzhou Baiyun hits record 100,000+ international passenger and cargo flights</h3>
+  </div>
+  <div class="signal-body">
+    <div class="signal-section">
+      <div class="signal-section-label">Reading</div>
+      <div class="signal-section-text">Baiyun Airport's port cleared over 100,000 inbound and outbound passenger and cargo flights year-to-date in 2026, the fastest in its history, confirming Baiyun as the dominant international gateway in South China. Sustained double-digit international traffic growth drives higher turnaround frequency and therefore higher GSE utilisation and replacement demand. Cargo flight growth in particular supports demand for cargo-specific GSE such as high-lift loaders and container/pallet transporters.</div>
+    </div>
+    <div class="signal-section">
+      <div class="signal-section-label">Business impact</div>
+      <div class="signal-section-text">Higher flight frequencies at Baiyun translate directly into increased wear cycles on existing handler fleets, pulling forward replacement purchases and leasing renewals. TLD's leasing book in the Pearl River Delta should see improved utilisation and renewal pricing power; the cargo GSE segment (loaders, transporters) is the fastest-growing sub-segment and should be prioritised in inventory planning for 2027.</div>
+    </div>
+    <div class="signal-section signal-action">
+      <div class="signal-section-label">Recommended action</div>
+      <div class="signal-section-text">Instruct the leasing team to review Baiyun-area contract renewal terms and propose a rate uplift plus an expanded cargo GSE leasing package for Q1 2027.</div>
+    </div>
+    <div class="signal-source"><span class="source-label">Source</span><a href="https://www.bidcenter.com.cn/news-446548460-1.html" target="_blank" rel="noopener">打印机采购项目（2026）询比采购公告</a><span class="source-name"> — Bidcenter (China Tenders)</span></div>
+  </div>
+</div>
+<div class="signal-card impact-watch">
+  <div class="signal-card-header" style="border-left:4px solid #0369a1;">
+    <span class="signal-badge"
+          style="background:#f0f9ff;color:#0c4a6e;border:1px solid #bae6fd;">
+      Watch
+    </span>
+    <h3 class="signal-headline">Haikou Meilan opens two Malaysia routes in a single day</h3>
+  </div>
+  <div class="signal-body">
+    <div class="signal-section">
+      <div class="signal-section-label">Reading</div>
+      <div class="signal-section-text">Meilan International Airport launched two new Malaysia routes on the same day, expanding Hainan's international connectivity as part of the free-trade-port aviation build-out. New route launches at secondary international hubs typically precede incremental ground handling capacity needs rather than step-change fleet purchases. However, cumulative route additions across Hainan are gradually building a larger GSE requirement.</div>
+    </div>
+    <div class="signal-section">
+      <div class="signal-section-label">Business impact</div>
+      <div class="signal-section-text">Incremental narrowbody-oriented GSE demand at Meilan — tractors, belt loaders, small deicers — likely to be met through handler fleet top-ups rather than large tenders. TLD should track cumulative Hainan route growth; if Meilan sustains this pace, a mid-size leasing package for 2027 becomes commercially viable.</div>
+    </div>
+    <div class="signal-section signal-action">
+      <div class="signal-section-label">Recommended action</div>
+      <div class="signal-section-text">Add Meilan and Hainan free-trade-port airports to the quarterly demand-tracking dashboard; revisit in Q1 2027 if route count continues rising.</div>
+    </div>
+    
+  </div>
+</div>
+<div class="signal-card impact-watch">
+  <div class="signal-card-header" style="border-left:4px solid #0369a1;">
+    <span class="signal-badge"
+          style="background:#f0f9ff;color:#0c4a6e;border:1px solid #bae6fd;">
+      Watch
+    </span>
+    <h3 class="signal-headline">Qingdao Airport Bangkok route frequency raised to 17 weekly flights</h3>
+  </div>
+  <div class="signal-body">
+    <div class="signal-section">
+      <div class="signal-section-label">Reading</div>
+      <div class="signal-section-text">Qingdao's Bangkok service has been densified to 17 weekly frequencies, reflecting strong China-Thailand leisure and business demand recovery. Frequency densification at a single airport increases daily aircraft movements and handler workload without requiring new terminal capacity. This is a steady, incremental driver of GSE utilisation rather than a step-change procurement event.</div>
+    </div>
+    <div class="signal-section">
+      <div class="signal-section-label">Business impact</div>
+      <div class="signal-section-text">Higher movements at Qingdao improve utilisation economics for any TLD units on lease there and support maintenance/spare-parts revenue. It also strengthens the case for electrification upgrades where handlers face tighter turnaround windows and emissions rules.</div>
+    </div>
+    <div class="signal-section signal-action">
+      <div class="signal-section-label">Recommended action</div>
+      <div class="signal-section-text">No immediate action; ensure Qingdao-based leased units are scheduled for preventive maintenance ahead of the winter peak.</div>
+    </div>
+    
+  </div>
+</div>
+<div class="signal-card impact-watch">
+  <div class="signal-card-header" style="border-left:4px solid #0369a1;">
+    <span class="signal-badge"
+          style="background:#f0f9ff;color:#0c4a6e;border:1px solid #bae6fd;">
+      Watch
+    </span>
+    <h3 class="signal-headline">Yancheng Airport aligns 33 routes to 33 cities with industrial strategy</h3>
+  </div>
+  <div class="signal-body">
+    <div class="signal-section">
+      <div class="signal-section-label">Reading</div>
+      <div class="signal-section-text">Yancheng Nanyang Airport now connects 33 cities with 33 routes, explicitly matching route network to local industrial layout. This reflects the broader Chinese policy of using regional airport connectivity to support manufacturing clusters. Such secondary-city airports generate modest but steady GSE demand, often procured through local handlers or airport-owned ground service companies.</div>
+    </div>
+    <div class="signal-section">
+      <div class="signal-section-label">Business impact</div>
+      <div class="signal-section-text">Secondary airports like Yancheng are price-sensitive and tend to favour domestic GSE suppliers such as Guangtai and CIMC Tianda on cost. TLD's opportunity here is limited to premium electric or specialised units, or leasing where the airport avoids capex; do not over-invest sales resource in this tier.</div>
+    </div>
+    <div class="signal-section signal-action">
+      <div class="signal-section-label">Recommended action</div>
+      <div class="signal-section-text">Keep Yancheng on the low-priority watch list; only pursue if a leasing or electrification tender emerges.</div>
+    </div>
+    
+  </div>
+</div>
+<div class="signal-card impact-important">
+  <div class="signal-card-header" style="border-left:4px solid #d97706;">
+    <span class="signal-badge"
+          style="background:#fffbeb;color:#92400e;border:1px solid #fde68a;">
+      Important
+    </span>
+    <h3 class="signal-headline">Winter de-icing and snow-removal mobilisation begins across northern and plateau airports</h3>
+  </div>
+  <div class="signal-body">
+    <div class="signal-section">
+      <div class="signal-section-label">Reading</div>
+      <div class="signal-section-text">Multiple airports — including Shouxin Ground Services (Beijing), Qinghai Airport Company and others — have launched winter de-icing and snow-removal drills and equipment mobilisation for the 2026-27 season. Qinghai specifically emphasises high-altitude winter readiness, which demands specialised, cold- and altitude-rated equipment. This is a recurring seasonal procurement and refurbishment window for de-icing rigs, snow blowers and related GSE.</div>
+    </div>
+    <div class="signal-section">
+      <div class="signal-section-label">Business impact</div>
+      <div class="signal-section-text">De-icing equipment is a high-margin, seasonally concentrated segment; northern and plateau airports will be finalising fleet readiness now, with purchase or lease decisions concentrated in Q4. TLD should ensure de-icer inventory and spare parts (nozzles, booms, heating systems) are positioned for immediate delivery, and that high-altitude specifications are available for Qinghai-type customers.</div>
+    </div>
+    <div class="signal-section signal-action">
+      <div class="signal-section-label">Recommended action</div>
+      <div class="signal-section-text">Confirm de-icer and snow-removal unit availability and spare-parts stock with the China operations team this week, and push a targeted winter-readiness offer to northern and plateau handlers.</div>
+    </div>
+    <div class="signal-source"><span class="source-label">Source</span><a href="https://www.bidcenter.com.cn/news-446548460-1.html" target="_blank" rel="noopener">打印机采购项目（2026）询比采购公告</a><span class="source-name"> — Bidcenter (China Tenders)</span></div>
+  </div>
+</div>
+<div class="signal-card impact-watch">
+  <div class="signal-card-header" style="border-left:4px solid #0369a1;">
+    <span class="signal-badge"
+          style="background:#f0f9ff;color:#0c4a6e;border:1px solid #bae6fd;">
+      Watch
+    </span>
+    <h3 class="signal-headline">Chongqing Jiangbei deploys digital smart-management for large passenger flows</h3>
+  </div>
+  <div class="signal-body">
+    <div class="signal-section">
+      <div class="signal-section-label">Reading</div>
+      <div class="signal-section-text">Chongqing Jiangbei Airport is highlighting digital tools for managing large passenger volumes, part of a broader Chinese airport push toward smart operations. Digitalisation of airport and ramp processes increasingly links to telematics-enabled GSE and fleet-management software. This signals rising buyer preference for connected, data-capable equipment rather than standalone machines.</div>
+    </div>
+    <div class="signal-section">
+      <div class="signal-section-label">Business impact</div>
+      <div class="signal-section-text">Airports and handlers investing in digital operations will increasingly require GSE with telematics, fleet-management integration and electric drivetrains that report status digitally. TLD's competitiveness in China will depend on offering a software/telematics layer alongside hardware; equipment-only bids will lose to integrated offers.</div>
+    </div>
+    <div class="signal-section signal-action">
+      <div class="signal-section-label">Recommended action</div>
+      <div class="signal-section-text">Accelerate the China-market telematics and fleet-management offering roadmap; prepare a smart-fleet value proposition for Jiangbei-type customers within 30 days.</div>
+    </div>
+    
+  </div>
+</div>
+<div class="signal-card impact-watch">
+  <div class="signal-card-header" style="border-left:4px solid #0369a1;">
+    <span class="signal-badge"
+          style="background:#f0f9ff;color:#0c4a6e;border:1px solid #bae6fd;">
+      Watch
+    </span>
+    <h3 class="signal-headline">Urumqi Tianshan International upgrades transit services with baggage-free transfer</h3>
+  </div>
+  <div class="signal-body">
+    <div class="signal-section">
+      <div class="signal-section-label">Reading</div>
+      <div class="signal-section-text">Urumqi Tianshan International Airport has introduced baggage-free transfer and a "nine-free, nine-benefit" service package to upgrade the transit experience. As a key Central Asia gateway, Urumqi's transit volume growth increases baggage handling and transfer GSE requirements. Service upgrades of this type typically accompany rising transfer baggage volumes, driving demand for conveyors, tugs and container handling equipment.</div>
+    </div>
+    <div class="signal-section">
+      <div class="signal-section-label">Business impact</div>
+      <div class="signal-section-text">Growing transfer traffic at Urumqi supports incremental demand for baggage tractors, dollies and container/pallet handling equipment, likely procured by the airport or its handler. TLD should monitor whether Urumqi issues a baggage-handling GSE tender in the coming quarters.</div>
+    </div>
+    <div class="signal-section signal-action">
+      <div class="signal-section-label">Recommended action</div>
+      <div class="signal-section-text">Add Urumqi baggage-handling GSE to the tender-monitoring list; no immediate action.</div>
+    </div>
+    
+  </div>
+</div>
+<div class="signal-card impact-watch">
+  <div class="signal-card-header" style="border-left:4px solid #0369a1;">
+    <span class="signal-badge"
+          style="background:#f0f9ff;color:#0c4a6e;border:1px solid #bae6fd;">
+      Watch
+    </span>
+    <h3 class="signal-headline">Ezhou Huahu completes first emergency medical charter support mission</h3>
+  </div>
+  <div class="signal-body">
+    <div class="signal-section">
+      <div class="signal-section-label">Reading</div>
+      <div class="signal-section-text">Ezhou Huahu International Airport, China's dedicated cargo hub anchored by SF Express, completed its first emergency medical charter flight support. This demonstrates the airport's expanding operational capability beyond pure express cargo. As a specialised cargo hub, Huahu is a concentrated source of cargo GSE demand — high-lift loaders, container transporters, pallet dollies and cargo tractors.</div>
+    </div>
+    <div class="signal-section">
+      <div class="signal-section-label">Business impact</div>
+      <div class="signal-section-text">Huahu's growth as a cargo hub represents one of the most concentrated cargo-GSE opportunities in China, and SF Express's expansion plans imply recurring fleet purchases. TLD should treat Huahu/SF Express as a strategic account for cargo GSE and pursue framework supply or leasing agreements rather than one-off tenders.</div>
+    </div>
+    <div class="signal-section signal-action">
+      <div class="signal-section-label">Recommended action</div>
+      <div class="signal-section-text">Initiate contact with Ezhou Huahu/SF Express procurement within 30 days to explore a cargo GSE framework or leasing agreement.</div>
+    </div>
+    
+  </div>
+</div>
+<div class="signal-card impact-watch">
+  <div class="signal-card-header" style="border-left:4px solid #0369a1;">
+    <span class="signal-badge"
+          style="background:#f0f9ff;color:#0c4a6e;border:1px solid #bae6fd;">
+      Watch
+    </span>
+    <h3 class="signal-headline">Yangtai Airport handles over 14,500 passengers daily during dual-holiday peak</h3>
+  </div>
+  <div class="signal-body">
+    <div class="signal-section">
+      <div class="signal-section-label">Reading</div>
+      <div class="signal-section-text">Yangtai Airport averaged more than 14,500 passengers per day during the National Day and Mid-Autumn holiday period, emphasising speed and service quality. Holiday peak volumes stress-test handler GSE fleets and often trigger post-peak maintenance, refurbishment or replacement decisions. This is a demand-utilisation signal rather than a procurement event.</div>
+    </div>
+    <div class="signal-section">
+      <div class="signal-section-label">Business impact</div>
+      <div class="signal-section-text">Post-peak periods are when handlers assess fleet condition and plan replacements; TLD should time aftermarket, spare-parts and refurbishment offers to this post-holiday window. No material new-unit volume expected from Yangtai alone.</div>
+    </div>
+    <div class="signal-section signal-action">
+      <div class="signal-section-label">Recommended action</div>
+      <div class="signal-section-text">Time a post-peak aftermarket and refurbishment campaign to northern winter airports over the next four to six weeks.</div>
+    </div>
+    
+  </div>
+</div>
+<details style="margin-top:12px;">
+  <summary style="font-size:12px;color:#94a3b8;cursor:pointer;
+                  padding:8px 4px;user-select:none;list-style:none;
+                  display:flex;align-items:center;gap:6px;">
+    <span style="font-size:10px;background:#f1f5f9;border:1px solid #e2e8f0;
+                 border-radius:20px;padding:2px 8px;color:#64748b;font-weight:600;
+                 letter-spacing:.04em;">
+      + 9 background items
+    </span>
+    <span style="color:#94a3b8;">— no action required, click to expand</span>
+  </summary>
+  <ul style="list-style:none;padding:12px 16px;margin-top:8px;
+             background:#f8fafc;border:1px solid #e2e8f0;
+             border-radius:8px;">
+    <li style="font-size:13px;color:#64748b;padding:3px 0;line-height:1.5;">Beijing Capital Airport security unit completes dual-holiday support</li><li style="font-size:13px;color:#64748b;padding:3px 0;line-height:1.5;">Ulanhot Airport completes meteorological calibration flight support</li><li style="font-size:13px;color:#64748b;padding:3px 0;line-height:1.5;">Shouxin Ground Services runs load-planning skills competition</li><li style="font-size:13px;color:#64748b;padding:3px 0;line-height:1.5;">Shouxin Ground Services highlights cabin-cleaning operations in confined spaces</li><li style="font-size:13px;color:#64748b;padding:3px 0;line-height:1.5;">Rizhao Airport promotes boarding pass as city branding tool</li><li style="font-size:13px;color:#64748b;padding:3px 0;line-height:1.5;">Changchun Airport ice-snow tourism service case selected for CAAC excellence compendium</li><li style="font-size:13px;color:#64748b;padding:3px 0;line-height:1.5;">Xi'an Xianyang Airport upgrades unaccompanied-traveller service station</li><li style="font-size:13px;color:#64748b;padding:3px 0;line-height:1.5;">Qinghai Airport Company conducts multi-site snow and ice drills</li><li style="font-size:13px;color:#64748b;padding:3px 0;line-height:1.5;">Bidcenter tenders show no GSE-relevant procurement activity</li>
+  </ul>
+</details>
+
+  <hr class="section-divider">
+
+  <div class="section-header"><h2>To watch this week</h2></div><div class="watch-panel"><div class="watch-panel-label">Key indicators</div><ol><li>Pudong T3 GSE procurement timeline and decision-makers, plus any early equipment package tenders from Shanghai Airport Authority.</li><li>Q4 de-icing and snow-removal equipment orders and tenders from northern and plateau airports (Beijing, Qinghai, Northeast China).</li><li>Any competitor activity from Guangtai, CIMC Tianda, JBT or Textron in China tenders, and cargo-GSE tenders at Ezhou Huahu/SF Express.</li></ol></div>
+
+  <div class="risk-panel"><div class="risk-panel-label">Main risk</div><div class="risk-panel-text">Domestic competitors such as Guangtai and CIMC Tianda could lock up the Pudong T3 and winter de-icing opportunities on price before TLD establishes its specification position, eroding both volume and margin in TLD's core China market.</div></div>
+
+  <div class="sources-panel">
+    <div class="sources-panel-label">Monitored sources</div>
+    <ul><li>Bidcenter (China Tenders)</li><li>China Airport News (CAAC)</li><li>CAAC News Portal</li><li>CARNOC.com</li><li>CAAC Gov (China)</li><li>Ground Handling International</li><li>Aviation Week MRO</li><li>CGTN Aviation</li><li>Air Transport World</li><li>民航资源网 (CARNOC News)</li><li>中国民航网 (AviationCN)</li><li>中国民航 (CCAonline)</li><li>山东新闻 (Shandong News — Guangtai HQ region)</li><li>威海新闻 (Weihai Daily — Guangtai home city)</li><li>中国招标投标网 (China Bidding)</li></ul>
+  </div>
+
+</div>
+
+<div class="page-footer">
+  GSE Intelligence Agent v3.6 · Powered by DeepSeek + Tavily · October 13, 2026
+</div>
+
+</div>
+</body>
+</html>
